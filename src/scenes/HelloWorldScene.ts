@@ -319,6 +319,10 @@ export default class HelloWorldScene extends Phaser.Scene
 
             this.load[fileTypes[fileType]](n, D.baseUrl + i.RESOURCE[n]);
         }
+
+        ["loading_bg.png", "loading0.gif", "loading1.gif", "loading2.gif"].forEach(n => {
+          this.load.image(n, `assets/img/loading/${n}`)
+        })
         
         this.load.on('complete', (loader, totalComplete, totalFailed) => {
             B.resource  = {
@@ -448,5 +452,70 @@ export default class HelloWorldScene extends Phaser.Scene
         logo.setCollideWorldBounds(true)
 
         emitter.startFollow(logo)
+
+        
+        var t;
+        // !function(t, e) {
+        //   if (!(t instanceof e))
+        //     throw new TypeError("Cannot call a class as a function")
+        // }(this, e),
+        t = this;  // Mn(this, Bn(e).call(this));
+        var o = ["loading0.gif", "loading1.gif", "loading2.gif"];
+        return t.loadingG = new AnimatedSprite(this, o),
+        t.loadingG.x = i.GAME_CENTER - 64,
+        t.loadingG.y = i.GAME_MIDDLE - 64,
+        t.loadingG.animationSpeed = .15,
+        t.loadingTexture = "loading_bg.png",
+        t.loadingBg = this.add.image(0, 0, t.loadingTexture).setOrigin(0),
+        t.loadingBg.alpha = .09,
+        t.loadingBgFlipCnt = 0,
+        document.cookie.split(";").forEach(function(t) {
+          var e = t.split("=");
+          "afc2021_highScore" == e[0] && (D.highScore = +e[1])
+        }),
+        t
     }
+}
+
+
+class AnimatedSprite extends Phaser.GameObjects.Sprite {
+
+  // variables
+  private frameRate: number | null  = null;
+
+  constructor(scene: Phaser.Scene, frameKeys: string[]) {
+    super(scene, -100, -100, frameKeys[0])
+
+    this.setOrigin(0)
+
+    let frames  = [...frameKeys.map(k => {return {key: k, frame: 0}})]
+
+    this.anims.create({
+      key       : 'default',
+      frames,
+      frameRate : 9,
+      repeat    : -1
+    })
+
+    this.scene.time.addEvent({
+      callback: () => this.play('default')
+    })
+
+    scene.add.existing(this)
+  }
+
+  set animationSpeed(percentOfSixty: number) {
+    this.frameRate  = 60 * percentOfSixty;
+  }
+
+  play(key: string = 'default') {
+    if (this.frameRate) {
+      super.play({
+        key,
+        frameRate: this.frameRate
+      })
+    } else {
+      super.play(key)
+    }
+  }
 }
