@@ -171,6 +171,33 @@ const i = {
     FPS: 30
   };
 
+const g = {
+    play: function(t) {
+      D.lowModeFlg || B.resource[t].sound.play()
+    },
+    bgmPlay: function(t, e, o) {
+      if (!D.lowModeFlg) {
+        var i, n = B.resource[t].sound, a = !1;
+        !function t() {
+          a ? ((i = n.play({
+            start: e / 48e3,
+            end: o / 48e3
+          })).on("progress", s),
+          i.on("end", t.bind(this))) : ((i = n.play({
+            start: 0,
+            end: o / 48e3
+          })).on("end", t.bind(this)),
+          i.on("progress", s),
+          a = !0)
+        }()
+      }
+      function s(t) {}
+    },
+    stop: function(t) {
+      D.lowModeFlg || B.resource[t].sound.stop()
+    }
+  };
+
 const D = {
     baseUrl: "",
     lowModeFlg: !1,
@@ -275,9 +302,6 @@ export default class HelloWorldScene extends Phaser.Scene
         this.load.image('sky', 'http://labs.phaser.io/assets/skies/space3.png')
         this.load.image('logo', 'http://labs.phaser.io/assets/sprites/phaser3-logo.png')
         this.load.image('red', 'http://labs.phaser.io/assets/particles/red.png')
-
-        // for (var n in i.RESOURCE)
-        //   D.lowModeFlg ? i.RESOURCE[n].indexOf(".mp3") <= 0 && this.load.audio(n, D.baseUrl + i.RESOURCE[n]) : console.log(n, i.RESOURCE[n]);
         
         let fileTypes   = {
             jpg     : 'image',
@@ -286,8 +310,13 @@ export default class HelloWorldScene extends Phaser.Scene
             png     : 'image'
         }
 
+        let audioFiles: string[]    = []
+
         for (var n in i.RESOURCE) {
             let fileType    = i.RESOURCE[n].match(/\w+$/)[0];
+
+            if (fileTypes[fileType] === 'audio')  audioFiles.push(n);
+
             this.load[fileTypes[fileType]](n, D.baseUrl + i.RESOURCE[n]);
         }
         
@@ -297,6 +326,106 @@ export default class HelloWorldScene extends Phaser.Scene
                     data    : loader.cacheManager.json.get( 'recipe' )
                 }
             }
+
+            audioFiles.forEach(n => {
+                B.resource[n] = {sound: loader.cacheManager.audio.get(n)};
+                g[n] = B.resource[n].sound;
+            })
+
+            g.voice_titlecall.volume = .7,
+            g.se_decision.volume = .75,
+            g.se_correct.volume = .9,
+            g.se_cursor_sub.volume = .9,
+            g.se_cursor.volume = .9,
+            g.se_over.volume = .9,
+            g.adventure_bgm.volume = .2,
+            g.g_adbenture_voice0.volume = .5,
+            g.voice_thankyou.volume = .7,
+            g.se_explosion.volume = .35,
+            g.se_shoot.volume = .3,
+            g.se_shoot_b.volume = .3,
+            g.se_ca.volume = .8,
+            g.se_ca_explosion.volume = .9,
+            g.se_damage.volume = .15,
+            g.se_guard.volume = .2,
+            g.se_finish_akebono.volume = .9,
+            g.se_barrier_start.volume = .9,
+            g.se_barrier_end.volume = .9,
+            g.voice_round0.volume = .7,
+            g.voice_round1.volume = .7,
+            g.voice_round2.volume = .7,
+            g.voice_round3.volume = .7,
+            g.voice_fight.volume = .7,
+            g.voice_ko.volume = .7,
+            g.voice_another_fighter.volume = .7,
+            g.g_stage_voice_0.volume = .55,
+            g.g_stage_voice_1.volume = .7,
+            g.g_stage_voice_2.volume = .45,
+            g.g_stage_voice_3.volume = .45,
+            g.g_stage_voice_4.volume = .55,
+            g.g_damage_voice.volume = .7,
+            g.g_powerup_voice.volume = .55,
+            g.g_ca_voice.volume = .7,
+            g.boss_bison_bgm.volume = .4,
+            g.boss_bison_voice_add.volume = .65,
+            g.boss_bison_voice_ko.volume = .9,
+            g.boss_bison_voice_faint.volume = .55,
+            g.boss_bison_voice_faint_punch.volume = .65,
+            g.boss_bison_voice_punch.volume = .65,
+            g.boss_barlog_bgm.volume = .4,
+            g.boss_barlog_voice_add.volume = .7,
+            g.boss_barlog_voice_ko.volume = .9,
+            g.boss_barlog_voice_tama.volume = .6,
+            g.boss_barlog_voice_barcelona.volume = .7,
+            g.boss_sagat_bgm.volume = .4,
+            g.boss_sagat_voice_add.volume = .9,
+            g.boss_sagat_voice_ko.volume = .9,
+            g.boss_sagat_voice_tama0.volume = .45,
+            g.boss_sagat_voice_tama1.volume = .65,
+            g.boss_sagat_voice_kick.volume = .65,
+            g.boss_vega_bgm.volume = .3,
+            g.boss_vega_voice_add.volume = .7,
+            g.boss_vega_voice_ko.volume = .9,
+            g.boss_vega_voice_crusher.volume = .7,
+            g.boss_vega_voice_warp.volume = .7,
+            g.boss_vega_voice_tama.volume = .7,
+            g.boss_vega_voice_shoot.volume = .7,
+            g.boss_goki_bgm.volume = .4,
+            g.boss_goki_voice_add.volume = .7,
+            g.boss_goki_voice_ko.volume = .9,
+            g.boss_goki_voice_tama0.volume = .7,
+            g.boss_goki_voice_tama1.volume = .7,
+            g.boss_goki_voice_ashura.volume = .7,
+            g.boss_goki_voice_syungokusatu0.volume = .7,
+            g.boss_goki_voice_syungokusatu1.volume = .7,
+            g.boss_fang_bgm.volume = .4,
+            g.boss_fang_voice_add.volume = .6,
+            g.boss_fang_voice_ko.volume = .9,
+            g.boss_fang_voice_beam0.volume = .6,
+            g.boss_fang_voice_beam1.volume = .6,
+            g.boss_fang_voice_tama.volume = .6,
+            g.bgm_continue.volume = .25,
+            g.bgm_gameover.volume = .3,
+            g.voice_countdown0.volume = .7,
+            g.voice_countdown1.volume = .7,
+            g.voice_countdown2.volume = .7,
+            g.voice_countdown3.volume = .7,
+            g.voice_countdown4.volume = .7,
+            g.voice_countdown5.volume = .7,
+            g.voice_countdown6.volume = .7,
+            g.voice_countdown7.volume = .7,
+            g.voice_countdown8.volume = .7,
+            g.voice_countdown9.volume = .7,
+            g.voice_gameover.volume = .7,
+            g.g_continue_yes_voice0.volume = .7,
+            g.g_continue_yes_voice1.volume = .7,
+            g.g_continue_yes_voice2.volume = .7,
+            g.g_continue_no_voice0.volume = .7,
+            g.g_continue_no_voice1.volume = .7,
+            g.voice_congra.volume = .7,
+            document.addEventListener("visibilitychange", function() {
+              "hidden" === document.visibilityState ? window.game.sound.pauseAll() : "visible" === document.visibilityState && window.game.sound.resumeAll()
+            }, !1)
         })
     }
 
@@ -319,7 +448,5 @@ export default class HelloWorldScene extends Phaser.Scene
         logo.setCollideWorldBounds(true)
 
         emitter.startFollow(logo)
-
-        window.foo  = this
     }
 }
