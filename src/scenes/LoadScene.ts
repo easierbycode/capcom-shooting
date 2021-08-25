@@ -349,10 +349,6 @@ export default class LoadScene extends Phaser.Scene
           require('../assets/images/game_ui.json')
       )
 
-      this.load.image('sky', 'http://labs.phaser.io/assets/skies/space3.png')
-      this.load.image('logo', 'http://labs.phaser.io/assets/sprites/phaser3-logo.png')
-      this.load.image('red', 'http://labs.phaser.io/assets/particles/red.png')
-      
       let fileTypes   = {
           jpg     : 'image',
           json    : 'json',
@@ -479,11 +475,7 @@ export default class LoadScene extends Phaser.Scene
 
           TweenMax.to([this.loadingG, this.loadingBg], .2, {
             alpha: 0,
-            // onComplete: function() {
             onComplete: () => {
-              
-              // triggers sceneRemoved (upon removal/sleep of this scene)
-              // B.Manager.game.stage.removeChild(B.Scene)
               this.scene.start('title-scene')
             }
           })
@@ -492,25 +484,6 @@ export default class LoadScene extends Phaser.Scene
 
   create()
   {
-      this.add.image(400, 300, 'sky').setDepth(-1)
-
-      const particles = this.add.particles('red').setDepth(-1)
-
-      const emitter = particles.createEmitter({
-          speed: 100,
-          scale: { start: 1, end: 0 },
-          blendMode: 'ADD'
-      })
-
-      const logo = this.physics.add.image(400, 100, 'logo').setDepth(-1)
-
-      logo.setVelocity(100, 200)
-      logo.setBounce(1, 1)
-      logo.setCollideWorldBounds(true)
-
-      emitter.startFollow(logo)
-
-
       this.events.on('shutdown', this.sceneRemoved, this)
   }
 
