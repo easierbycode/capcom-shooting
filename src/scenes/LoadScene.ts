@@ -1,3 +1,5 @@
+
+import AudioManager from './audio'
 import Phaser from 'phaser'
 
 export const i = {
@@ -171,7 +173,7 @@ export const i = {
   FPS: 30
 };
 
-const g = {
+export const g = {
   play: function(t) {
     D.lowModeFlg || B.resource[t].sound.play()
   },
@@ -198,7 +200,7 @@ const g = {
   }
 };
 
-const D = {
+export const D = {
   baseUrl: "",
   lowModeFlg: !1,
   hitarea: !1,
@@ -221,7 +223,7 @@ const D = {
   enemyBulletList: []
 }
 
-const B = {
+export const B = {
     resource: {},
     Manager: ""
 }
@@ -375,6 +377,7 @@ export default class LoadScene extends Phaser.Scene
 
           audioFiles.forEach(n => {
               B.resource[n] = {sound: loader.cacheManager.audio.get(n)};
+              AudioManager.resource[n] = this.sound.add(n);
               g[n] = B.resource[n].sound;
           })
 
