@@ -3,14 +3,18 @@ import { B, D, g, i } from './LoadScene'
 import AudioManager from './audio'
 
 
-class Container extends Phaser.GameObjects.Container {
-	constructor(scene, x, y, children?) {
+export class Container extends Phaser.GameObjects.Container {
+	constructor(scene: Phaser.Scene, x, y, children?) {
 		super(scene, x, y, children)
 		scene.add.existing(this)
 	}
 
 	set hitArea(rect: Phaser.GameObjects.Rectangle) {
 		this.setInteractive(rect, Phaser.Geom.Rectangle.Contains)
+	}
+
+	addChild(gameObject: Phaser.GameObjects.GameObject) {
+		super.add(gameObject)
 	}
 }
 
@@ -109,13 +113,13 @@ class StartBtn extends Container {
 }
 
 
-class Scene extends Phaser.Scene {
+export class Scene extends Phaser.Scene {
 	constructor(sceneKey)
 	{
 		super(sceneKey)
 	}
 
-	create()
+	init()
 	{
 		this.events.once('shutdown', this.sceneRemoved, this)
 	}
@@ -165,8 +169,6 @@ export default class TitleScene extends Scene
 
     create()
     {
-		super.create()
-
 		this.bg	= this.add.tileSprite(0, 0, i.GAME_WIDTH, i.GAME_HEIGHT, 'title_bg').setOrigin(0)
 		const scaleY = i.GAME_HEIGHT / this.bg.displayTexture.source[0].height
 		this.bg.setTileScale(1, scaleY),

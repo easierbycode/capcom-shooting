@@ -1,6 +1,8 @@
 
 import Phaser from 'phaser'
 import AdvScene from './scenes/AdvScene'
+import GameScene from './scenes/GameScene'
+import GameoverScene from './scenes/GameoverScene'
 import LoadScene from './scenes/LoadScene'
 import TitleScene from './scenes/TitleScene'
 import { i } from './scenes/LoadScene'
@@ -16,7 +18,7 @@ const config: Phaser.Types.Core.GameConfig = {
 			gravity: { y: 200 }
 		}
 	},
-	scene: [LoadScene, TitleScene, AdvScene],
+	scene: [LoadScene, TitleScene, AdvScene, GameScene, GameoverScene],
 	scale: {
 		autoCenter: Phaser.Scale.Center.CENTER_HORIZONTALLY,
 		mode: Phaser.Scale.ScaleModes.FIT
