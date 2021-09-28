@@ -22,6 +22,9 @@ const config: Phaser.Types.Core.GameConfig = {
 	scale: {
 		autoCenter: Phaser.Scale.Center.CENTER_HORIZONTALLY,
 		mode: Phaser.Scale.ScaleModes.FIT
+	},
+	render: {
+		pixelArt: true
 	}
 }
 

@@ -161,6 +161,7 @@ export default class TitleScene extends Scene
 	private subTitle: Phaser.GameObjects.Sprite
 	private titleG: Phaser.GameObjects.Sprite
 	private titleGWrap: Phaser.GameObjects.Container
+	private copyright: Phaser.GameObjects.Text
 
 	constructor()
 	{
@@ -200,8 +201,12 @@ export default class TitleScene extends Scene
         // this.startBtn.interactive = !1,
         // this.startBtn.alpha = 0,
 
-		this.copyright = this.add.sprite(0, 0, 'game_ui', "titleCopyright.gif").setOrigin(0),
-        this.copyright.x = 0,
+		this.copyright = this.add.text(0, 0, '© CodeMonkey.Games 2021', {
+			fontFamily: 'Press Start 2P',
+			fontSize: '34px',
+			strokeThickness: 0.15
+		}).setOrigin(0, 1),
+        this.copyright.x = 32,
         this.copyright.y = i.GAME_HEIGHT - this.copyright.height - 6,
 
 		this.scoreTitleTxt = this.add.sprite(0, 0, 'game_ui', "hiScoreTxt.gif").setOrigin(0),
