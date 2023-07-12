@@ -5,8 +5,10 @@ import AudioManager from './audio'
 
 export class Container extends Phaser.GameObjects.Container {
 	constructor(scene: Phaser.Scene, x, y, children?) {
-		super(scene, x, y, children)
-		scene.add.existing(this)
+		// super(scene, x, y, children)
+		super(scene || window.gameScene, x, y, children);
+		// scene.add.existing(this)
+		(scene || window.gameScene).add.existing(this);
 	}
 
 	set hitArea(rect: Phaser.GameObjects.Rectangle) {
@@ -18,7 +20,7 @@ export class Container extends Phaser.GameObjects.Container {
 	}
 }
 
-class Sprite extends Phaser.GameObjects.Sprite {
+export class Sprite extends Phaser.GameObjects.Sprite {
 	constructor(scene, x, y, texture, frame?) {
 		super(scene, x, y, texture, frame)
 		this.setOrigin(0)
@@ -26,7 +28,7 @@ class Sprite extends Phaser.GameObjects.Sprite {
 	}
 }
 
-class Texture extends Phaser.Textures.Texture {
+export class Texture extends Phaser.Textures.Texture {
 	constructor(manager, key, source) {
 		super(manager, key, source)
 	}
@@ -124,7 +126,8 @@ export class Scene extends Phaser.Scene {
 		this.events.once('shutdown', this.sceneRemoved, this)
 	}
 
-	nextScene() {
+	nextScene()
+	{
 		this.scene.stop()
 	}
 

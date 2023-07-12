@@ -503,17 +503,24 @@ export default class LoadScene extends Phaser.Scene
 }
 
 
-class AnimatedSprite extends Phaser.GameObjects.Sprite {
+export class AnimatedSprite extends Phaser.GameObjects.Sprite {
 
   // variables
   private frameRate: number | null  = null;
 
-  constructor(scene: Phaser.Scene, frameKeys: string[]) {
-    super(scene, -100, -100, frameKeys[0])
+  constructor(scene: Phaser.Scene, frameKeys: string[], texture?: string) {
+    
+    super(scene, 0, 0, frameKeys[0])
+
+    if (texture)  this.setTexture(texture, frameKeys[0]);
 
     this.setOrigin(0)
 
     let frames  = [...frameKeys.map(k => {return {key: k, frame: 0}})]
+
+    if (texture) {
+      frames    = [...frameKeys.map(k => {return {key: texture, frame: k}})]
+    }
 
     this.anims.create({
       key       : 'default',
