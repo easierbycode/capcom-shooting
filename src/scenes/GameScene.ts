@@ -72,13 +72,6 @@ export default class GameScene extends Scene
         // }
         // this.stageBg = new Bi(u),
         // this.addChildAt(this.stageBg, 0);
-        // Set up player
-        // var d = B.resource.recipe.data.playerData;
-        // return d.explosion = this.explosionTextures,
-        // this.player = new M(d)//,
-        // this.player.on(M.CUSTOM_EVENT_DEAD, this.gameover.bind(Yi(Yi(o)))),
-        // this.player.on(M.CUSTOM_EVENT_DEAD_COMPLETE, this.gameoverComplete.bind(Yi(Yi(o)))),
-        // D.player = this.player,
     }
 
     create()
