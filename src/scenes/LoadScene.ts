@@ -182,6 +182,7 @@ export const g = {
       var i, n = B.resource[t].sound, a = !1;
       !function t() {
         a ? ((i = n.play({
+          // 48e3 == 48000 in scientific notation
           start: e / 48e3,
           end: o / 48e3
         })).on("progress", s),
