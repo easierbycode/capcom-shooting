@@ -1,5 +1,6 @@
 import { Container, Scene, Sprite, Texture } from "./TitleScene";
 import { AnimatedSprite, B, D, i } from "./LoadScene";
+import AudioManager from "./audio";
 
 window.gameScene;
 
@@ -32,6 +33,7 @@ export default class GameScene extends Scene {
   explosionTextures: string[] = [];
   caExplosionTextures: string[] = [];
   itemTextureList: any = {};
+  stageBg;
 
   constructor() {
     super("game-scene");
@@ -56,30 +58,19 @@ export default class GameScene extends Scene {
       this.caExplosionTextures[h] = l;
     }
     // this.itemTextureList = {},
-    (this.itemTextureList.powerupBig = [
-      PIXI.Texture.fromFrame("powerupBig0.gif"),
-      PIXI.Texture.fromFrame("powerupBig1.gif"),
-    ]),
+    (this.itemTextureList.powerupBig = ["powerupBig0.gif", "powerupBig1.gif"]),
       (this.itemTextureList.powerup3way = [
-        PIXI.Texture.fromFrame("powerup3way0.gif"),
-        PIXI.Texture.fromFrame("powerup3way1.gif"),
+        "powerup3way0.gif",
+        "powerup3way1.gif",
       ]),
-      (this.itemTextureList.barrier = [
-        PIXI.Texture.fromFrame("barrierItem0.gif"),
-        PIXI.Texture.fromFrame("barrierItem1.gif"),
-      ]),
-      (this.itemTextureList.speedup = [
-        PIXI.Texture.fromFrame("speedupItem0.gif"),
-        PIXI.Texture.fromFrame("speedupItem1.gif"),
-      ]);
-    // for (var u = [], c = 0; c < 5; c++) {
-    //     var f = [];
-    //     f[0] = new PIXI.Texture.fromImage(B.resource["stage_end" + c].url),
-    //     f[1] = new PIXI.Texture.fromImage(B.resource["stage_loop" + c].url),
-    //     u.push(f)
-    // }
-    // this.stageBg = new Bi(u),
-    // this.addChildAt(this.stageBg, 0);
+      (this.itemTextureList.barrier = ["barrierItem0.gif", "barrierItem1.gif"]),
+      (this.itemTextureList.speedup = ["speedupItem0.gif", "speedupItem1.gif"]);
+    for (var u = [], c = 0; c < 5; c++) {
+      var f = [];
+      (f[0] = `stage_end${c}`), (f[1] = `stage_loop${c}`), u.push(f);
+    }
+    // (this.stageBg = new Bi(u)),
+    (this.stageBg = new StageBg(u)), this.addChildAt(this.stageBg, 0);
     // Set up player
     var d = B.resource.recipe.data.playerData;
     return (
@@ -124,11 +115,39 @@ export default class GameScene extends Scene {
   }
 
   create() {
+    this.stageBg.init(D.stageId),
+      //   this.hud.caBtnDeactive(),
+      TweenMax.delayedCall(
+        2.6,
+        function () {
+          AudioManager.play("g_stage_voice_" + String(D.stageId)); //,
+          // this.hud.caBtnActive();
+        }.bind(this)
+      );
     var n = B.resource.recipe.data["stage" + D.stageId].enemylist.slice();
     (this.stageEnemyPositionList = n.reverse()),
-      // "true" == D.shortFlg && (this.stageEnemyPositionList = [],
-      // this.stageEnemyPositionList.push(["00", "00", "A1", "A2", "A9", "00", "00", "00"]),
-      // this.stageEnemyPositionList.push(["00", "00", "A3", "A3", "00", "00", "00", "00"])),
+      "true" == D.shortFlg &&
+        ((this.stageEnemyPositionList = []),
+        this.stageEnemyPositionList.push([
+          "00",
+          "00",
+          "A1",
+          "A2",
+          "A9",
+          "00",
+          "00",
+          "00",
+        ]),
+        this.stageEnemyPositionList.push([
+          "00",
+          "00",
+          "A3",
+          "A3",
+          "00",
+          "00",
+          "00",
+          "00",
+        ])),
       this.player.setUp(D.playerMaxHp, D.shootMode, D.shootSpeed),
       (this.player.unit.height = 64),
       (this.player.unit.width = 32),
@@ -139,7 +158,14 @@ export default class GameScene extends Scene {
   }
 
   update(time: number, delta: number): void {
-    this.player.update();
+    if (!this.theWorldFlg) {
+      // this.player.loop(),
+      this.player.update(),
+        // this.hud.loop();
+        // enemyHitTestList
+        // itemHitTestList
+        this.stageBg.loop(this.stageBgAmountMove); //,
+    }
   }
 }
 
@@ -528,39 +554,26 @@ var M = (function (t) {
       "object" !== C(t.texture[0]))
     ) {
       for (var n = 0; n < t.texture.length; n++) {
-        // (a = PIXI.Texture.fromFrame(t.texture[n])).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST,
-        (a = PIXI.Texture.fromFrame(t.texture[n])), (t.texture[n] = a);
+        (a = t.texture[n]), (t.texture[n] = a);
       }
       for (n = 0; n < t.shootNormal.texture.length; n++) {
-        // (a = PIXI.Texture.fromFrame(t.shootNormal.texture[n])).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST,
-        (a = PIXI.Texture.fromFrame(t.shootNormal.texture[n])),
-          (t.shootNormal.texture[n] = a);
+        (a = t.shootNormal.texture[n]), (t.shootNormal.texture[n] = a);
       }
       for (n = 0; n < t.shootBig.texture.length; n++) {
-        // (a = PIXI.Texture.fromFrame(t.shootBig.texture[n])).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST,
-        (a = PIXI.Texture.fromFrame(t.shootBig.texture[n])),
-          (t.shootBig.texture[n] = a);
+        (a = t.shootBig.texture[n]), (t.shootBig.texture[n] = a);
       }
       for (n = 0; n < t.barrier.texture.length; n++) {
         var a;
-        // (a = PIXI.Texture.fromFrame(t.barrier.texture[n])).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST,
-        (a = PIXI.Texture.fromFrame(t.barrier.texture[n])),
-          (t.barrier.texture[n] = a);
+        (a = t.barrier.texture[n]), (t.barrier.texture[n] = a);
       }
-      (t.barrierEffectTexture = PIXI.Texture.fromFrame("barrierEffect.gif")),
-        (t.hit = [
-          PIXI.Texture.fromFrame("hit0.gif"),
-          PIXI.Texture.fromFrame("hit1.gif"),
-          PIXI.Texture.fromFrame("hit2.gif"),
-          PIXI.Texture.fromFrame("hit3.gif"),
-          PIXI.Texture.fromFrame("hit4.gif"),
-        ]),
+      (t.barrierEffectTexture = "barrierEffect.gif"),
+        (t.hit = ["hit0.gif", "hit1.gif", "hit2.gif", "hit3.gif", "hit4.gif"]),
         (t.guard = [
-          PIXI.Texture.fromFrame("guard0.gif"),
-          PIXI.Texture.fromFrame("guard1.gif"),
-          PIXI.Texture.fromFrame("guard2.gif"),
-          PIXI.Texture.fromFrame("guard3.gif"),
-          PIXI.Texture.fromFrame("guard4.gif"),
+          "guard0.gif",
+          "guard1.gif",
+          "guard2.gif",
+          "guard3.gif",
+          "guard4.gif",
         ]);
     }
     return (
@@ -762,13 +775,9 @@ var M = (function (t) {
               case 39:
                 this.unitX += 6;
             }
-            // this.unitX <= this.unit.hitArea.width / 2 &&
             this.unitX <= this.unit.input.hitArea.width / 2 &&
-            //   (this.unitX = this.unit.hitArea.width / 2),
               (this.unitX = this.unit.input.hitArea.width / 2),
-            //   this.unitX >= i.GAME_WIDTH - this.unit.hitArea.width / 2 &&
               this.unitX >= i.GAME_WIDTH - this.unit.input.hitArea.width / 2 &&
-                // (this.unitX = i.GAME_WIDTH - this.unit.hitArea.width / 2);
                 (this.unitX = i.GAME_WIDTH - this.unit.input.hitArea.width / 2);
           }
           (this.unit.x +=
@@ -1260,27 +1269,27 @@ var M = (function (t) {
         key: "addedToScene",
         // value: function (t) {
         value: function (gameObject, scene) {
-        //   I(O(e.prototype), "castAdded", this).call(this),
-        //   gameObject.castAdded.call(gameObject),
-            // DRJ - renamed all instances of this to 'gameObject'
-            // may need to revert if castAdded is used
-            // gameObject.addChild(gameObject.barrier),
-            // gameObject.addChild(gameObject.barrierEffect),
-            // gameObject.addChild(gameObject.dragAreaRect),
-            // gameObject.dragAreaRect.on(
-            //   "pointerdown",
-            //   gameObject.onScreenDragStart.bind(this)
-            // ),
-            // gameObject.dragAreaRect.on("pointerup", gameObject.onScreenDragEnd.bind(this)),
-            // gameObject.dragAreaRect.on(
-            //   "pointerupoutside",
-            //   gameObject.onScreenDragEnd.bind(this)
-            // ),
-            // gameObject.dragAreaRect.on(
-            //   "pointermove",
-            //   gameObject.onScreenDragMove.bind(this)
-            // ),
-            (gameObject.keyDownListener = gameObject.onKeyDown.bind(this)),
+          //   I(O(e.prototype), "castAdded", this).call(this),
+          //   gameObject.castAdded.call(gameObject),
+          // DRJ - renamed all instances of this to 'gameObject'
+          // may need to revert if castAdded is used
+          // gameObject.addChild(gameObject.barrier),
+          // gameObject.addChild(gameObject.barrierEffect),
+          // gameObject.addChild(gameObject.dragAreaRect),
+          // gameObject.dragAreaRect.on(
+          //   "pointerdown",
+          //   gameObject.onScreenDragStart.bind(this)
+          // ),
+          // gameObject.dragAreaRect.on("pointerup", gameObject.onScreenDragEnd.bind(this)),
+          // gameObject.dragAreaRect.on(
+          //   "pointerupoutside",
+          //   gameObject.onScreenDragEnd.bind(this)
+          // ),
+          // gameObject.dragAreaRect.on(
+          //   "pointermove",
+          //   gameObject.onScreenDragMove.bind(this)
+          // ),
+          (gameObject.keyDownListener = gameObject.onKeyDown.bind(this)),
             (gameObject.keyUpListener = gameObject.onKeyUp.bind(this)),
             document.addEventListener("keydown", gameObject.keyDownListener),
             document.addEventListener("keyup", gameObject.keyUpListener),
@@ -1292,21 +1301,21 @@ var M = (function (t) {
         key: "removedFromScene",
         // value: function (t) {
         value: function (gameObject, scene) {
-        //   I(O(e.prototype), "castRemoved", this).call(this),
-        //     this.dragAreaRect.off(
-        //       "pointerdown",
-        //       this.onScreenDragStart.bind(this)
-        //     ),
-        //     this.dragAreaRect.off("pointerup", this.onScreenDragEnd.bind(this)),
-        //     this.dragAreaRect.off(
-        //       "pointerupoutside",
-        //       this.onScreenDragEnd.bind(this)
-        //     ),
-        //     this.dragAreaRect.off(
-        //       "pointermove",
-        //       this.onScreenDragMove.bind(this)
-        //     ),
-            document.removeEventListener("keydown", this.keyDownListener),
+          //   I(O(e.prototype), "castRemoved", this).call(this),
+          //     this.dragAreaRect.off(
+          //       "pointerdown",
+          //       this.onScreenDragStart.bind(this)
+          //     ),
+          //     this.dragAreaRect.off("pointerup", this.onScreenDragEnd.bind(this)),
+          //     this.dragAreaRect.off(
+          //       "pointerupoutside",
+          //       this.onScreenDragEnd.bind(this)
+          //     ),
+          //     this.dragAreaRect.off(
+          //       "pointermove",
+          //       this.onScreenDragMove.bind(this)
+          //     ),
+          document.removeEventListener("keydown", this.keyDownListener),
             document.removeEventListener("keyup", this.keyUpListener),
             (this.keyDownListener = null),
             (this.keyUpListener = null);
@@ -1326,138 +1335,121 @@ var M = (function (t) {
   );
 })();
 
-// line 6855
-// var Bi = function(t) {
-//     function e(t) {
-//         var o;
-//         return function(t, e) {
-//             if (!(t instanceof e))
-//                 throw new TypeError("Cannot call a class as a function")
-//         }(this, e),
-//         (o = Ai(this, Mi(e).call(this))).allStagebgTexturesList = t,
-//         o.bg,
-//         o.scrollAmount = 0,
-//         o.scrollCount = 0,
-//         o.moveFlg = !1,
-//         o.bossAppearFlg = !1,
-//         o
-//     }
-//     var o, n, a;
-//     return function(t, e) {
-//         if ("function" != typeof e && null !== e)
-//             throw new TypeError("Super expression must either be null or a function");
-//         t.prototype = Object.create(e && e.prototype, {
-//             constructor: {
-//                 value: t,
-//                 writable: !0,
-//                 configurable: !0
-//             }
-//         }),
-//         e && Di(t, e)
-//     }(e, l),
-//     o = e,
-//     (n = [{
-//         key: "init",
-//         value: function(t) {
-//             this.moveFlg = !0,
-//             this.bossAppearFlg = !1,
-//             this.scrollAmount = 0;
-//             var e = this.allStagebgTexturesList[t][1]
-//               , o = this.allStagebgTexturesList[t][0];
-//             // background tiled sprite
-//             this.bg = new PIXI.extras.TilingSprite(e),
-//             this.bg.width = i.GAME_WIDTH,
-//             this.bg.height = i.GAME_HEIGHT,
-//             this.addChild(this.bg),
-//             // background static sprite
-//             this.bgEnd = new PIXI.Sprite(o),
-//             this.bgEnd.y = -this.bgEnd.height,
-//             this.addChild(this.bgEnd);
-//             var n = [];
-//             n[0] = PIXI.Texture.fromFrame("akebonoBg0.gif"),
-//             n[1] = PIXI.Texture.fromFrame("akebonoBg1.gif"),
-//             n[2] = PIXI.Texture.fromFrame("akebonoBg2.gif"),
-//             this.akebonoBg = new PIXI.extras.AnimatedSprite(n),
-//             this.akebonoBg.animationSpeed = .7
-//         }
-//     }, {
-//         key: "loop",
-//         value: function(t) {
-//             // updates the position of the background based on the scroll amount
-//             this.scrollAmount = t,
-//             this.moveFlg && (this.bg.tilePosition.y += this.scrollAmount),
-//             this.bossAppearFlg && (this.scrollCount += t,
-//             this.bg.y += this.scrollAmount,
-//             this.bgEnd.y += this.scrollAmount,
-//             this.scrollAmount >= 214 && (this.scrollAmount = 0),
-//             this.bgEnd.y >= 42 && (this.bossAppearFlg = !1))
-//         }
-//     }, {
-//         key: "bossScene",
-//         value: function() {
-//             this.moveFlg = !1,
-//             this.bossAppearFlg = !0
-//         }
-//     }, {
-//         key: "akebonofinish",
-//         value: function() {
-//             this.akebonoBg.play(),
-//             this.addChild(this.akebonoBg)
-//         }
-//     }, {
-//         key: "akebonoGokifinish",
-//         value: function() {
-//             this.akebonoBg.play(),
-//             this.addChild(this.akebonoBg),
-//             this.akebonoTen = new PIXI.Sprite(PIXI.Texture.fromFrame("akebonoTen.gif")),
-//             this.akebonoTen.anchor.set(.5),
-//             this.akebonoTen.x = 27 + this.akebonoTen.width / 2,
-//             this.akebonoTen.y = 113 + this.akebonoTen.height / 2,
-//             this.akebonoTen.scale.set(1.2),
-//             this.addChild(this.akebonoTen),
-//             this.akebonoTenShock = new PIXI.Sprite(PIXI.Texture.fromFrame("akebonoTen.gif")),
-//             this.akebonoTenShock.anchor.set(.5),
-//             this.akebonoTenShock.x = 27 + this.akebonoTenShock.width / 2,
-//             this.akebonoTenShock.y = 113 + this.akebonoTenShock.height / 2,
-//             this.akebonoTenShock.alpha = 0,
-//             this.addChild(this.akebonoTenShock);
-//             var t = new TimelineMax;
-//             t.to(this.akebonoTen.scale, .3, {
-//                 x: 1,
-//                 y: 1,
-//                 ease: Quint.easeIn
-//             }),
-//             t.to(this.akebonoTenShock, .001, {
-//                 alpha: 1
-//             }),
-//             t.to(this.akebonoTenShock, .6, {
-//                 alpha: 0,
-//                 ease: Quint.easeOut
-//             }),
-//             t.to(this.akebonoTenShock.scale, .4, {
-//                 x: 1.5,
-//                 y: 1.5,
-//                 ease: Quint.easeOut
-//             }, "-=0.6"),
-//             t.to(this.akebonoTen, .3, {
-//                 alpha: 0,
-//                 ease: Quint.easeOut
-//             })
-//         }
-//     }, {
-//         key: "castAdded",
-//         value: function(t) {}
-//     }, {
-//         key: "castRemoved",
-//         value: function(t) {
-//             this.akebonoBg && (this.akebonoBg.destroy(),
-//             this.removeChild(this.akebonoBg)),
-//             this.akebonoTen && (this.removeChild(this.akebonoTen),
-//             this.removeChild(this.akebonoTenShock)),
-//             this.removeChild(this.bg),
-//             this.removeChild(this.bgEnd)
-//         }
-//     }]) && Pi(o.prototype, n),
-//     a && Pi(o, a),
-//     e
-// }();
+// StageBg  (line 6855)
+class StageBg extends Container {
+  constructor(allStagebgTexturesList, scene?, x?, y?) {
+    scene = scene || window.gameScene;
+    x = x || 0;
+    y = y || 0;
+    super(scene, x, y);
+    this.allStagebgTexturesList = allStagebgTexturesList;
+    this.bg;
+    this.scrollAmount = 0;
+    this.scrollCount = 0;
+    this.moveFlg = false;
+    this.bossAppearFlg = false;
+  }
+
+  init(t) {
+    this.moveFlg = true;
+    this.bossAppearFlg = false;
+    this.scrollAmount = 0;
+    const e = this.allStagebgTexturesList[t][1];
+    const o = this.allStagebgTexturesList[t][0];
+    this.bg = new Phaser.GameObjects.TileSprite(
+      window.gameScene,
+      0,
+      0,
+      i.GAME_WIDTH,
+      i.GAME_HEIGHT,
+      e
+    ).setOrigin(0);
+    this.addChild(this.bg),
+      (this.bgEnd = new Sprite(window.gameScene, 0, 0, o)),
+      (this.bgEnd.y = -this.bgEnd.height),
+      this.addChild(this.bgEnd);
+    var n = [];
+    (n[0] = PIXI.Texture.fromFrame("akebonoBg0.gif")),
+      (n[1] = PIXI.Texture.fromFrame("akebonoBg1.gif")),
+      (n[2] = PIXI.Texture.fromFrame("akebonoBg2.gif")),
+      (this.akebonoBg = new PIXI.extras.AnimatedSprite(
+        window.gameScene,
+        n,
+        "game_ui",
+        false
+      )),
+      (this.akebonoBg.animationSpeed = 0.7);
+  }
+
+  loop(t) {
+    this.scrollAmount = t;
+    this.moveFlg && (this.bg.tilePositionY -= this.scrollAmount);
+    if (this.bossAppearFlg) {
+      this.scrollCount += t;
+      this.bg.y += this.scrollAmount;
+      this.bgEnd.y += this.scrollAmount;
+      if (this.scrollAmount >= 214) {
+        this.scrollAmount = 0;
+      }
+      if (this.bgEnd.y >= 42) {
+        this.bossAppearFlg = false;
+      }
+    }
+  }
+
+  bossScene() {
+    this.moveFlg = false;
+    this.bossAppearFlg = true;
+  }
+
+  akebonofinish() {
+    this.akebonoBg.play();
+    this.addChild(this.akebonoBg);
+  }
+
+  akebonoGokifinish() {
+    this.akebonoBg.play();
+    this.addChild(this.akebonoBg);
+    this.akebonoTen = new Sprite(
+      window.gameScene,
+      0,
+      0,
+      "game_ui",
+      "akebonoTen.gif"
+    );
+    this.akebonoTen.setOrigin(0.5);
+    this.akebonoTen.x = 27 + this.akebonoTen.width / 2;
+    this.akebonoTen.y = 113 + this.akebonoTen.height / 2;
+    this.akebonoTen.setScale(1.2);
+    this.addChild(this.akebonoTen);
+    this.akebonoTenShock = new Sprite(
+      window.gameScene,
+      0,
+      0,
+      "game_ui",
+      "akebonoTen.gif"
+    );
+    this.akebonoTenShock.setOrigin(0.5);
+    this.akebonoTenShock.x = 27 + this.akebonoTenShock.width / 2;
+    this.akebonoTenShock.y = 113 + this.akebonoTenShock.height / 2;
+    this.akebonoTenShock.alpha = 0;
+    this.addChild(this.akebonoTenShock);
+    TweenMax.to(this.akebonoTenShock, 0.5, {
+      alpha: 1,
+      repeat: -1,
+      yoyo: true,
+    });
+  }
+
+  castAdded(t) {}
+
+  castRemoved(t) {
+    this.akebonoBg &&
+      (this.akebonoBg.destroy(), this.removeChild(this.akebonoBg)),
+      this.akebonoTen &&
+        (this.removeChild(this.akebonoTen),
+        this.removeChild(this.akebonoTenShock)),
+      this.removeChild(this.bg),
+      this.removeChild(this.bgEnd);
+  }
+}
