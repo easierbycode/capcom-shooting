@@ -34,6 +34,7 @@ export default class GameScene extends Scene {
   caExplosionTextures: string[] = [];
   itemTextureList: any = {};
   stageBg;
+  stageEnemyPositionList: any;
 
   constructor() {
     super("game-scene");
@@ -92,7 +93,9 @@ export default class GameScene extends Scene {
       // this.addChildAt(this.hud, 3),
       // Set up title screen
       // this.title = new Oi,
+      (this.title = new TitleScreen()),
       // this.title.on(Oi.EVENT_START, this.gameStart.bind(Yi(Yi(o)))),
+      this.title.on(TitleScreen.EVENT_START, this.gameStart.bind(this)),
       // this.addChildAt(this.title, 4),
       // Set up cutin container
       // this.cutinCont = new Hi,
@@ -115,6 +118,7 @@ export default class GameScene extends Scene {
   }
 
   create() {
+    this.title.gameStart(D.stageId),
     this.stageBg.init(D.stageId),
       //   this.hud.caBtnDeactive(),
       TweenMax.delayedCall(
@@ -154,7 +158,24 @@ export default class GameScene extends Scene {
       (this.player.unit.x = i.GAME_WIDTH / 2 - this.player.unit.width / 2),
       (this.player.unit.y = i.GAME_HEIGHT - this.player.unit.height - 30),
       (this.player.unitX = i.GAME_WIDTH / 2),
-      (this.player.unitY = this.player.unit.y);
+      (this.player.unitY = this.player.unit.y),
+      // this.addChildAt(this.player, 2),
+      // this.hud.setPercent(this.player.percent),
+      // this.hud.scoreCount = D.score,
+      // this.hud.highScore = D.highScore,
+      // this.hud.comboCount = D.combo,
+      // this.hud.maxCombo = D.maxCombo,
+      // this.hud.cagageCount = D.cagage,
+      // this.hud.comboTimeCnt = 0,
+      // D.combo = 0,
+      (this.enemyWaveFlg = !1),
+      // this.theWorldFlg = !1,
+      (this.waveCount = 0),
+      (this.waveInterval = 80),
+      (this.frameCnt = 0),
+      (this.frameCntUp = 1),
+      (this.enemyHitTestList = []),
+      (this.itemHitTestList = []);
   }
 
   update(time: number, delta: number): void {
@@ -164,8 +185,219 @@ export default class GameScene extends Scene {
         // this.hud.loop();
         // enemyHitTestList
         // itemHitTestList
-        this.stageBg.loop(this.stageBgAmountMove); //,
+        this.stageBg.loop(this.stageBgAmountMove),
+        this.enemyWaveFlg &&
+          (this.frameCnt % this.waveInterval == 0 && this.enemyWave(),
+          (this.frameCnt += this.frameCntUp));
     }
+  }
+
+  enemyWave() {
+    this.waveCount >= this.stageEnemyPositionList.length
+      ? this.bossAdd()
+      : this.enemyAdd();
+  }
+  enemyAdd() {
+    for (
+      var t = this.stageEnemyPositionList[this.waveCount], e = 0;
+      e < t.length;
+      e++
+    ) {
+      var o = t[e];
+      if ("00" !== o) {
+        var i = String(o).substr(0, 1),
+          n = String(o).substr(1, 2),
+          a = B.resource.recipe.data.enemyData["enemy" + i];
+    //     switch (((a.explosion = this.explosionTextures), n)) {
+    //       case "1":
+    //         (a.itemName = M.SHOOT_NAME_BIG),
+    //           (a.itemTexture = this.itemTextureList.powerupBig);
+    //         break;
+    //       case "2":
+    //         (a.itemName = M.SHOOT_NAME_3WAY),
+    //           (a.itemTexture = this.itemTextureList.powerup3way);
+    //         break;
+    //       case "3":
+    //         (a.itemName = M.SHOOT_SPEED_HIGH),
+    //           (a.itemTexture = this.itemTextureList.speedup);
+    //         break;
+    //       case "9":
+    //         (a.itemName = M.BARRIER),
+    //           (a.itemTexture = this.itemTextureList.barrier);
+    //         break;
+    //       default:
+    //         (a.itemName = null), (a.itemTexture = null);
+    //     }
+    //     var s = new Ye(a);
+    //     (s.unit.x = 32 * e),
+    //       (s.unit.y = -32),
+    //       s.on(Ye.CUSTOM_EVENT_DEAD, this.enemyRemove.bind(this, s)),
+    //       s.on(
+    //         Ye.CUSTOM_EVENT_DEAD_COMPLETE,
+    //         this.enemyRemoveComplete.bind(this, s)
+    //       ),
+    //       s.on(Ye.CUSTOM_EVENT_TAMA_ADD, this.tamaAdd.bind(this, s)),
+    //       this.unitContainer.addChild(s),
+    //       this.enemyHitTestList.push(s);
+      }
+    }
+    this.waveCount++;
+  }
+  bossAdd() {
+    // if (3 == D.stageId && 0 == D.continueCnt) {
+    //   ((o = B.resource.recipe.data.bossData["boss" + D.stageId]).explosion =
+    //     this.explosionTextures),
+    //     (o.gokiFlg = !0),
+    //     (o.continueCnt = D.continueCnt);
+    //   var t = new Eo(o);
+    //   t.on(
+    //     Eo.CUSTOM_EVENT_GOKI,
+    //     function e() {
+    //       (this.theWorldFlg = !0), this.hud.caBtnDeactive();
+    //       for (var o = 0; o < this.player.bulletList.length; o++) {
+    //         var n = this.player.bulletList[o];
+    //         this.player.bulletRemove(n), this.player.bulletRemoveComplete(n);
+    //       }
+    //       this.boss.toujou();
+    //       var a = new TimelineMax();
+    //       a.to(this.boss.unit, 1, {
+    //         x: i.GAME_CENTER + this.boss.width / 4,
+    //       }),
+    //         a.addCallback(
+    //           function () {
+    //             this.boss.shungokusatsu(t.unit),
+    //               (this.hud.cagaBtn.alpha = 0),
+    //               (this.player.alpha = 0);
+    //             for (var e = 0; e < this.player.bulletList.length; e++) {
+    //               var o = this.player.bulletList[e];
+    //               this.player.removeChild(o);
+    //             }
+    //           },
+    //           "+=1.5",
+    //           null,
+    //           this
+    //         ),
+    //         a.addCallback(
+    //           function () {
+    //             (this.hud.cagaBtn.alpha = 1),
+    //               (this.player.alpha = 1),
+    //               t.off(Eo.CUSTOM_EVENT_GOKI, e.bind(this)),
+    //               (t.hp = 0),
+    //               t.dead();
+    //             for (var o = 0; o < this.enemyHitTestList.length; o++)
+    //               this.enemyHitTestList[o] == t &&
+    //                 this.enemyHitTestList.splice(o, 1);
+    //             g.stop(this.stageBgmName);
+    //             var n =
+    //               "boss_" +
+    //               B.resource.recipe.data.bossData.bossExtra.name +
+    //               "_bgm_info";
+    //             this.stageBgmName = i[n].name;
+    //             var a = i[n].start,
+    //               s = i[n].end;
+    //             g.bgmPlay(this.stageBgmName, a, s);
+    //           },
+    //           "+=2.3",
+    //           null,
+    //           this
+    //         ),
+    //         a.to(
+    //           this.boss.unit,
+    //           1,
+    //           {
+    //             x: i.GAME_CENTER - this.boss.width / 2,
+    //           },
+    //           "+=1.5"
+    //         ),
+    //         a.addCallback(
+    //           function () {
+    //             this.unitContainer.removeChild(t),
+    //               this.enemyHitTestList.push(this.boss),
+    //               (this.theWorldFlg = !1),
+    //               this.hud.caBtnActive(),
+    //               this.boss.shootStart();
+    //           },
+    //           "+=1",
+    //           null,
+    //           this
+    //         );
+    //     }.bind(this)
+    //   ),
+    //     this.enemyHitTestList.push(t),
+    //     this.unitContainer.addChild(t);
+    //   var e = B.resource.recipe.data.bossData.bossExtra;
+    //   (e.explosion = this.explosionTextures),
+    //     (e.continueCnt = D.continueCnt),
+    //     (this.boss = new Ro(e)),
+    //     this.boss.on(
+    //       Ze.CUSTOM_EVENT_DEAD,
+    //       this.bossRemove.bind(this, this.boss)
+    //     ),
+    //     this.boss.on(
+    //       Ze.CUSTOM_EVENT_TAMA_ADD,
+    //       this.tamaAdd.bind(this, this.boss)
+    //     ),
+    //     this.unitContainer.addChild(this.boss),
+    //     (this.boss.unit.x = i.GAME_WIDTH),
+    //     (this.boss.unit.y = i.GAME_HEIGHT / 4);
+    // } else {
+    //   var o;
+    //   switch (
+    //     (((o = B.resource.recipe.data.bossData["boss" + D.stageId]).explosion =
+    //       this.explosionTextures),
+    //     D.stageId)
+    //   ) {
+    //     case 0:
+    //       this.boss = new so(o);
+    //       break;
+    //     case 1:
+    //       this.boss = new po(o);
+    //       break;
+    //     case 2:
+    //       this.boss = new wo(o);
+    //       break;
+    //     case 3:
+    //       (o.gokiFlg = !1), (this.boss = new Eo(o));
+    //       break;
+    //     case 4:
+    //       this.boss = new Wo(o);
+    //   }
+    //   this.boss.on(Ze.CUSTOM_EVENT_DEAD, this.bossRemove.bind(this, this.boss)),
+    //     this.boss.on(
+    //       Ze.CUSTOM_EVENT_TAMA_ADD,
+    //       this.tamaAdd.bind(this, this.boss)
+    //     ),
+    //     this.enemyHitTestList.push(this.boss),
+    //     this.unitContainer.addChild(this.boss);
+    // }
+    // (this.timeTxt = new PIXI.Sprite(PIXI.Texture.fromFrame("timeTxt.gif"))),
+    //   (this.timeTxt.x = i.GAME_CENTER - this.timeTxt.width),
+    //   (this.timeTxt.y = 58),
+    //   (this.timeTxt.alpha = 0),
+    //   this.unitContainer.addChild(this.timeTxt),
+    //   (this.bigNumTxt = new qt(2)),
+    //   (this.bigNumTxt.x = this.timeTxt.x + this.timeTxt.width + 3),
+    //   (this.bigNumTxt.y = this.timeTxt.y - 2),
+    //   this.bigNumTxt.setNum(99),
+    //   (this.bigNumTxt.alpha = 0),
+    //   this.unitContainer.addChild(this.bigNumTxt),
+    //   TweenMax.to([this.bigNumTxt, this.timeTxt], 0.2, {
+    //     delay: 6,
+    //     alpha: 1,
+    //     onComplete: function () {
+    //       (this.bossTimerCountDown = 99),
+    //         (this.bossTimerFrameCnt = 0),
+    //         (this.bossTimerStartFlg = !0);
+    //     },
+    //     onCompleteScope: this,
+    //   }),
+    //   (this.enemyWaveFlg = !1),
+    //   this.stageBg.bossScene();
+  }
+
+  gameStart() {
+    // F.dlog("GameScene.gameStart()."),
+    (this.enemyWaveFlg = !0), this.player.shootStart();
   }
 }
 
@@ -805,79 +1037,79 @@ var M = (function (t) {
       {
         key: "shoot",
         value: function () {
-          switch (this.shootMode) {
-            case e.SHOOT_NAME_NORMAL:
-              ((o = new S(this.shootNormalData)).unit.rotation =
-                (270 * Math.PI) / 180),
-                (o.unit.x = this.unit.x + 5 * Math.sin(o.unit.rotation) + 14),
-                (o.unit.y = this.unit.y + 5 * Math.sin(o.unit.rotation) + 11),
-                (o.name = e.SHOOT_NAME_NORMAL),
-                (o.id = this.bulletIdCnt++),
-                (o.shadowReverse = !1),
-                (o.shadowOffsetY = 0),
-                o.on(y.CUSTOM_EVENT_DEAD, this.bulletRemove.bind(this, o)),
-                o.on(
-                  y.CUSTOM_EVENT_DEAD_COMPLETE,
-                  this.bulletRemoveComplete.bind(this, o)
-                ),
-                this.addChild(o),
-                this.bulletList.push(o),
-                g.stop("se_shoot"),
-                g.play("se_shoot");
-              break;
-            case e.SHOOT_NAME_BIG:
-              ((o = new S(this.shootBigData)).unit.rotation =
-                (270 * Math.PI) / 180),
-                (o.unit.x = this.unit.x + 5 * Math.sin(o.unit.rotation) + 10),
-                (o.unit.y = this.unit.y + 5 * Math.sin(o.unit.rotation) + 22),
-                (o.name = e.SHOOT_NAME_BIG),
-                (o.id = this.bulletIdCnt++),
-                (o.shadowReverse = !1),
-                (o.shadowOffsetY = 0),
-                o.on(y.CUSTOM_EVENT_DEAD, this.bulletRemove.bind(this, o)),
-                o.on(
-                  y.CUSTOM_EVENT_DEAD_COMPLETE,
-                  this.bulletRemoveComplete.bind(this, o)
-                ),
-                this.addChild(o),
-                this.bulletList.push(o),
-                g.stop("se_shoot_b"),
-                g.play("se_shoot_b");
-              break;
-            case e.SHOOT_NAME_3WAY:
-              for (var t = 0; t < 3; t++) {
-                var o = new S(this.shoot3wayData);
-                0 == t
-                  ? ((o.unit.rotation = (280 * Math.PI) / 180),
-                    (o.unit.x =
-                      this.unit.x + 5 * Math.cos(o.unit.rotation) + 14),
-                    (o.unit.y =
-                      this.unit.y + 5 * Math.sin(o.unit.rotation) + 11))
-                  : 1 == t
-                  ? ((o.unit.rotation = (270 * Math.PI) / 180),
-                    (o.unit.x =
-                      this.unit.x + 5 * Math.cos(o.unit.rotation) + 10),
-                    (o.unit.y =
-                      this.unit.y + 5 * Math.sin(o.unit.rotation) + 11))
-                  : 2 == t &&
-                    ((o.unit.rotation = (260 * Math.PI) / 180),
-                    (o.unit.x =
-                      this.unit.x + 5 * Math.cos(o.unit.rotation) + 6),
-                    (o.unit.y =
-                      this.unit.y + 5 * Math.sin(o.unit.rotation) + 11)),
-                  (o.id = this.bulletIdCnt++),
-                  (o.shadowReverse = !1),
-                  (o.shadowOffsetY = 0),
-                  o.on(y.CUSTOM_EVENT_DEAD, this.bulletRemove.bind(this, o)),
-                  o.on(
-                    y.CUSTOM_EVENT_DEAD_COMPLETE,
-                    this.bulletRemoveComplete.bind(this, o)
-                  ),
-                  this.addChild(o),
-                  this.bulletList.push(o);
-              }
-              g.stop("se_shoot"), g.play("se_shoot");
-          }
+          // switch (this.shootMode) {
+          //   case e.SHOOT_NAME_NORMAL:
+          //     ((o = new S(this.shootNormalData)).unit.rotation =
+          //       (270 * Math.PI) / 180),
+          //       (o.unit.x = this.unit.x + 5 * Math.sin(o.unit.rotation) + 14),
+          //       (o.unit.y = this.unit.y + 5 * Math.sin(o.unit.rotation) + 11),
+          //       (o.name = e.SHOOT_NAME_NORMAL),
+          //       (o.id = this.bulletIdCnt++),
+          //       (o.shadowReverse = !1),
+          //       (o.shadowOffsetY = 0),
+          //       o.on(y.CUSTOM_EVENT_DEAD, this.bulletRemove.bind(this, o)),
+          //       o.on(
+          //         y.CUSTOM_EVENT_DEAD_COMPLETE,
+          //         this.bulletRemoveComplete.bind(this, o)
+          //       ),
+          //       this.addChild(o),
+          //       this.bulletList.push(o),
+          //       g.stop("se_shoot"),
+          //       g.play("se_shoot");
+          //     break;
+          //   case e.SHOOT_NAME_BIG:
+          //     ((o = new S(this.shootBigData)).unit.rotation =
+          //       (270 * Math.PI) / 180),
+          //       (o.unit.x = this.unit.x + 5 * Math.sin(o.unit.rotation) + 10),
+          //       (o.unit.y = this.unit.y + 5 * Math.sin(o.unit.rotation) + 22),
+          //       (o.name = e.SHOOT_NAME_BIG),
+          //       (o.id = this.bulletIdCnt++),
+          //       (o.shadowReverse = !1),
+          //       (o.shadowOffsetY = 0),
+          //       o.on(y.CUSTOM_EVENT_DEAD, this.bulletRemove.bind(this, o)),
+          //       o.on(
+          //         y.CUSTOM_EVENT_DEAD_COMPLETE,
+          //         this.bulletRemoveComplete.bind(this, o)
+          //       ),
+          //       this.addChild(o),
+          //       this.bulletList.push(o),
+          //       g.stop("se_shoot_b"),
+          //       g.play("se_shoot_b");
+          //     break;
+          //   case e.SHOOT_NAME_3WAY:
+          //     for (var t = 0; t < 3; t++) {
+          //       var o = new S(this.shoot3wayData);
+          //       0 == t
+          //         ? ((o.unit.rotation = (280 * Math.PI) / 180),
+          //           (o.unit.x =
+          //             this.unit.x + 5 * Math.cos(o.unit.rotation) + 14),
+          //           (o.unit.y =
+          //             this.unit.y + 5 * Math.sin(o.unit.rotation) + 11))
+          //         : 1 == t
+          //         ? ((o.unit.rotation = (270 * Math.PI) / 180),
+          //           (o.unit.x =
+          //             this.unit.x + 5 * Math.cos(o.unit.rotation) + 10),
+          //           (o.unit.y =
+          //             this.unit.y + 5 * Math.sin(o.unit.rotation) + 11))
+          //         : 2 == t &&
+          //           ((o.unit.rotation = (260 * Math.PI) / 180),
+          //           (o.unit.x =
+          //             this.unit.x + 5 * Math.cos(o.unit.rotation) + 6),
+          //           (o.unit.y =
+          //             this.unit.y + 5 * Math.sin(o.unit.rotation) + 11)),
+          //         (o.id = this.bulletIdCnt++),
+          //         (o.shadowReverse = !1),
+          //         (o.shadowOffsetY = 0),
+          //         o.on(y.CUSTOM_EVENT_DEAD, this.bulletRemove.bind(this, o)),
+          //         o.on(
+          //           y.CUSTOM_EVENT_DEAD_COMPLETE,
+          //           this.bulletRemoveComplete.bind(this, o)
+          //         ),
+          //         this.addChild(o),
+          //         this.bulletList.push(o);
+          //     }
+          //     g.stop("se_shoot"), g.play("se_shoot");
+          // }
         },
       },
       {
@@ -1334,6 +1566,185 @@ var M = (function (t) {
     e
   );
 })();
+
+// TitleScreen (line 6593)
+class TitleScreen extends Container {
+  constructor(scene?, x?, y?) {
+    scene = scene || window.gameScene;
+    x = x || 0;
+    y = y || 0;
+    super(scene, x, y);
+
+    var t = this;
+    // (t.interactive = !1),
+    // (t.buttonMode = !1),
+    // (t.gameStartBg = new PIXI.Graphics()),
+    // t.gameStartBg.beginFill(16777215, 0.2),
+    // t.gameStartBg.drawRect(0, 0, i.GAME_WIDTH, i.GAME_HEIGHT),
+    // (t.gameStartBg.visible = !1),
+    // (t.gameStartBg.alpha = 0),
+    t.stageNumList = [];
+    // for (var o = 0; o < 4; o++) {
+    //   var n = PIXI.Texture.fromFrame("stageNum" + String(o + 1) + ".gif");
+    //   (n.scaleMode = PIXI.SCALE_MODES.NEAREST), (t.stageNumList[o] = n);
+    // }
+    // (t.stageNum = new PIXI.Sprite()),
+    //   (t.stageNum.x = 0),
+    //   (t.stageNum.y = i.GAME_HEIGHT / 2 - 20),
+    //   (t.stageNum.visible = !1);
+    // var a = PIXI.Texture.fromFrame("stageFight.gif");
+    return (
+      // (a.scaleMode = PIXI.SCALE_MODES.NEAREST),
+      // (t.stageFight = new PIXI.Sprite(a)),
+      // (t.stageFight.x = t.stageFight.width / 2),
+      // (t.stageFight.y = i.GAME_HEIGHT / 2 + t.stageFight.height / 2 - 20),
+      // (t.stageFight.visible = !1),
+      // t.stageFight.anchor.set(0.5),
+      // (t.stageClearBg = new PIXI.Graphics()),
+      // t.stageClearBg.beginFill(16777215, 0.4),
+      // t.stageClearBg.drawRect(0, 0, i.GAME_WIDTH, i.GAME_HEIGHT),
+      // (t.stageClearBg.visible = !1),
+      // (t.stageClearBg.alpha = 0),
+      // (t.stageClearText = new PIXI.Sprite(
+      //   PIXI.Texture.fromFrame("stageclear.gif")
+      // )),
+      // (t.stageClearText.x = i.GAME_WIDTH / 2 - t.stageClearText.width / 2),
+      // (t.stageClearText.y = i.GAME_HEIGHT / 2 - t.stageClearText.height),
+      // (t.stageTimeoverBg = new PIXI.Graphics()),
+      // t.stageTimeoverBg.beginFill(16777215, 0.4),
+      // t.stageTimeoverBg.drawRect(0, 0, i.GAME_WIDTH, i.GAME_HEIGHT),
+      // (t.stageTimeoverBg.visible = !1),
+      // (t.stageTimeoverBg.alpha = 0),
+      // (t.stageTimeoverText = new PIXI.Sprite(
+      //   PIXI.Texture.fromFrame("stageTimeover.gif")
+      // )),
+      // (t.stageTimeoverText.x =
+      //   i.GAME_WIDTH / 2 - t.stageTimeoverText.width / 2),
+      // (t.stageTimeoverText.y = i.GAME_HEIGHT / 2 - t.stageTimeoverText.height),
+      // (t.knockoutK = new PIXI.Sprite(PIXI.Texture.fromFrame("knockoutK.gif"))),
+      // (t.knockoutK.x = i.GAME_CENTER - t.knockoutK.width / 2),
+      // (t.knockoutK.y = i.GAME_MIDDLE),
+      // t.knockoutK.anchor.set(0.5),
+      // (t.knockoutK.visible = !1),
+      // (t.knockoutO = new PIXI.Sprite(PIXI.Texture.fromFrame("knockoutO.gif"))),
+      // (t.knockoutO.x = i.GAME_CENTER + t.knockoutO.width / 2),
+      // (t.knockoutO.y = i.GAME_MIDDLE),
+      // t.knockoutO.anchor.set(0.5),
+      // (t.knockoutO.visible = !1),
+      t
+    );
+  }
+
+  static EVENT_START = "evenStart";
+
+  static EVENT_RESTART = "evenRestart";
+
+  gameStart(t) {
+    var o,
+      n,
+      a = !1;
+    4 == t
+      ? ((n = 3),
+        (a = !0),
+        // (o = new PIXI.Graphics()).beginFill(0, 1),
+        // o.drawRect(0, 0, i.GAME_WIDTH, i.GAME_HEIGHT),
+        // this.addChild(o),
+        // g.play("voice_another_fighter"))
+        AudioManager.play("voice_another_fighter"))
+      : (n = t); //,
+    // (this.gameStartBg.visible = !0),
+    // (this.stageNum.texture = this.stageNumList[n]),
+    // (this.stageNum.visible = !0),
+    // (this.stageNum.alpha = 0),
+    // (this.stageFight.visible = !0),
+    // (this.stageFight.alpha = 0),
+    // this.stageFight.scale.set(1.2);
+    var s = new TimelineMax({
+      onComplete: function () {
+        // (this.gameStartBg.visible = !1), this.emit(e.EVENT_START);
+        this.emit(TitleScreen.EVENT_START);
+      }.bind(this),
+    });
+    // a &&
+    //   s.to(
+    //     o,
+    //     0.3,
+    //     {
+    //       alpha: 0,
+    //     },
+    //     "+=3"
+    //   ),
+    //   s.to(this.gameStartBg, 0.3, {
+    //     alpha: 1,
+    //   }),
+    s.addCallback(
+      function () {
+        // g.play(["voice_round" + n]);
+        AudioManager.play(["voice_round" + n]);
+      },
+      "+=0",
+      null,
+      this
+    ); //,
+    //   s.to(this.stageNum, 0.3, {
+    //     alpha: 1,
+    //   }),
+    //   s.to(this.stageNum, 0.1, {
+    //     delay: 1,
+    //     alpha: 0,
+    //   }),
+    //   s.to(
+    //     this.stageFight,
+    //     0.2,
+    //     {
+    //       alpha: 1,
+    //     },
+    //     "-=0.1"
+    //   ),
+    //   s.to(
+    //     this.stageFight.scale,
+    //     0.2,
+    //     {
+    //       x: 1,
+    //       y: 1,
+    //     },
+    //     "-=0.2"
+    //   ),
+    //   s.addCallback(
+    //     function () {
+    //       g.play("voice_fight");
+    //     },
+    //     "+=0",
+    //     null,
+    //     this
+    //   ),
+    //   s.to(
+    //     this.stageFight.scale,
+    //     0.2,
+    //     {
+    //       x: 1.5,
+    //       y: 1.5,
+    //     },
+    //     "+=0.4"
+    //   ),
+    //   s.to(
+    //     this.stageFight,
+    //     0.2,
+    //     {
+    //       alpha: 0,
+    //     },
+    //     "-=0.2"
+    //   ),
+    //   s.to(
+    //     this.gameStartBg,
+    //     0.2,
+    //     {
+    //       alpha: 0,
+    //     },
+    //     "-=0.1"
+    //   );
+  }
+}
 
 // StageBg  (line 6855)
 class StageBg extends Container {
