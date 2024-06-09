@@ -321,7 +321,7 @@ const files = [
 export default class LoadScene extends Phaser.Scene {
   constructor() {
     super({
-      key: "hello-world",
+      key: "load-scene",
       pack: { files },
     });
   }

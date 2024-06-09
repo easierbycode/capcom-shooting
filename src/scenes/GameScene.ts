@@ -35,6 +35,7 @@ export default class GameScene extends Scene {
   itemTextureList: any = {};
   stageBg;
   stageEnemyPositionList: any;
+  unitContainer: Container;
 
   constructor() {
     super("game-scene");
@@ -119,7 +120,7 @@ export default class GameScene extends Scene {
 
   create() {
     this.title.gameStart(D.stageId),
-    this.stageBg.init(D.stageId),
+      this.stageBg.init(D.stageId),
       //   this.hud.caBtnDeactive(),
       TweenMax.delayedCall(
         2.6,
@@ -181,11 +182,104 @@ export default class GameScene extends Scene {
   update(time: number, delta: number): void {
     if (!this.theWorldFlg) {
       // this.player.loop(),
-      this.player.update(),
-        // this.hud.loop();
-        // enemyHitTestList
-        // itemHitTestList
-        this.stageBg.loop(this.stageBgAmountMove),
+      this.player.update(); //,
+      // this.hud.loop();
+      // enemyHitTestList
+      for (var t = 0; t < this.enemyHitTestList.length; t++) {
+        var o = this.enemyHitTestList[t];
+        // o.loop(this.stageBgAmountMove);
+        o.update(this.stageBgAmountMove);
+        var n = -o.unit.width / 2,
+          a = i.GAME_WIDTH - o.unit.width / 2;
+        if (o.unit.y >= 40 && o.unit.x >= n && o.unit.x <= a)
+          for (var s = 0; s < this.player.bulletList.length; s++) {
+            var r = this.player.bulletList[s];
+            // if (B.Manager.interact.hitTestRectangle(o.unit, r.unit))
+            if (this.physics.world.overlap(o.unit, r.unit))
+              switch (this.player.shootMode) {
+                case M.SHOOT_NAME_NORMAL:
+                  o.onDamage(r.damage), r.onDamage(1, o.hp);
+                  break;
+                case M.SHOOT_NAME_BIG:
+                  null == o["bulletid" + r.id]
+                    ? ((o["bulletid" + r.id] = 0),
+                      (o["bulletframeCnt" + r.id] = 0),
+                      o.onDamage(r.damage),
+                      r.onDamage(1, o.hp))
+                    : (o["bulletframeCnt" + r.id]++,
+                      o["bulletframeCnt" + r.id] % 15 == 0 &&
+                        (o["bulletid" + r.id]++,
+                        o["bulletid" + r.id] <= 1 &&
+                          (o.onDamage(r.damage), r.onDamage(1, o.hp))));
+                  break;
+                case M.SHOOT_NAME_3WAY:
+                  o.onDamage(r.damage), r.onDamage(1, o.hp);
+                  break;
+                default:
+                  o.onDamage(1), r.onDamage(1, o.hp);
+              }
+          }
+        if (this.player.barrierFlg)
+          // B.Manager.interact.hitTestRectangle(o.unit, this.player.barrier) &&
+          this.physics.world.overlap(o.unit, this.player.barrier) &&
+            (this.player.barrierHitEffect(), o.dead());
+        // else if (B.Manager.interact.hitTestRectangle(o.unit, this.player.unit))
+        else if (this.physics.world.overlap(o.unit, this.player.unit))
+          if ("goki" == o.name) {
+            this.hud.caBtnDeactive(),
+              (this.theWorldFlg = !0),
+              this.boss && this.boss.onTheWorld(this.theWorldFlg),
+              this.boss.shungokusatsu(this.player.unit, !0),
+              (this.player.alpha = 0),
+              (this.hud.cagaBtn.alpha = 0);
+            for (var h = 0; h < this.player.bulletList.length; h++) {
+              var l = this.player.bulletList[h];
+              this.player.removeChild(l);
+            }
+            TweenMax.delayedCall(
+              1.8,
+              function () {
+                this.player.alpha = 1;
+              },
+              null,
+              this
+            ),
+              TweenMax.delayedCall(
+                1.9,
+                function () {
+                  this.stageBg.akebonoGokifinish();
+                },
+                null,
+                this
+              ),
+              TweenMax.delayedCall(
+                2.7,
+                function () {
+                  this.playerDamage(100);
+                },
+                null,
+                this
+              ),
+              TweenMax.delayedCall(
+                3,
+                function () {
+                  this.title.akebonofinish();
+                },
+                null,
+                this
+              );
+          } else this.playerDamage(1);
+        (o.unit.x <= -50 ||
+          o.unit.x >= i.GAME_WIDTH + 33 ||
+          o.unit.y <= -33 ||
+          o.unit.y >= i.GAME_HEIGHT) &&
+          "boss" !== o.unit.name &&
+          // (this.unitContainer.removeChild(o),
+          (this.unitContainer.remove(o), this.enemyHitTestList.splice(t, 1));
+      }
+
+      // itemHitTestList
+      this.stageBg.loop(this.stageBgAmountMove),
         this.enemyWaveFlg &&
           (this.frameCnt % this.waveInterval == 0 && this.enemyWave(),
           (this.frameCnt += this.frameCntUp));
@@ -197,6 +291,7 @@ export default class GameScene extends Scene {
       ? this.bossAdd()
       : this.enemyAdd();
   }
+
   enemyAdd() {
     for (
       var t = this.stageEnemyPositionList[this.waveCount], e = 0;
@@ -208,41 +303,54 @@ export default class GameScene extends Scene {
         var i = String(o).substr(0, 1),
           n = String(o).substr(1, 2),
           a = B.resource.recipe.data.enemyData["enemy" + i];
-    //     switch (((a.explosion = this.explosionTextures), n)) {
-    //       case "1":
-    //         (a.itemName = M.SHOOT_NAME_BIG),
-    //           (a.itemTexture = this.itemTextureList.powerupBig);
-    //         break;
-    //       case "2":
-    //         (a.itemName = M.SHOOT_NAME_3WAY),
-    //           (a.itemTexture = this.itemTextureList.powerup3way);
-    //         break;
-    //       case "3":
-    //         (a.itemName = M.SHOOT_SPEED_HIGH),
-    //           (a.itemTexture = this.itemTextureList.speedup);
-    //         break;
-    //       case "9":
-    //         (a.itemName = M.BARRIER),
-    //           (a.itemTexture = this.itemTextureList.barrier);
-    //         break;
-    //       default:
-    //         (a.itemName = null), (a.itemTexture = null);
-    //     }
-    //     var s = new Ye(a);
-    //     (s.unit.x = 32 * e),
-    //       (s.unit.y = -32),
-    //       s.on(Ye.CUSTOM_EVENT_DEAD, this.enemyRemove.bind(this, s)),
-    //       s.on(
-    //         Ye.CUSTOM_EVENT_DEAD_COMPLETE,
-    //         this.enemyRemoveComplete.bind(this, s)
-    //       ),
-    //       s.on(Ye.CUSTOM_EVENT_TAMA_ADD, this.tamaAdd.bind(this, s)),
-    //       this.unitContainer.addChild(s),
-    //       this.enemyHitTestList.push(s);
+        switch (((a.explosion = this.explosionTextures), n)) {
+          case "1":
+            (a.itemName = M.SHOOT_NAME_BIG),
+              (a.itemTexture = this.itemTextureList.powerupBig);
+            break;
+          case "2":
+            (a.itemName = M.SHOOT_NAME_3WAY),
+              (a.itemTexture = this.itemTextureList.powerup3way);
+            break;
+          case "3":
+            (a.itemName = M.SHOOT_SPEED_HIGH),
+              (a.itemTexture = this.itemTextureList.speedup);
+            break;
+          case "9":
+            (a.itemName = M.BARRIER),
+              (a.itemTexture = this.itemTextureList.barrier);
+            break;
+          default:
+            (a.itemName = null), (a.itemTexture = null);
+        }
+        // var s = new Ye(a);
+        var s = new Enemy(a);
+        (s.unit.x = 32 * e),
+          (s.unit.y = -32),
+          // s.on(Ye.CUSTOM_EVENT_DEAD, this.enemyRemove.bind(this, s)),
+          s.on(Enemy.CUSTOM_EVENT_DEAD, this.enemyRemove.bind(this, s)),
+          // s.on(
+          //   Ye.CUSTOM_EVENT_DEAD_COMPLETE,
+          //   this.enemyRemoveComplete.bind(this, s)
+          // ),
+          // s.on(Ye.CUSTOM_EVENT_TAMA_ADD, this.tamaAdd.bind(this, s)),
+          this.unitContainer.addChild(s),
+          this.enemyHitTestList.push(s);
       }
     }
     this.waveCount++;
   }
+
+  tamaAdd() {}
+
+  tamaAllRemove() {}
+
+  enemyRemove(t) {
+    console.log("enemyRemove");
+  }
+
+  enemyRemoveComplete() {}
+
   bossAdd() {
     // if (3 == D.stageId && 0 == D.continueCnt) {
     //   ((o = B.resource.recipe.data.bossData["boss" + D.stageId]).explosion =
@@ -393,6 +501,60 @@ export default class GameScene extends Scene {
     //   }),
     //   (this.enemyWaveFlg = !1),
     //   this.stageBg.bossScene();
+  }
+
+  playerDamage(t) {
+    new TimelineMax()
+      .call(
+        function () {
+          (this.x = 4), (this.y = -2);
+        },
+        null,
+        this,
+        "+=0.0"
+      )
+      .call(
+        function () {
+          (this.x = -3), (this.y = 1);
+        },
+        null,
+        this,
+        "+=0.08"
+      )
+      .call(
+        function () {
+          (this.x = 2), (this.y = -1);
+        },
+        null,
+        this,
+        "+=0.07"
+      )
+      .call(
+        function () {
+          (this.x = -2), (this.y = 1);
+        },
+        null,
+        this,
+        "+=0.05"
+      )
+      .call(
+        function () {
+          (this.x = 1), (this.y = 1);
+        },
+        null,
+        this,
+        "+=0.05"
+      )
+      .call(
+        function () {
+          (this.x = 0), (this.y = 0);
+        },
+        null,
+        this,
+        "+=0.04"
+      ),
+      this.player.onDamage(t); //,
+    // this.hud.onDamage(this.player.percent);
   }
 
   gameStart() {
@@ -1566,6 +1728,382 @@ var M = (function (t) {
     e
   );
 })();
+
+// (line 3638)
+//
+// correctly handle ES6 symbols in environments that do not fully support them
+// returns the string "symbol" or the typeof t
+function He(t) {
+  return (He =
+    // checks if Symbol and Symbol.iterator are functions. If they are, environment
+    // supports ES6 symbols. In this case, the He function is redefined to simply
+    // return the type of t using the typeof operator.
+    "function" == typeof Symbol && "symbol" == typeof Symbol.iterator
+      ? function (t) {
+          return typeof t;
+        }
+      : // does not fully support ES6
+        function (t) {
+          return t &&
+            "function" == typeof Symbol &&
+            t.constructor === Symbol &&
+            t !== Symbol.prototype
+            ? "symbol"
+            : typeof t;
+        })(t);
+}
+
+// add properties to an object t based on an array of property descriptors e
+function Ne(t, e) {
+  for (var o = 0; o < e.length; o++) {
+    var i = e[o];
+    (i.enumerable = i.enumerable || !1),
+      (i.configurable = !0),
+      "value" in i && (i.writable = !0),
+      Object.defineProperty(t, i.key, i);
+  }
+}
+
+// If Object.setPrototypeOf exists, it uses that
+// in older JavaScript environments, it falls back to directly setting __proto__
+function Ve(t, e) {
+  return (Ve =
+    Object.setPrototypeOf ||
+    function (t, e) {
+      return (t.__proto__ = e), t;
+    })(t, e);
+}
+
+// (line 3690)
+class Enemy extends y.prototype.constructor {
+  constructor(t) {
+    super(t.texture, t.explosion);
+
+    // if (function(t, e) {
+    //     if (!(t instanceof e))
+    //         throw new TypeError("Cannot call a class as a function")
+    // }(this, e),
+    // "object" !== He(t.texture[0])) {
+    if ("object" !== typeof t.texture[0]) {
+      for (var o = 0; o < t.texture.length; o++) {
+        var i = t.texture[o];
+        t.texture[o] = i;
+      }
+      if (null !== t.tamaData)
+        for (o = 0; o < t.tamaData.texture.length; o++) {
+          var n = PIXI.Texture.fromFrame(t.tamaData.texture[o]);
+          // n.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST,
+          t.tamaData.texture[o] = n;
+        }
+    }
+
+    var o = this;
+
+    // switch ((o = Le(this, Ue(e).call(this, t.texture, t.explosion))).name = t.name,
+    switch (
+      ((o.name = t.name),
+      (o.interval = t.interval),
+      (o.score = t.score),
+      (o.hp = t.hp),
+      (o.speed = t.speed),
+      (o.cagage = t.cagage),
+      (o.tamaData = t.tamaData),
+      (o.itemName = t.itemName),
+      (o.itemTexture = t.itemTexture),
+      // o.whitefilter = new PIXI.filters.ColorMatrixFilter,
+      // o.whitefilter.matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+      t.name)
+    ) {
+      case "baraA":
+      case "baraB":
+        o.shadow.visible = !1;
+        break;
+      case "drum":
+        // o.unit.hitArea = new PIXI.Rectangle(7, 2, o.unit.width - 14, o.unit.height - 2);
+        o.unit.hitArea = new PIXI.Rectangle(
+          window.gameScene,
+          7,
+          2,
+          o.unit.width - 14,
+          o.unit.height - 2
+        );
+        break;
+      case "launchpad":
+        // o.unit.hitArea = new PIXI.Rectangle(8, 0, o.unit.width - 16, o.unit.height)
+        o.unit.hitArea = new PIXI.Rectangle(
+          window.gameScene,
+          8,
+          0,
+          o.unit.width - 16,
+          o.unit.height
+        );
+    }
+    return (
+      (o.shadowReverse = t.shadowReverse),
+      (o.shadowOffsetY = t.shadowOffsetY),
+      (o.playerBigBulletCnt = 0),
+      (o.bulletFrameCnt = 0),
+      (o.shootFlg = !0),
+      (o.hardleFlg = !1),
+      o.interval <= -1 && (o.hardleFlg = !0),
+      (o.deadFlg = !1),
+      o
+    );
+  }
+
+  // loop
+  update() {
+    switch (
+      (this.bulletFrameCnt++,
+      this.shootFlg &&
+        !this.hardleFlg &&
+        this.bulletFrameCnt % this.interval == 0 &&
+        this.shoot(),
+      (this.unit.y += this.speed),
+      this.name)
+    ) {
+      case "soliderA":
+        this.unit.y >= i.GAME_HEIGHT / 1.5 &&
+          (this.unit.x += 0.005 * (D.player.unit.x - this.unit.x));
+        break;
+      case "soliderB":
+        this.unit.y <= 10 &&
+          (this.unit.x >= i.GAME_WIDTH / 2
+            ? ((this.unit.x = i.GAME_WIDTH), (this.posName = "right"))
+            : ((this.unit.x = -this.unit.width), (this.posName = "left"))),
+          this.unit.y >= i.GAME_HEIGHT / 3 &&
+            ("right" == this.posName
+              ? (this.unit.x -= 1)
+              : "left" == this.posName && (this.unit.x += 1));
+    }
+  }
+
+  shoot() {
+    this.emit(y.CUSTOM_EVENT_TAMA_ADD),
+      AudioManager.stop("se_shoot"),
+      AudioManager.play("se_shoot");
+  }
+
+  onDamage() {}
+
+  dead() {
+    // "infinity" == this.hp ||
+    //   (this.emit(y.CUSTOM_EVENT_DEAD),
+    //   (this.shootFlg = !1),
+    //   (this.explosion.onComplete = this.explosionComplete.bind(this)),
+    //   (this.explosion.x =
+    //     this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
+    //   (this.explosion.y =
+    //     this.unit.y + this.unit.height / 2 - this.explosion.height / 2),
+    //   this.addChild(this.explosion),
+    //   this.explosion.play(),
+    //   this.unit.removeChild(this.shadow),
+    //   this.unit.removeChild(this.character),
+    //   this.removeChild(this.unit),
+    //   AudioManager.stop("se_damage"),
+    //   AudioManager.play("se_explosion"));
+  }
+
+  explosionComplete() {}
+
+  castAdded() {}
+
+  castRemoved() {}
+}
+// var Ye = (function (t) {
+//   function e(t) {
+//     var o;
+//     if (
+//       ((function (t, e) {
+//         if (!(t instanceof e))
+//           throw new TypeError("Cannot call a class as a function");
+//       })(this, e),
+//       "object" !== He(t.texture[0]))
+//     ) {
+//       for (var i = 0; i < t.texture.length; i++) {
+//         ((a = PIXI.Texture.fromFrame(t.texture[i])).baseTexture.scaleMode =
+//           PIXI.SCALE_MODES.NEAREST),
+//           (t.texture[i] = a);
+//       }
+//       if (null !== t.tamaData)
+//         for (var n = 0; n < t.tamaData.texture.length; n++) {
+//           var a;
+//           ((a = PIXI.Texture.fromFrame(
+//             t.tamaData.texture[n]
+//           )).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST),
+//             (t.tamaData.texture[n] = a);
+//         }
+//     }
+//     switch (
+//       (((o = Le(this, Ue(e).call(this, t.texture, t.explosion))).name = t.name),
+//       (o.interval = t.interval),
+//       (o.score = t.score),
+//       (o.hp = t.hp),
+//       (o.speed = t.speed),
+//       (o.cagage = t.cagage),
+//       (o.tamaData = t.tamaData),
+//       (o.itemName = t.itemName),
+//       (o.itemTexture = t.itemTexture),
+//       (o.whitefilter = new PIXI.filters.ColorMatrixFilter()),
+//       (o.whitefilter.matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]),
+//       t.name)
+//     ) {
+//       case "baraA":
+//       case "baraB":
+//         o.shadow.visible = !1;
+//         break;
+//       case "drum":
+//         o.unit.hitArea = new PIXI.Rectangle(
+//           7,
+//           2,
+//           o.unit.width - 14,
+//           o.unit.height - 2
+//         );
+//         break;
+//       case "launchpad":
+//         o.unit.hitArea = new PIXI.Rectangle(
+//           8,
+//           0,
+//           o.unit.width - 16,
+//           o.unit.height
+//         );
+//     }
+//     return (
+//       (o.shadowReverse = t.shadowReverse),
+//       (o.shadowOffsetY = t.shadowOffsetY),
+//       (o.playerBigBulletCnt = 0),
+//       (o.bulletFrameCnt = 0),
+//       (o.shootFlg = !0),
+//       (o.hardleFlg = !1),
+//       o.interval <= -1 && (o.hardleFlg = !0),
+//       (o.deadFlg = !1),
+//       o
+//     );
+//   }
+//   var o, n, a;
+//   return (
+//     (function (t, e) {
+//       if ("function" != typeof e && null !== e)
+//         throw new TypeError(
+//           "Super expression must either be null or a function"
+//         );
+//       (t.prototype = Object.create(e && e.prototype, {
+//         constructor: {
+//           value: t,
+//           writable: !0,
+//           configurable: !0,
+//         },
+//       })),
+//         e && Ve(t, e);
+//     })(e, y),
+//     (o = e),
+//     (n = [
+//       {
+//         key: "loop",
+//         value: function (t) {
+//           switch (
+//             (this.bulletFrameCnt++,
+//             this.shootFlg &&
+//               !this.hardleFlg &&
+//               this.bulletFrameCnt % this.interval == 0 &&
+//               this.shoot(),
+//             (this.unit.y += this.speed),
+//             this.name)
+//           ) {
+//             case "soliderA":
+//               this.unit.y >= i.GAME_HEIGHT / 1.5 &&
+//                 (this.unit.x += 0.005 * (D.player.unit.x - this.unit.x));
+//               break;
+//             case "soliderB":
+//               this.unit.y <= 10 &&
+//                 (this.unit.x >= i.GAME_WIDTH / 2
+//                   ? ((this.unit.x = i.GAME_WIDTH), (this.posName = "right"))
+//                   : ((this.unit.x = -this.unit.width),
+//                     (this.posName = "left"))),
+//                 this.unit.y >= i.GAME_HEIGHT / 3 &&
+//                   ("right" == this.posName
+//                     ? (this.unit.x -= 1)
+//                     : "left" == this.posName && (this.unit.x += 1));
+//           }
+//         },
+//       },
+//       {
+//         key: "shoot",
+//         value: function () {
+//           this.emit(y.CUSTOM_EVENT_TAMA_ADD),
+//             g.stop("se_shoot"),
+//             g.play("se_shoot");
+//         },
+//       },
+//       {
+//         key: "onDamage",
+//         value: function (t) {
+//           "infinity" == this.hp
+//             ? (TweenMax.to(this.character, 0.05, {
+//                 filters: [this.whitefilter],
+//               }),
+//               TweenMax.to(this.character, 0.3, {
+//                 delay: 0.1,
+//                 filters: null,
+//               }))
+//             : this.deadFlg ||
+//               ((this.hp -= t),
+//               this.hp <= 0
+//                 ? (this.dead.bind(this)(), (this.deadFlg = !0))
+//                 : (TweenMax.to(this.character, 0.1, {
+//                     tint: 16711680,
+//                   }),
+//                   TweenMax.to(this.character, 0.1, {
+//                     delay: 0.1,
+//                     tint: 16777215,
+//                   })));
+//         },
+//       },
+//       {
+//         key: "dead",
+//         value: function () {
+//           "infinity" == this.hp ||
+//             (this.emit(y.CUSTOM_EVENT_DEAD),
+//             (this.shootFlg = !1),
+//             (this.explosion.onComplete = this.explosionComplete.bind(this)),
+//             (this.explosion.x =
+//               this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
+//             (this.explosion.y =
+//               this.unit.y + this.unit.height / 2 - this.explosion.height / 2),
+//             this.addChild(this.explosion),
+//             this.explosion.play(),
+//             this.unit.removeChild(this.shadow),
+//             this.unit.removeChild(this.character),
+//             this.removeChild(this.unit),
+//             g.stop("se_damage"),
+//             g.play("se_explosion"));
+//         },
+//       },
+//       {
+//         key: "explosionComplete",
+//         value: function () {
+//           this.explosion.destroy(),
+//             this.removeChild(this.explosion),
+//             this.emit(y.CUSTOM_EVENT_DEAD_COMPLETE);
+//         },
+//       },
+//       {
+//         key: "castAdded",
+//         value: function (t) {
+//           We(Ue(e.prototype), "castAdded", this).call(this);
+//         },
+//       },
+//       {
+//         key: "castRemoved",
+//         value: function (t) {
+//           We(Ue(e.prototype), "castRemoved", this).call(this);
+//         },
+//       },
+//     ]) && Ne(o.prototype, n),
+//     a && Ne(o, a),
+//     e
+//   );
+// })();
 
 // TitleScreen (line 6593)
 class TitleScreen extends Container {

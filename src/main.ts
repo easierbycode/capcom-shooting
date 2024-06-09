@@ -25,6 +25,9 @@ const config: Phaser.Types.Core.GameConfig = {
 	},
 	render: {
 		pixelArt: true
+	},
+	fps: {
+		target: 30
 	}
 }
 
