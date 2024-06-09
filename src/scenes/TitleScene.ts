@@ -4,6 +4,9 @@ import AudioManager from './audio'
 
 
 export class Container extends Phaser.GameObjects.Container {
+
+	_hitArea: any = {};
+
 	constructor(scene: Phaser.Scene, x, y, children?) {
 		// super(scene, x, y, children)
 		super(scene || window.gameScene, x, y, children);
@@ -11,8 +14,18 @@ export class Container extends Phaser.GameObjects.Container {
 		(scene || window.gameScene).add.existing(this);
 	}
 
-	set hitArea(rect: Phaser.GameObjects.Rectangle) {
+	// set hitArea(rect: Phaser.GameObjects.Rectangle) {
+	set hitArea(rect) {
+		this._hitArea.height = rect.height;
+		this._hitArea.width = rect.width;
 		this.setInteractive(rect, Phaser.Geom.Rectangle.Contains)
+	}
+
+	get hitArea() {
+		return {
+			height: this._hitArea.height,
+			width: this._hitArea.width,
+		}
 	}
 
 	addChild(gameObject: Phaser.GameObjects.GameObject) {

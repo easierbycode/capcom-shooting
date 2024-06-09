@@ -334,6 +334,7 @@ export default class GameScene extends Scene {
           //   this.enemyRemoveComplete.bind(this, s)
           // ),
           // s.on(Ye.CUSTOM_EVENT_TAMA_ADD, this.tamaAdd.bind(this, s)),
+          s.on(Enemy.CUSTOM_EVENT_TAMA_ADD, this.tamaAdd.bind(this, s)),
           this.unitContainer.addChild(s),
           this.enemyHitTestList.push(s);
       }
@@ -341,12 +342,147 @@ export default class GameScene extends Scene {
     this.waveCount++;
   }
 
-  tamaAdd() {}
+  tamaAdd(t) {
+    switch (t.tamaData.name) {
+      case "beam":
+        for (var e = 0; e < 2; e++) {
+          var o = 0 == e ? 121 : 141,
+            n = new S(t.tamaData),
+            a = n.character.width,
+            s = n.character.height,
+            r = void 0;
+          switch (t.tamaData.cnt) {
+            case 0:
+              (r = 105),
+                (n.unit.hitArea = new PIXI.Rectangle(
+                  2.7 * -s,
+                  a / 2 - 10,
+                  s,
+                  a / 2
+                ));
+              break;
+            case 1:
+              (r = 90),
+                (n.unit.hitArea = new PIXI.Rectangle(-s, a / 2, s, a / 2));
+              break;
+            case 2:
+              (r = 75),
+                (n.unit.hitArea = new PIXI.Rectangle(
+                  0.7 * s,
+                  a / 2 - 5,
+                  s,
+                  a / 2
+                ));
+          }
+          (n.character.rotation = (r * Math.PI) / 180),
+            (n.rotX = Math.cos((r * Math.PI) / 180)),
+            (n.rotY = Math.sin((r * Math.PI) / 180)),
+            (n.unit.x = t.unit.x + o),
+            (n.unit.y = t.unit.y + 50),
+            n.on(S.CUSTOM_EVENT_DEAD, this.enemyRemove.bind(this, n)),
+            n.on(
+              S.CUSTOM_EVENT_DEAD_COMPLETE,
+              this.enemyRemoveComplete.bind(this, n)
+            ),
+            this.unitContainer.addChild(n),
+            this.enemyHitTestList.push(n);
+        }
+        t.tamaData.cnt >= 2 ? (t.tamaData.cnt = 0) : t.tamaData.cnt++;
+        break;
+      case "smoke":
+        var h = 60 * Math.random() + 60,
+          l = new S(t.tamaData);
+        (l.unit.hitArea = new PIXI.Rectangle(
+          20,
+          20,
+          l.character.width - 40,
+          l.character.height - 40
+        )),
+          (l.rotX = Math.cos((h * Math.PI) / 180)),
+          (l.rotY = Math.sin((h * Math.PI) / 180)),
+          (l.unit.x = t.unit.x + t.unit.width / 2 - 50),
+          (l.unit.y = t.unit.y + 45),
+          l.on(S.CUSTOM_EVENT_DEAD, this.enemyRemove.bind(this, l)),
+          l.on(
+            S.CUSTOM_EVENT_DEAD_COMPLETE,
+            this.enemyRemoveComplete.bind(this, l)
+          ),
+          (l.character.loop = !1),
+          (l.character.onComplete = function () {
+            l.character.gotoAndPlay(6);
+          }.bind(this)),
+          this.unitContainer.addChild(l),
+          this.enemyHitTestList.push(l);
+        break;
+      case "meka":
+        for (var u = 0; u < 32; u++) {
+          var c = new S(t.tamaData);
+          (c.cont = 0),
+            (c.start = 10 * u),
+            (c.player = this.player.unit),
+            (c.unit.x = t.unit.hitArea.x + t.unit.hitArea.width / 2),
+            (c.unit.y = t.unit.hitArea.y + t.unit.hitArea.height),
+            c.unit.scale.set(0);
+          var f = Math.random() * (i.GAME_WIDTH - 2 * t.unit.hitArea.x),
+            d = Math.random() * t.unit.hitArea.height + t.unit.hitArea.y;
+          TweenMax.to(c.unit, 0.3, {
+            x: f,
+            y: d,
+          }),
+            TweenMax.to(c.unit.scale, 0.3, {
+              x: 1,
+              y: 1,
+            }),
+            c.on(S.CUSTOM_EVENT_DEAD, this.enemyRemove.bind(this, c)),
+            c.on(
+              S.CUSTOM_EVENT_DEAD_COMPLETE,
+              this.enemyRemoveComplete.bind(this, c)
+            ),
+            this.unitContainer.addChild(c),
+            this.enemyHitTestList.push(c);
+        }
+        break;
+      case "psychoField":
+        for (var p = 0; p < 72; p++) {
+          var m = new S(t.tamaData);
+          (m.rotX = Math.cos(((p / 72) * 360 * Math.PI) / 180)),
+            (m.rotY = Math.sin(((p / 72) * 360 * Math.PI) / 180)),
+            (m.unit.x =
+              50 * m.rotX +
+              t.unit.x +
+              t.unit.hitArea.width / 2 +
+              m.unit.width / 2),
+            (m.unit.y = 50 * m.rotY + t.unit.y + t.unit.hitArea.height / 2),
+            m.on(S.CUSTOM_EVENT_DEAD, this.enemyRemove.bind(this, m)),
+            m.on(
+              S.CUSTOM_EVENT_DEAD_COMPLETE,
+              this.enemyRemoveComplete.bind(this, m)
+            ),
+            this.unitContainer.addChild(m),
+            this.enemyHitTestList.push(m);
+        }
+        break;
+      default:
+        // var y = new S(t.tamaData);
+        var y = new Bullet(t.tamaData);
+        (y.unit.x = t.unit.x + t.unit.width / 2 - y.unit.width / 2),
+          (y.unit.y = t.unit.y + t.unit.hitArea.height / 2),
+          // y.on(S.CUSTOM_EVENT_DEAD, this.enemyRemove.bind(this, y)),
+          y.on(Bullet.CUSTOM_EVENT_DEAD, this.enemyRemove.bind(this, y)),
+          y.on(
+            // S.CUSTOM_EVENT_DEAD_COMPLETE,
+            Bullet.CUSTOM_EVENT_DEAD_COMPLETE,
+            this.enemyRemoveComplete.bind(this, y)
+          ),
+          this.unitContainer.addChild(y),
+          this.enemyHitTestList.push(y);
+    }
+  }
 
   tamaAllRemove() {}
 
   enemyRemove(t) {
-    console.log("enemyRemove");
+    console.log("[GameScene] enemyRemove", t);
   }
 
   enemyRemoveComplete() {}
@@ -869,6 +1005,136 @@ var y = (function (t) {
     e
   );
 })();
+
+// Bullet
+class Bullet extends y.prototype.constructor {
+  constructor(t) {
+    super(t.texture, t.explosion),
+    this.name = t.name,
+    this.unit.name = t.name,
+    this.damage = t.damage,
+    this.speed = t.speed,
+    this.hp = t.hp,
+    this.score = t.score,
+    this.cagage = t.cagage,
+    this.guardTexture = t.guard,
+    this.deadFlg = !1,
+    this.shadow.visible = !1,
+    this.unit.hitArea = new PIXI.Rectangle(window.gameScene,0,0,this.unit.width,this.unit.height)
+  }
+
+  update() {
+    this.rotX ? (this.unit.x += this.rotX * this.speed,
+      this.unit.y += this.rotY * this.speed) : "meka" == this.name ? (this.cont++,
+      this.cont >= this.start && (this.targetX || (this.targetX = this.player.x),
+      this.unit.x += .009 * (this.targetX - this.unit.x),
+      this.unit.y += Math.cos(this.cont / 5) + 2.5 * this.speed)) : this.unit.y += this.speed
+  }
+}
+
+// var S = function(t) {
+//   function e(t) {
+//       var o;
+//       return function(t, e) {
+//           if (!(t instanceof e))
+//               throw new TypeError("Cannot call a class as a function")
+//       }(this, e),
+//       (o = _(this, x(e).call(this, t.texture, t.explosion))).name = t.name,
+//       o.unit.name = t.name,
+//       o.damage = t.damage,
+//       o.speed = t.speed,
+//       o.hp = t.hp,
+//       o.score = t.score,
+//       o.cagage = t.cagage,
+//       o.guardTexture = t.guard,
+//       o.deadFlg = !1,
+//       o.shadow.visible = !1,
+//       o.unit.hitArea = new PIXI.Rectangle(0,0,o.unit.width,o.unit.height),
+//       o
+//   }
+//   var o, i, n;
+//   return function(t, e) {
+//       if ("function" != typeof e && null !== e)
+//           throw new TypeError("Super expression must either be null or a function");
+//       t.prototype = Object.create(e && e.prototype, {
+//           constructor: {
+//               value: t,
+//               writable: !0,
+//               configurable: !0
+//           }
+//       }),
+//       e && T(t, e)
+//   }(e, y),
+//   o = e,
+//   (i = [{
+//       key: "loop",
+//       value: function() {
+//           this.rotX ? (this.unit.x += this.rotX * this.speed,
+//           this.unit.y += this.rotY * this.speed) : "meka" == this.name ? (this.cont++,
+//           this.cont >= this.start && (this.targetX || (this.targetX = this.player.x),
+//           this.unit.x += .009 * (this.targetX - this.unit.x),
+//           this.unit.y += Math.cos(this.cont / 5) + 2.5 * this.speed)) : this.unit.y += this.speed
+//       }
+//   }, {
+//       key: "onDamage",
+//       value: function(t, e) {
+//           this.deadFlg || (this.hp -= t,
+//           this.hp <= 0 ? (this.dead.bind(this)(e),
+//           this.deadFlg = !0) : (TweenMax.to(this.character, .1, {
+//               tint: 16711680
+//           }),
+//           TweenMax.to(this.character, .1, {
+//               delay: .1,
+//               tint: 16777215
+//           }))),
+//           void 0 !== this.explosion && (this.explosion.onComplete = function(t) {
+//               this.removeChild(t)
+//           }
+//           .bind(this, this.explosion),
+//           this.explosion.x = this.unit.x + this.unit.width / 2 - this.explosion.width / 2,
+//           this.explosion.y = this.unit.y + this.unit.height / 2 - this.explosion.height / 2 - 10,
+//           "infinity" == e && (this.explosion.textures = this.guardTexture),
+//           this.addChild(this.explosion),
+//           this.explosion.play()),
+//           "infinity" == e ? (g.stop("se_guard"),
+//           g.play("se_guard")) : this.name == M.SHOOT_NAME_NORMAL || this.name == M.SHOOT_NAME_3WAY ? (g.stop("se_damage"),
+//           g.play("se_damage")) : this.name == M.SHOOT_NAME_BIG && (g.stop("se_damage"),
+//           g.play("se_damage"))
+//       }
+//   }, {
+//       key: "dead",
+//       value: function(t) {
+//           this.emit(y.CUSTOM_EVENT_DEAD),
+//           this.unit.removeChild(this.character),
+//           this.unit.removeChild(this.shadow),
+//           this.removeChild(this.unit),
+//           void 0 !== this.explosion && (this.explosion.onComplete = this.explosionComplete.bind(this),
+//           this.explosion.x = this.unit.x + this.unit.width / 2 - this.explosion.width / 2,
+//           this.explosion.y = this.unit.y + this.unit.height / 2 - this.explosion.height / 2 - 10,
+//           this.addChild(this.explosion),
+//           this.explosion.play())
+//       }
+//   }, {
+//       key: "explosionComplete",
+//       value: function() {
+//           this.removeChild(this.explosion),
+//           this.explosion.destroy(),
+//           this.emit(y.CUSTOM_EVENT_DEAD_COMPLETE)
+//       }
+//   }, {
+//       key: "castAdded",
+//       value: function(t) {
+//           w(x(e.prototype), "castAdded", this).call(this)
+//       }
+//   }, {
+//       key: "castRemoved",
+//       value: function(t) {
+//           w(x(e.prototype), "castRemoved", this).call(this)
+//       }
+//   }]) && v(o.prototype, i),
+//   n && v(o, n),
+//   e
+// }();
 
 // returns the type of the value passed as an argument, with special handling for Symbol instances
 function C(t) {
@@ -1876,6 +2142,16 @@ class Enemy extends y.prototype.constructor {
               ? (this.unit.x -= 1)
               : "left" == this.posName && (this.unit.x += 1));
     }
+
+    // DRJ
+    if (this.unit.y >= i.GAME_HEIGHT) {
+      this.emit(y.CUSTOM_EVENT_DEAD);
+    } else if (
+      this.unit.x <= (this.character.width * -1) ||
+      this.unit.x >= (i.GAME_WIDTH + this.character.width)
+    ) {
+      this.emit(y.CUSTOM_EVENT_DEAD);
+    }
   }
 
   shoot() {
@@ -1887,26 +2163,28 @@ class Enemy extends y.prototype.constructor {
   onDamage() {}
 
   dead() {
-    // "infinity" == this.hp ||
-    //   (this.emit(y.CUSTOM_EVENT_DEAD),
-    //   (this.shootFlg = !1),
-    //   (this.explosion.onComplete = this.explosionComplete.bind(this)),
-    //   (this.explosion.x =
-    //     this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
-    //   (this.explosion.y =
-    //     this.unit.y + this.unit.height / 2 - this.explosion.height / 2),
-    //   this.addChild(this.explosion),
-    //   this.explosion.play(),
-    //   this.unit.removeChild(this.shadow),
-    //   this.unit.removeChild(this.character),
-    //   this.removeChild(this.unit),
-    //   AudioManager.stop("se_damage"),
-    //   AudioManager.play("se_explosion"));
+    "infinity" == this.hp ||
+      (this.emit(y.CUSTOM_EVENT_DEAD),
+      (this.shootFlg = !1),
+      (this.explosion.onComplete = this.explosionComplete.bind(this)),
+      (this.explosion.x =
+        this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
+      (this.explosion.y =
+        this.unit.y + this.unit.height / 2 - this.explosion.height / 2),
+      this.addChild(this.explosion),
+      this.explosion.play(),
+      this.unit.removeChild(this.shadow),
+      this.unit.removeChild(this.character),
+      this.removeChild(this.unit),
+      AudioManager.stop("se_damage"),
+      AudioManager.play("se_explosion"));
   }
 
   explosionComplete() {}
 
-  castAdded() {}
+  castAdded() {
+    console.log('[Enemy] castAdded');
+  }
 
   castRemoved() {}
 }
