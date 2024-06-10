@@ -567,6 +567,18 @@ export class AnimatedSprite extends Phaser.GameObjects.Sprite {
     }
   }
 
+  set hitArea(rect) {
+    
+    this.scene.time.addEvent({
+      callback: () => {
+        this.body.setSize(rect.width, rect.height);
+        this.body.setOffset(rect.x, rect.y);
+      }
+    });
+
+    this.scene.physics.add.existing(this);
+  }
+
   set animationSpeed(percentOfSixty: number) {
     this.frameRate = 60 * percentOfSixty;
   }

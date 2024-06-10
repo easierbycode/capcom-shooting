@@ -31,6 +31,16 @@ export class Container extends Phaser.GameObjects.Container {
 	addChild(gameObject: Phaser.GameObjects.GameObject) {
 		super.add(gameObject)
 	}
+
+	removeChild(gameObject: Phaser.GameObjects.GameObject) {
+		super.remove(gameObject)
+	}
+
+	addedToScene() {
+		this.castAdded();
+	}
+
+	castAdded() {}
 }
 
 export class Sprite extends Phaser.GameObjects.Sprite {
@@ -146,6 +156,7 @@ export class Scene extends Phaser.Scene {
 
 	sceneRemoved()
 	{
+		console.log('[Scene] sceneRemoved()', this);
 		// // Loop from the end
 		let i = this.children.length - 1
 		while (i >= 0) {
@@ -153,6 +164,7 @@ export class Scene extends Phaser.Scene {
 			let child = this.children.list[i]
 			// Check for image or sprite
 			if (child.type === 'Image' || child.type === 'Sprite') {
+				console.log('[Scene] child.destroy()', child);
 				// Remove child
 				child.destroy()
 				// Remove all its tweens
@@ -271,6 +283,7 @@ export default class TitleScene extends Scene
 
 	private sceneRemoved()
 	{
+		console.log('[TitleScene] sceneRemoved()');
 		// F.dlog("TitleScene.sceneRemoved() Start."),
         
 		// fn(dn(e.prototype), "sceneRemoved", this).call(this),

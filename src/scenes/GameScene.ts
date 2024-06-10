@@ -187,6 +187,9 @@ export default class GameScene extends Scene {
       // enemyHitTestList
       for (var t = 0; t < this.enemyHitTestList.length; t++) {
         var o = this.enemyHitTestList[t];
+
+        if (!o.active) continue;  // DRJ - skip current loop if not active
+
         // o.loop(this.stageBgAmountMove);
         o.update(this.stageBgAmountMove);
         var n = -o.unit.width / 2,
@@ -275,7 +278,10 @@ export default class GameScene extends Scene {
           o.unit.y >= i.GAME_HEIGHT) &&
           "boss" !== o.unit.name &&
           // (this.unitContainer.removeChild(o),
-          (this.unitContainer.remove(o), this.enemyHitTestList.splice(t, 1));
+          // (this.unitContainer.remove(o), this.enemyHitTestList.splice(t, 1));
+          // DRJ
+          // (o.active = false, o.emit(y.CUSTOM_EVENT_DEAD), this.unitContainer.remove(o, true), this.enemyHitTestList.splice(t, 1));
+          (o.active = false, o.emit(y.CUSTOM_EVENT_DEAD), this.unitContainer.remove(o, true), this.enemyHitTestList.splice(t, 1));
       }
 
       // itemHitTestList
@@ -333,6 +339,10 @@ export default class GameScene extends Scene {
           //   Ye.CUSTOM_EVENT_DEAD_COMPLETE,
           //   this.enemyRemoveComplete.bind(this, s)
           // ),
+          s.on(
+            Enemy.CUSTOM_EVENT_DEAD_COMPLETE,
+            this.enemyRemoveComplete.bind(this, s)
+          ),
           // s.on(Ye.CUSTOM_EVENT_TAMA_ADD, this.tamaAdd.bind(this, s)),
           s.on(Enemy.CUSTOM_EVENT_TAMA_ADD, this.tamaAdd.bind(this, s)),
           this.unitContainer.addChild(s),
@@ -482,10 +492,28 @@ export default class GameScene extends Scene {
   tamaAllRemove() {}
 
   enemyRemove(t) {
-    console.log("[GameScene] enemyRemove", t);
+    if (
+      // ((this.hud.comboCount = 1),
+      // (this.hud.scoreCount = t.score),
+      // (this.hud.cagageCount = t.cagage),
+      // this.hud.scoreView(t),
+      t.itemName //)
+    ) {
+      // var e = new Xe(t.itemTexture);
+      var e = new Item(t.itemTexture);
+      (e.x = t.unit.x),
+        (e.y = t.unit.y),
+        (e.name = t.itemName),
+        this.unitContainer.addChild(e),
+        this.itemHitTestList.push(e);
+    }
+    // for (var o = 0; o < this.enemyHitTestList.length; o++)
+    //   t == this.enemyHitTestList[o] && this.enemyHitTestList.splice(o, 1);
   }
 
-  enemyRemoveComplete() {}
+  enemyRemoveComplete() {
+    console.log("[GameScene] enemyRemoveComplete");
+  }
 
   bossAdd() {
     // if (3 == D.stageId && 0 == D.continueCnt) {
@@ -640,6 +668,7 @@ export default class GameScene extends Scene {
   }
 
   playerDamage(t) {
+    console.log("[GameScene] playerDamage", t);
     new TimelineMax()
       .call(
         function () {
@@ -918,7 +947,8 @@ var y = (function (t) {
       i.explosion = new PIXI.extras.AnimatedSprite(
         window.gameScene,
         o,
-        "game_asset"
+        "game_asset",
+        false
       );
       var n = (i.unit.height + 50) / i.explosion.height;
       n >= 1 && (n = 1),
@@ -973,22 +1003,29 @@ var y = (function (t) {
       {
         key: "castAdded",
         value: function (t) {
-          this.character.play(),
-            this.shadow.play(),
-            "true" == D.hitAreaFlg &&
-              ((this.hitbox = new PIXI.Graphics()),
-              this.hitbox.lineStyle(1, 16773120),
-              this.hitbox.drawRect(
-                this.unit.hitArea.x,
-                this.unit.hitArea.y,
-                this.unit.hitArea.width,
-                this.unit.hitArea.height
-              ),
-              this.unit.addChild(this.hitbox)),
-            this.shadowReverse
-              ? ((this.shadow.scale.y = -1),
-                (this.shadow.y = 2 * this.shadow.height - this.shadowOffsetY))
-              : (this.shadow.y = this.shadow.height - this.shadowOffsetY);
+          this.scene.time.addEvent({
+            callback: () => {
+              if (!this.active) return;
+              this.character.play(),
+                this.shadow.play(),
+                "true" == D.hitAreaFlg &&
+                  ((this.hitbox = new PIXI.Graphics()),
+                  this.hitbox.lineStyle(1, 16773120),
+                  this.hitbox.drawRect(
+                    this.unit.hitArea.x,
+                    this.unit.hitArea.y,
+                    this.unit.hitArea.width,
+                    this.unit.hitArea.height
+                  ),
+                  this.unit.addChild(this.hitbox)),
+                this.shadowReverse
+                  // ? ((this.shadow.scale.y = -1),
+                  ? ((this.shadow.scaleY = -1),
+                    (this.shadow.y =
+                      2 * this.shadow.height - this.shadowOffsetY))
+                  : (this.shadow.y = this.shadow.height - this.shadowOffsetY);
+            },
+          });
         },
       },
       {
@@ -1010,25 +1047,36 @@ var y = (function (t) {
 class Bullet extends y.prototype.constructor {
   constructor(t) {
     super(t.texture, t.explosion),
-    this.name = t.name,
-    this.unit.name = t.name,
-    this.damage = t.damage,
-    this.speed = t.speed,
-    this.hp = t.hp,
-    this.score = t.score,
-    this.cagage = t.cagage,
-    this.guardTexture = t.guard,
-    this.deadFlg = !1,
-    this.shadow.visible = !1,
-    this.unit.hitArea = new PIXI.Rectangle(window.gameScene,0,0,this.unit.width,this.unit.height)
+      (this.name = t.name),
+      (this.unit.name = t.name),
+      (this.damage = t.damage),
+      (this.speed = t.speed),
+      (this.hp = t.hp),
+      (this.score = t.score),
+      (this.cagage = t.cagage),
+      (this.guardTexture = t.guard),
+      (this.deadFlg = !1),
+      (this.shadow.visible = !1),
+      (this.unit.hitArea = new PIXI.Rectangle(
+        window.gameScene,
+        0,
+        0,
+        this.unit.width,
+        this.unit.height
+      ));
   }
 
   update() {
-    this.rotX ? (this.unit.x += this.rotX * this.speed,
-      this.unit.y += this.rotY * this.speed) : "meka" == this.name ? (this.cont++,
-      this.cont >= this.start && (this.targetX || (this.targetX = this.player.x),
-      this.unit.x += .009 * (this.targetX - this.unit.x),
-      this.unit.y += Math.cos(this.cont / 5) + 2.5 * this.speed)) : this.unit.y += this.speed
+    this.rotX
+      ? ((this.unit.x += this.rotX * this.speed),
+        (this.unit.y += this.rotY * this.speed))
+      : "meka" == this.name
+      ? (this.cont++,
+        this.cont >= this.start &&
+          (this.targetX || (this.targetX = this.player.x),
+          (this.unit.x += 0.009 * (this.targetX - this.unit.x)),
+          (this.unit.y += Math.cos(this.cont / 5) + 2.5 * this.speed)))
+      : (this.unit.y += this.speed);
   }
 }
 
@@ -1203,6 +1251,7 @@ function A(t, e) {
     })(t, e);
 }
 
+// Player
 var M = (function (t) {
   function e(t) {
     var o;
@@ -1465,79 +1514,82 @@ var M = (function (t) {
       {
         key: "shoot",
         value: function () {
-          // switch (this.shootMode) {
-          //   case e.SHOOT_NAME_NORMAL:
-          //     ((o = new S(this.shootNormalData)).unit.rotation =
-          //       (270 * Math.PI) / 180),
-          //       (o.unit.x = this.unit.x + 5 * Math.sin(o.unit.rotation) + 14),
-          //       (o.unit.y = this.unit.y + 5 * Math.sin(o.unit.rotation) + 11),
-          //       (o.name = e.SHOOT_NAME_NORMAL),
-          //       (o.id = this.bulletIdCnt++),
-          //       (o.shadowReverse = !1),
-          //       (o.shadowOffsetY = 0),
-          //       o.on(y.CUSTOM_EVENT_DEAD, this.bulletRemove.bind(this, o)),
-          //       o.on(
-          //         y.CUSTOM_EVENT_DEAD_COMPLETE,
-          //         this.bulletRemoveComplete.bind(this, o)
-          //       ),
-          //       this.addChild(o),
-          //       this.bulletList.push(o),
-          //       g.stop("se_shoot"),
-          //       g.play("se_shoot");
-          //     break;
-          //   case e.SHOOT_NAME_BIG:
-          //     ((o = new S(this.shootBigData)).unit.rotation =
-          //       (270 * Math.PI) / 180),
-          //       (o.unit.x = this.unit.x + 5 * Math.sin(o.unit.rotation) + 10),
-          //       (o.unit.y = this.unit.y + 5 * Math.sin(o.unit.rotation) + 22),
-          //       (o.name = e.SHOOT_NAME_BIG),
-          //       (o.id = this.bulletIdCnt++),
-          //       (o.shadowReverse = !1),
-          //       (o.shadowOffsetY = 0),
-          //       o.on(y.CUSTOM_EVENT_DEAD, this.bulletRemove.bind(this, o)),
-          //       o.on(
-          //         y.CUSTOM_EVENT_DEAD_COMPLETE,
-          //         this.bulletRemoveComplete.bind(this, o)
-          //       ),
-          //       this.addChild(o),
-          //       this.bulletList.push(o),
-          //       g.stop("se_shoot_b"),
-          //       g.play("se_shoot_b");
-          //     break;
-          //   case e.SHOOT_NAME_3WAY:
-          //     for (var t = 0; t < 3; t++) {
-          //       var o = new S(this.shoot3wayData);
-          //       0 == t
-          //         ? ((o.unit.rotation = (280 * Math.PI) / 180),
-          //           (o.unit.x =
-          //             this.unit.x + 5 * Math.cos(o.unit.rotation) + 14),
-          //           (o.unit.y =
-          //             this.unit.y + 5 * Math.sin(o.unit.rotation) + 11))
-          //         : 1 == t
-          //         ? ((o.unit.rotation = (270 * Math.PI) / 180),
-          //           (o.unit.x =
-          //             this.unit.x + 5 * Math.cos(o.unit.rotation) + 10),
-          //           (o.unit.y =
-          //             this.unit.y + 5 * Math.sin(o.unit.rotation) + 11))
-          //         : 2 == t &&
-          //           ((o.unit.rotation = (260 * Math.PI) / 180),
-          //           (o.unit.x =
-          //             this.unit.x + 5 * Math.cos(o.unit.rotation) + 6),
-          //           (o.unit.y =
-          //             this.unit.y + 5 * Math.sin(o.unit.rotation) + 11)),
-          //         (o.id = this.bulletIdCnt++),
-          //         (o.shadowReverse = !1),
-          //         (o.shadowOffsetY = 0),
-          //         o.on(y.CUSTOM_EVENT_DEAD, this.bulletRemove.bind(this, o)),
-          //         o.on(
-          //           y.CUSTOM_EVENT_DEAD_COMPLETE,
-          //           this.bulletRemoveComplete.bind(this, o)
-          //         ),
-          //         this.addChild(o),
-          //         this.bulletList.push(o);
-          //     }
-          //     g.stop("se_shoot"), g.play("se_shoot");
-          // }
+          switch (this.shootMode) {
+            case e.SHOOT_NAME_NORMAL:
+              // ((o = new S(this.shootNormalData)).unit.rotation =
+              ((o = new Bullet(this.shootNormalData)).unit.rotation =
+                (270 * Math.PI) / 180),
+                (o.unit.x = this.unit.x + 5 * Math.sin(o.unit.rotation) + 14),
+                (o.unit.y = this.unit.y + 5 * Math.sin(o.unit.rotation) + 11),
+                (o.name = e.SHOOT_NAME_NORMAL),
+                (o.id = this.bulletIdCnt++),
+                (o.shadowReverse = !1),
+                (o.shadowOffsetY = 0),
+                o.on(y.CUSTOM_EVENT_DEAD, this.bulletRemove.bind(this, o)),
+                o.on(
+                  y.CUSTOM_EVENT_DEAD_COMPLETE,
+                  this.bulletRemoveComplete.bind(this, o)
+                ),
+                this.addChild(o),
+                this.bulletList.push(o),
+                AudioManager.stop("se_shoot"),
+                AudioManager.play("se_shoot");
+              break;
+            case e.SHOOT_NAME_BIG:
+              // ((o = new S(this.shootBigData)).unit.rotation =
+              ((o = new Bullet(this.shootBigData)).unit.rotation =
+                (270 * Math.PI) / 180),
+                (o.unit.x = this.unit.x + 5 * Math.sin(o.unit.rotation) + 10),
+                (o.unit.y = this.unit.y + 5 * Math.sin(o.unit.rotation) + 22),
+                (o.name = e.SHOOT_NAME_BIG),
+                (o.id = this.bulletIdCnt++),
+                (o.shadowReverse = !1),
+                (o.shadowOffsetY = 0),
+                o.on(y.CUSTOM_EVENT_DEAD, this.bulletRemove.bind(this, o)),
+                o.on(
+                  y.CUSTOM_EVENT_DEAD_COMPLETE,
+                  this.bulletRemoveComplete.bind(this, o)
+                ),
+                this.addChild(o),
+                this.bulletList.push(o),
+                AudioManager.stop("se_shoot_b"),
+                AudioManager.play("se_shoot_b");
+              break;
+            case e.SHOOT_NAME_3WAY:
+              for (var t = 0; t < 3; t++) {
+                // var o = new S(this.shoot3wayData);
+                var o = new Bullet(this.shoot3wayData);
+                0 == t
+                  ? ((o.unit.rotation = (280 * Math.PI) / 180),
+                    (o.unit.x =
+                      this.unit.x + 5 * Math.cos(o.unit.rotation) + 14),
+                    (o.unit.y =
+                      this.unit.y + 5 * Math.sin(o.unit.rotation) + 11))
+                  : 1 == t
+                  ? ((o.unit.rotation = (270 * Math.PI) / 180),
+                    (o.unit.x =
+                      this.unit.x + 5 * Math.cos(o.unit.rotation) + 10),
+                    (o.unit.y =
+                      this.unit.y + 5 * Math.sin(o.unit.rotation) + 11))
+                  : 2 == t &&
+                    ((o.unit.rotation = (260 * Math.PI) / 180),
+                    (o.unit.x =
+                      this.unit.x + 5 * Math.cos(o.unit.rotation) + 6),
+                    (o.unit.y =
+                      this.unit.y + 5 * Math.sin(o.unit.rotation) + 11)),
+                  (o.id = this.bulletIdCnt++),
+                  (o.shadowReverse = !1),
+                  (o.shadowOffsetY = 0),
+                  o.on(y.CUSTOM_EVENT_DEAD, this.bulletRemove.bind(this, o)),
+                  o.on(
+                    y.CUSTOM_EVENT_DEAD_COMPLETE,
+                    this.bulletRemoveComplete.bind(this, o)
+                  ),
+                  this.addChild(o),
+                  this.bulletList.push(o);
+              }
+              AudioManager.stop("se_shoot"), AudioManager.play("se_shoot");
+          }
         },
       },
       {
@@ -1555,7 +1607,8 @@ var M = (function (t) {
               y.CUSTOM_EVENT_DEAD_COMPLETE,
               this.bulletRemoveComplete.bind(this, t)
             ),
-            this.removeChild(t);
+            // this.removeChild(t);
+            this.remove(t, true);
         },
       },
       {
@@ -1826,6 +1879,7 @@ var M = (function (t) {
       {
         key: "onDamage",
         value: function (t) {
+          console.log("[Player] onDamage");
           if (this.barrierFlg);
           else if (!0 !== this.damageAnimationFlg) {
             if (
@@ -1889,8 +1943,8 @@ var M = (function (t) {
                   tint: 16777215,
                   alpha: 1,
                 }),
-                g.play("g_damage_voice"),
-                g.play("se_damage");
+                AudioManager.play("g_damage_voice"),
+                AudioManager.play("se_damage");
             }
             this.damageAnimationFlg = !0;
           }
@@ -1912,9 +1966,11 @@ var M = (function (t) {
             this.removeChild(this.shadow);
           for (var t = 0; t < this.bulletList.length; t++) {
             var e = this.bulletList[t];
+            // DRJ - is bulletList item child of Player?
             this.removeChild(e);
           }
-          g.play("se_explosion"), g.play("g_continue_no_voice0");
+          AudioManager.play("se_explosion"),
+            AudioManager.play("g_continue_no_voice0");
         },
       },
       {
@@ -1994,6 +2050,30 @@ var M = (function (t) {
     e
   );
 })();
+
+// Item
+class Item extends AnimatedSprite {
+  constructor(t) {
+    super(window.gameScene, t, "game_asset");
+
+    var o = this;
+
+    return (
+      (o.interactive = !0), // DRJ - mouse/touch events needed?
+      (o.animationSpeed = 0.08),
+      // o.hitArea = new PIXI.Rectangle(0,0,t[0].width,t[0].height),
+      (o.hitArea = new PIXI.Rectangle(
+        window.gameScene,
+        0,
+        0,
+        t[0].width,
+        t[0].height
+      )),
+      o.play(),
+      o
+    );
+  }
+}
 
 // (line 3638)
 //
@@ -2142,16 +2222,6 @@ class Enemy extends y.prototype.constructor {
               ? (this.unit.x -= 1)
               : "left" == this.posName && (this.unit.x += 1));
     }
-
-    // DRJ
-    if (this.unit.y >= i.GAME_HEIGHT) {
-      this.emit(y.CUSTOM_EVENT_DEAD);
-    } else if (
-      this.unit.x <= (this.character.width * -1) ||
-      this.unit.x >= (i.GAME_WIDTH + this.character.width)
-    ) {
-      this.emit(y.CUSTOM_EVENT_DEAD);
-    }
   }
 
   shoot() {
@@ -2163,6 +2233,7 @@ class Enemy extends y.prototype.constructor {
   onDamage() {}
 
   dead() {
+    console.log("[Enemy] dead");
     "infinity" == this.hp ||
       (this.emit(y.CUSTOM_EVENT_DEAD),
       (this.shootFlg = !1),
@@ -2183,10 +2254,12 @@ class Enemy extends y.prototype.constructor {
   explosionComplete() {}
 
   castAdded() {
-    console.log('[Enemy] castAdded');
+    // console.log("[Enemy] castAdded", this);
   }
 
-  castRemoved() {}
+  castRemoved() {
+    console.log("[Enemy] castRemoved");
+  }
 }
 // var Ye = (function (t) {
 //   function e(t) {
@@ -2668,9 +2741,12 @@ class StageBg extends Container {
     });
   }
 
-  castAdded(t) {}
+  castAdded(t) {
+    console.log("[StageBg] castAdded");
+  }
 
   castRemoved(t) {
+    console.log("[StageBg] castRemoved");
     this.akebonoBg &&
       (this.akebonoBg.destroy(), this.removeChild(this.akebonoBg)),
       this.akebonoTen &&
