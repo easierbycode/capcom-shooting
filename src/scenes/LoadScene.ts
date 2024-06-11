@@ -522,6 +522,7 @@ export default class LoadScene extends Phaser.Scene {
 export class AnimatedSprite extends Phaser.GameObjects.Sprite {
   // variables
   private frameRate: number | null = null;
+  private repeat: boolean | null = null;
 
   constructor(
     scene: Phaser.Scene,
@@ -537,7 +538,7 @@ export class AnimatedSprite extends Phaser.GameObjects.Sprite {
 
     this.setOrigin(0);
 
-    let frames = [
+    let frames: Phaser.Types.Animations.AnimationFrame[] = [
       ...frameKeys.map((k) => {
         return { key: k, frame: 0 };
       }),
@@ -567,13 +568,16 @@ export class AnimatedSprite extends Phaser.GameObjects.Sprite {
     }
   }
 
+  set loop(bool: boolean) {
+    this.repeat = bool;
+  }
+
   set hitArea(rect) {
-    
     this.scene.time.addEvent({
       callback: () => {
         this.body.setSize(rect.width, rect.height);
         this.body.setOffset(rect.x, rect.y);
-      }
+      },
     });
 
     this.scene.physics.add.existing(this);
@@ -584,11 +588,12 @@ export class AnimatedSprite extends Phaser.GameObjects.Sprite {
   }
 
   play(key: string = "default") {
-    if (this.frameRate) {
-      super.play({
-        key,
-        frameRate: this.frameRate,
-      });
+    if (this.frameRate || this.repeat !== null) {
+      let animConfig: Phaser.Types.Animations.PlayAnimationConfig = { key };
+      if (this.frameRate) animConfig.frameRate = this.frameRate;
+      if (this.repeat !== null) animConfig.repeat = this.repeat ? -1 : 0;
+
+      super.play(animConfig);
     } else {
       super.play(key);
     }
