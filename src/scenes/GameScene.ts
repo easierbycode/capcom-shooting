@@ -188,7 +188,7 @@ export default class GameScene extends Scene {
       for (var t = 0; t < this.enemyHitTestList.length; t++) {
         var o = this.enemyHitTestList[t];
 
-        if (!o.active) continue;  // DRJ - skip current loop if not active
+        if (!o.active) continue; // DRJ - skip current loop if not active
 
         // o.loop(this.stageBgAmountMove);
         o.update(this.stageBgAmountMove);
@@ -280,8 +280,10 @@ export default class GameScene extends Scene {
           // (this.unitContainer.removeChild(o),
           // (this.unitContainer.remove(o), this.enemyHitTestList.splice(t, 1));
           // DRJ
-          // (o.active = false, o.emit(y.CUSTOM_EVENT_DEAD), this.unitContainer.remove(o, true), this.enemyHitTestList.splice(t, 1));
-          (o.active = false, o.emit(y.CUSTOM_EVENT_DEAD), this.unitContainer.remove(o, true), this.enemyHitTestList.splice(t, 1));
+          ((o.active = false),
+          o.emit(y.CUSTOM_EVENT_DEAD),
+          this.unitContainer.remove(o, true),
+          this.enemyHitTestList.splice(t, 1));
       }
 
       // itemHitTestList
@@ -1019,7 +1021,6 @@ var y = (function (t) {
                   ),
                   this.unit.addChild(this.hitbox)),
                 this.shadowReverse
-                  // ? ((this.shadow.scale.y = -1),
                   ? ((this.shadow.scaleY = -1),
                     (this.shadow.y =
                       2 * this.shadow.height - this.shadowOffsetY))
@@ -1077,6 +1078,70 @@ class Bullet extends y.prototype.constructor {
           (this.unit.x += 0.009 * (this.targetX - this.unit.x)),
           (this.unit.y += Math.cos(this.cont / 5) + 2.5 * this.speed)))
       : (this.unit.y += this.speed);
+  }
+
+  onDamage(t, e) {
+    if (!this.deadFlg) {
+      if (
+        ((this.hp -= t),
+        this.hp <= 0
+          ? (this.dead.bind(this)(e), (this.deadFlg = !0))
+          : (TweenMax.to(this.character, 0.1, { tint: 16711680 }),
+            TweenMax.to(this.character, 0.1, { delay: 0.1, tint: 16777215 })),
+        void 0 !== this.explosion)
+      ) {
+        // this.explosion.onComplete = function (t) {
+        this.explosion.on(
+          "animationcomplete",
+          function (t) {
+            this.removeChild(t);
+          }.bind(this, this.explosion)
+        );
+        this.explosion.x =
+          this.unit.x + this.unit.width / 2 - this.explosion.width / 2;
+        this.explosion.y =
+          this.unit.y + this.unit.height / 2 - this.explosion.height / 2 - 10;
+        "infinity" == e && (this.explosion.textures = this.guardTexture);
+        this.addChild(this.explosion);
+        this.explosion.play();
+      }
+
+      if ("infinity" == e) {
+        AudioManager.stop("se_guard"), AudioManager.play("se_guard");
+      } else if (
+        this.name == M.SHOOT_NAME_NORMAL ||
+        this.name == M.SHOOT_NAME_3WAY
+      ) {
+        AudioManager.stop("se_damage"), AudioManager.play("se_damage");
+      } else if (this.name == M.SHOOT_NAME_BIG) {
+        AudioManager.stop("se_damage"), AudioManager.play("se_damage");
+      }
+    }
+  }
+
+  dead(t) {
+    this.emit(y.CUSTOM_EVENT_DEAD),
+      this.unit.removeChild(this.character),
+      this.unit.removeChild(this.shadow),
+      this.removeChild(this.unit),
+      void 0 !== this.explosion &&
+        // ((this.explosion.onComplete = this.explosionComplete.bind(this)),
+        (this.explosion.on(
+          "animationcomplete",
+          this.explosionComplete.bind(this)
+        ),
+        (this.explosion.x =
+          this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
+        (this.explosion.y =
+          this.unit.y + this.unit.height / 2 - this.explosion.height / 2 - 10),
+        this.addChild(this.explosion),
+        this.explosion.play());
+  }
+
+  explosionComplete() {
+    this.removeChild(this.explosion),
+      this.explosion.destroy(),
+      this.emit(y.CUSTOM_EVENT_DEAD_COMPLETE);
   }
 }
 
