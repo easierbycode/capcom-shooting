@@ -2,7 +2,6 @@ import { B, D, g, i } from "./LoadScene";
 import AudioManager from "./audio";
 
 export class Container extends Phaser.GameObjects.Container {
-  _hitArea: any = {};
 
   constructor(scene: Phaser.Scene, x, y, children?) {
     // super(scene, x, y, children)
@@ -13,15 +12,22 @@ export class Container extends Phaser.GameObjects.Container {
 
   // set hitArea(rect: Phaser.GameObjects.Rectangle) {
   set hitArea(rect) {
-    this._hitArea.height = rect.height;
-    this._hitArea.width = rect.width;
     this.setInteractive(rect, Phaser.Geom.Rectangle.Contains);
+
+    this.scene.time.addEvent({
+      callback: () => {
+        this.body.setSize(rect.width, rect.height);
+        this.body.setOffset(rect.x, rect.y);
+      },
+    });
+
+    this.scene.physics.add.existing(this);
   }
 
   get hitArea() {
     return {
-      height: this._hitArea.height,
-      width: this._hitArea.width,
+      height: this.body.height,
+      width: this.body.width,
     };
   }
 
