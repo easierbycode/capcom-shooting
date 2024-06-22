@@ -188,7 +188,7 @@ export default class GameScene extends Scene {
       for (var t = 0; t < this.enemyHitTestList.length; t++) {
         var o = this.enemyHitTestList[t];
 
-        if (!o.active) continue; // DRJ - skip current loop if not active
+        // if (!o.active) continue; // DRJ - skip current loop if not active
 
         // o.loop(this.stageBgAmountMove);
         o.update(this.stageBgAmountMove);
@@ -279,11 +279,13 @@ export default class GameScene extends Scene {
           "boss" !== o.unit.name &&
           // (this.unitContainer.removeChild(o),
           // (this.unitContainer.remove(o), this.enemyHitTestList.splice(t, 1));
-          // DRJ
-          ((o.active = false),
-          o.emit(y.CUSTOM_EVENT_DEAD),
-          this.unitContainer.remove(o, true),
+          (this.unitContainer.remove(o, true),
           this.enemyHitTestList.splice(t, 1));
+        // DRJ
+        // ((o.active = false),
+        // o.emit(y.CUSTOM_EVENT_DEAD),
+        // this.unitContainer.remove(o, true),
+        // this.enemyHitTestList.splice(t, 1));
       }
 
       // itemHitTestList
@@ -509,141 +511,149 @@ export default class GameScene extends Scene {
         this.unitContainer.addChild(e),
         this.itemHitTestList.push(e);
     }
-    // for (var o = 0; o < this.enemyHitTestList.length; o++)
-    //   t == this.enemyHitTestList[o] && this.enemyHitTestList.splice(o, 1);
+    for (var o = 0; o < this.enemyHitTestList.length; o++)
+      t == this.enemyHitTestList[o] && this.enemyHitTestList.splice(o, 1);
   }
 
-  enemyRemoveComplete() {
-    console.log("[GameScene] enemyRemoveComplete");
+  enemyRemoveComplete(t) {
+    t.off(Enemy.CUSTOM_EVENT_DEAD, this.enemyRemove.bind(this)),
+      t.off(
+        Enemy.CUSTOM_EVENT_DEAD_COMPLETE,
+        this.enemyRemoveComplete.bind(this)
+      ),
+      t.off(Enemy.CUSTOM_EVENT_TAMA_ADD, this.tamaAdd.bind(this)),
+      // this.unitContainer.removeChild(t);
+      this.unitContainer.remove(t, true);
   }
 
   bossAdd() {
-    // if (3 == D.stageId && 0 == D.continueCnt) {
-    //   ((o = B.resource.recipe.data.bossData["boss" + D.stageId]).explosion =
-    //     this.explosionTextures),
-    //     (o.gokiFlg = !0),
-    //     (o.continueCnt = D.continueCnt);
-    //   var t = new Eo(o);
-    //   t.on(
-    //     Eo.CUSTOM_EVENT_GOKI,
-    //     function e() {
-    //       (this.theWorldFlg = !0), this.hud.caBtnDeactive();
-    //       for (var o = 0; o < this.player.bulletList.length; o++) {
-    //         var n = this.player.bulletList[o];
-    //         this.player.bulletRemove(n), this.player.bulletRemoveComplete(n);
-    //       }
-    //       this.boss.toujou();
-    //       var a = new TimelineMax();
-    //       a.to(this.boss.unit, 1, {
-    //         x: i.GAME_CENTER + this.boss.width / 4,
-    //       }),
-    //         a.addCallback(
-    //           function () {
-    //             this.boss.shungokusatsu(t.unit),
-    //               (this.hud.cagaBtn.alpha = 0),
-    //               (this.player.alpha = 0);
-    //             for (var e = 0; e < this.player.bulletList.length; e++) {
-    //               var o = this.player.bulletList[e];
-    //               this.player.removeChild(o);
-    //             }
-    //           },
-    //           "+=1.5",
-    //           null,
-    //           this
-    //         ),
-    //         a.addCallback(
-    //           function () {
-    //             (this.hud.cagaBtn.alpha = 1),
-    //               (this.player.alpha = 1),
-    //               t.off(Eo.CUSTOM_EVENT_GOKI, e.bind(this)),
-    //               (t.hp = 0),
-    //               t.dead();
-    //             for (var o = 0; o < this.enemyHitTestList.length; o++)
-    //               this.enemyHitTestList[o] == t &&
-    //                 this.enemyHitTestList.splice(o, 1);
-    //             g.stop(this.stageBgmName);
-    //             var n =
-    //               "boss_" +
-    //               B.resource.recipe.data.bossData.bossExtra.name +
-    //               "_bgm_info";
-    //             this.stageBgmName = i[n].name;
-    //             var a = i[n].start,
-    //               s = i[n].end;
-    //             g.bgmPlay(this.stageBgmName, a, s);
-    //           },
-    //           "+=2.3",
-    //           null,
-    //           this
-    //         ),
-    //         a.to(
-    //           this.boss.unit,
-    //           1,
-    //           {
-    //             x: i.GAME_CENTER - this.boss.width / 2,
-    //           },
-    //           "+=1.5"
-    //         ),
-    //         a.addCallback(
-    //           function () {
-    //             this.unitContainer.removeChild(t),
-    //               this.enemyHitTestList.push(this.boss),
-    //               (this.theWorldFlg = !1),
-    //               this.hud.caBtnActive(),
-    //               this.boss.shootStart();
-    //           },
-    //           "+=1",
-    //           null,
-    //           this
-    //         );
-    //     }.bind(this)
-    //   ),
-    //     this.enemyHitTestList.push(t),
-    //     this.unitContainer.addChild(t);
-    //   var e = B.resource.recipe.data.bossData.bossExtra;
-    //   (e.explosion = this.explosionTextures),
-    //     (e.continueCnt = D.continueCnt),
-    //     (this.boss = new Ro(e)),
-    //     this.boss.on(
-    //       Ze.CUSTOM_EVENT_DEAD,
-    //       this.bossRemove.bind(this, this.boss)
-    //     ),
-    //     this.boss.on(
-    //       Ze.CUSTOM_EVENT_TAMA_ADD,
-    //       this.tamaAdd.bind(this, this.boss)
-    //     ),
-    //     this.unitContainer.addChild(this.boss),
-    //     (this.boss.unit.x = i.GAME_WIDTH),
-    //     (this.boss.unit.y = i.GAME_HEIGHT / 4);
-    // } else {
-    //   var o;
-    //   switch (
-    //     (((o = B.resource.recipe.data.bossData["boss" + D.stageId]).explosion =
-    //       this.explosionTextures),
-    //     D.stageId)
-    //   ) {
-    //     case 0:
-    //       this.boss = new so(o);
-    //       break;
-    //     case 1:
-    //       this.boss = new po(o);
-    //       break;
-    //     case 2:
-    //       this.boss = new wo(o);
-    //       break;
-    //     case 3:
-    //       (o.gokiFlg = !1), (this.boss = new Eo(o));
-    //       break;
-    //     case 4:
-    //       this.boss = new Wo(o);
-    //   }
-    //   this.boss.on(Ze.CUSTOM_EVENT_DEAD, this.bossRemove.bind(this, this.boss)),
-    //     this.boss.on(
-    //       Ze.CUSTOM_EVENT_TAMA_ADD,
-    //       this.tamaAdd.bind(this, this.boss)
-    //     ),
-    //     this.enemyHitTestList.push(this.boss),
-    //     this.unitContainer.addChild(this.boss);
-    // }
+    if (3 == D.stageId && 0 == D.continueCnt) {
+      ((o = B.resource.recipe.data.bossData["boss" + D.stageId]).explosion =
+        this.explosionTextures),
+        (o.gokiFlg = !0),
+        (o.continueCnt = D.continueCnt);
+      var t = new Eo(o);
+      t.on(
+        Eo.CUSTOM_EVENT_GOKI,
+        function e() {
+          (this.theWorldFlg = !0), this.hud.caBtnDeactive();
+          for (var o = 0; o < this.player.bulletList.length; o++) {
+            var n = this.player.bulletList[o];
+            this.player.bulletRemove(n), this.player.bulletRemoveComplete(n);
+          }
+          this.boss.toujou();
+          var a = new TimelineMax();
+          a.to(this.boss.unit, 1, {
+            x: i.GAME_CENTER + this.boss.width / 4,
+          }),
+            a.addCallback(
+              function () {
+                this.boss.shungokusatsu(t.unit),
+                  (this.hud.cagaBtn.alpha = 0),
+                  (this.player.alpha = 0);
+                for (var e = 0; e < this.player.bulletList.length; e++) {
+                  var o = this.player.bulletList[e];
+                  this.player.removeChild(o);
+                }
+              },
+              "+=1.5",
+              null,
+              this
+            ),
+            a.addCallback(
+              function () {
+                (this.hud.cagaBtn.alpha = 1),
+                  (this.player.alpha = 1),
+                  t.off(Eo.CUSTOM_EVENT_GOKI, e.bind(this)),
+                  (t.hp = 0),
+                  t.dead();
+                for (var o = 0; o < this.enemyHitTestList.length; o++)
+                  this.enemyHitTestList[o] == t &&
+                    this.enemyHitTestList.splice(o, 1);
+                g.stop(this.stageBgmName);
+                var n =
+                  "boss_" +
+                  B.resource.recipe.data.bossData.bossExtra.name +
+                  "_bgm_info";
+                this.stageBgmName = i[n].name;
+                var a = i[n].start,
+                  s = i[n].end;
+                g.bgmPlay(this.stageBgmName, a, s);
+              },
+              "+=2.3",
+              null,
+              this
+            ),
+            a.to(
+              this.boss.unit,
+              1,
+              {
+                x: i.GAME_CENTER - this.boss.width / 2,
+              },
+              "+=1.5"
+            ),
+            a.addCallback(
+              function () {
+                this.unitContainer.removeChild(t),
+                  this.enemyHitTestList.push(this.boss),
+                  (this.theWorldFlg = !1),
+                  this.hud.caBtnActive(),
+                  this.boss.shootStart();
+              },
+              "+=1",
+              null,
+              this
+            );
+        }.bind(this)
+      ),
+        this.enemyHitTestList.push(t),
+        this.unitContainer.addChild(t);
+      var e = B.resource.recipe.data.bossData.bossExtra;
+      (e.explosion = this.explosionTextures),
+        (e.continueCnt = D.continueCnt),
+        (this.boss = new Ro(e)),
+        this.boss.on(
+          Ze.CUSTOM_EVENT_DEAD,
+          this.bossRemove.bind(this, this.boss)
+        ),
+        this.boss.on(
+          Ze.CUSTOM_EVENT_TAMA_ADD,
+          this.tamaAdd.bind(this, this.boss)
+        ),
+        this.unitContainer.addChild(this.boss),
+        (this.boss.unit.x = i.GAME_WIDTH),
+        (this.boss.unit.y = i.GAME_HEIGHT / 4);
+    } else {
+      var o;
+      switch (
+        (((o = B.resource.recipe.data.bossData["boss" + D.stageId]).explosion =
+          this.explosionTextures),
+        D.stageId)
+      ) {
+        case 0:
+          // this.boss = new so(o);
+          console.log("boss 0");
+          break;
+        case 1:
+          this.boss = new po(o);
+          break;
+        case 2:
+          this.boss = new wo(o);
+          break;
+        case 3:
+          (o.gokiFlg = !1), (this.boss = new Eo(o));
+          break;
+        case 4:
+          this.boss = new Wo(o);
+      }
+      // this.boss.on(Ze.CUSTOM_EVENT_DEAD, this.bossRemove.bind(this, this.boss)),
+      //   this.boss.on(
+      //     Ze.CUSTOM_EVENT_TAMA_ADD,
+      //     this.tamaAdd.bind(this, this.boss)
+      //   ),
+      //   this.enemyHitTestList.push(this.boss),
+      //   this.unitContainer.addChild(this.boss);
+    }
     // (this.timeTxt = new PIXI.Sprite(PIXI.Texture.fromFrame("timeTxt.gif"))),
     //   (this.timeTxt.x = i.GAME_CENTER - this.timeTxt.width),
     //   (this.timeTxt.y = 58),
@@ -665,8 +675,7 @@ export default class GameScene extends Scene {
     //     },
     //     onCompleteScope: this,
     //   }),
-    //   (this.enemyWaveFlg = !1),
-    //   this.stageBg.bossScene();
+    (this.enemyWaveFlg = !1), this.stageBg.bossScene();
   }
 
   playerDamage(t) {
@@ -2295,14 +2304,34 @@ class Enemy extends y.prototype.constructor {
       AudioManager.play("se_shoot");
   }
 
-  onDamage() {}
+  onDamage(t) {
+    "infinity" == this.hp
+      ? (TweenMax.to(this.character, 0.05, {
+          filters: [this.whitefilter],
+        }),
+        TweenMax.to(this.character, 0.3, {
+          delay: 0.1,
+          filters: null,
+        }))
+      : this.deadFlg ||
+        ((this.hp -= t),
+        this.hp <= 0
+          ? (this.dead.bind(this)(), (this.deadFlg = !0))
+          : (TweenMax.to(this.character, 0.1, {
+              tint: 16711680,
+            }),
+            TweenMax.to(this.character, 0.1, {
+              delay: 0.1,
+              tint: 16777215,
+            })));
+  }
 
   dead() {
-    console.log("[Enemy] dead");
     "infinity" == this.hp ||
       (this.emit(y.CUSTOM_EVENT_DEAD),
       (this.shootFlg = !1),
-      (this.explosion.onComplete = this.explosionComplete.bind(this)),
+      // (this.explosion.onComplete = this.explosionComplete.bind(this)),
+      this.explosion.on("animationcomplete", this.explosionComplete.bind(this)),
       (this.explosion.x =
         this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
       (this.explosion.y =
@@ -2316,7 +2345,11 @@ class Enemy extends y.prototype.constructor {
       AudioManager.play("se_explosion"));
   }
 
-  explosionComplete() {}
+  explosionComplete() {
+    this.explosion.destroy(),
+      this.removeChild(this.explosion),
+      this.emit(y.CUSTOM_EVENT_DEAD_COMPLETE);
+  }
 
   castAdded() {
     // console.log("[Enemy] castAdded", this);
