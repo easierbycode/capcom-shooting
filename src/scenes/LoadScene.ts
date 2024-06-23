@@ -528,9 +528,12 @@ export class AnimatedSprite extends Phaser.GameObjects.Sprite {
     scene: Phaser.Scene,
     frameKeys: string[],
     texture?: string,
-    addToScene?: boolean
+    addToScene?: boolean,
+    repeatNum?: number
   ) {
     if (addToScene === undefined) addToScene = true;
+    if (repeatNum === undefined) repeatNum = -1;
+    if (frameKeys[0] == 'hit0.gif') repeatNum = 0;
 
     super(scene, 0, 0, frameKeys[0]);
 
@@ -552,16 +555,25 @@ export class AnimatedSprite extends Phaser.GameObjects.Sprite {
       ];
     }
 
+    // this.anims.create({
+    //   key: "default",
+    //   frames,
+    //   frameRate: 9,
+    //   repeat: -1,
+    // });
     this.anims.create({
       key: "default",
       frames,
       frameRate: 9,
-      repeat: -1,
+      repeat: repeatNum,
+      hideOnComplete: true,
+      showOnStart: true
     });
 
     if (addToScene) {
       this.scene.time.addEvent({
-        callback: () => this.play("default"),
+        // callback: () => this.play("default"),
+        callback: () => {this.anims && this.play("default")},
       });
 
       scene.add.existing(this);
@@ -597,5 +609,10 @@ export class AnimatedSprite extends Phaser.GameObjects.Sprite {
     } else {
       super.play(key);
     }
+  }
+
+  // DRJ
+  removedFromScene() {
+    this.scene.sys.updateList.remove(this);
   }
 }

@@ -959,7 +959,7 @@ var y = (function (t) {
         window.gameScene,
         o,
         "game_asset",
-        false
+        true
       );
       var n = (i.unit.height + 50) / i.explosion.height;
       n >= 1 && (n = 1),
@@ -1016,7 +1016,7 @@ var y = (function (t) {
         value: function (t) {
           this.scene.time.addEvent({
             callback: () => {
-              if (!this.active) return;
+              if (!this.character.active) return; // DRJ
               this.character.play(),
                 this.shadow.play(),
                 "true" == D.hitAreaFlg &&
@@ -1043,9 +1043,12 @@ var y = (function (t) {
         value: function (t) {
           this.character.destroy(),
             this.shadow.destroy(),
-            this.unit.removeChild(this.shadow),
-            this.unit.removeChild(this.character),
-            this.removeChild(this.unit);
+            // this.unit.removeChild(this.shadow),
+            this.unit.remove(this.shadow, true),
+            // this.unit.removeChild(this.character),
+            this.unit.remove(this.character, true),
+            // this.removeChild(this.unit);
+            this.remove(this.unit, true);
         },
       },
     ]),
@@ -1090,42 +1093,41 @@ class Bullet extends y.prototype.constructor {
   }
 
   onDamage(t, e) {
-    if (!this.deadFlg) {
-      if (
-        ((this.hp -= t),
-        this.hp <= 0
-          ? (this.dead.bind(this)(e), (this.deadFlg = !0))
-          : (TweenMax.to(this.character, 0.1, { tint: 16711680 }),
-            TweenMax.to(this.character, 0.1, { delay: 0.1, tint: 16777215 })),
-        void 0 !== this.explosion)
-      ) {
-        // this.explosion.onComplete = function (t) {
-        this.explosion.on(
-          "animationcomplete",
-          function (t) {
-            this.removeChild(t);
-          }.bind(this, this.explosion)
-        );
-        this.explosion.x =
-          this.unit.x + this.unit.width / 2 - this.explosion.width / 2;
-        this.explosion.y =
-          this.unit.y + this.unit.height / 2 - this.explosion.height / 2 - 10;
-        "infinity" == e && (this.explosion.textures = this.guardTexture);
-        this.addChild(this.explosion);
-        this.explosion.play();
-      }
-
-      if ("infinity" == e) {
-        AudioManager.stop("se_guard"), AudioManager.play("se_guard");
-      } else if (
-        this.name == M.SHOOT_NAME_NORMAL ||
-        this.name == M.SHOOT_NAME_3WAY
-      ) {
-        AudioManager.stop("se_damage"), AudioManager.play("se_damage");
-      } else if (this.name == M.SHOOT_NAME_BIG) {
-        AudioManager.stop("se_damage"), AudioManager.play("se_damage");
-      }
-    }
+    this.deadFlg ||
+      ((this.hp -= t),
+      this.hp <= 0
+        ? (this.dead.bind(this)(e), (this.deadFlg = !0))
+        : (TweenMax.to(this.character, 0.1, {
+            tint: 16711680,
+          }),
+          TweenMax.to(this.character, 0.1, {
+            delay: 0.1,
+            tint: 16777215,
+          }))),
+      void 0 !== this.explosion &&
+        // ((this.explosion.onComplete = function (t) {
+        //   this.removeChild(t);
+        // }.bind(this, this.explosion)),
+        ((this.explosion.on('animationcomplete', function (t) {
+          t.destroy(true); // DRJ
+          // this.removeChild(t);
+          this.remove(t, true);
+          if (this.scene)  this.scene.sys.displayList.remove(t); // DRJ
+          if (this.displayList)  this.displayList.remove(t); // DRJ
+        }.bind(this, this.explosion))),
+        (this.explosion.x =
+          this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
+        (this.explosion.y =
+          this.unit.y + this.unit.height / 2 - this.explosion.height / 2 - 10),
+        "infinity" == e && (this.explosion.textures = this.guardTexture),
+        this.addChild(this.explosion),
+        this.explosion.play()),
+      "infinity" == e
+        ? (AudioManager.stop("se_guard"), AudioManager.play("se_guard"))
+        : this.name == M.SHOOT_NAME_NORMAL || this.name == M.SHOOT_NAME_3WAY
+        ? (AudioManager.stop("se_damage"), AudioManager.play("se_damage"))
+        : this.name == M.SHOOT_NAME_BIG &&
+          (AudioManager.stop("se_damage"), AudioManager.play("se_damage"));
   }
 
   dead(t) {
@@ -1151,6 +1153,19 @@ class Bullet extends y.prototype.constructor {
     this.removeChild(this.explosion),
       this.explosion.destroy(),
       this.emit(y.CUSTOM_EVENT_DEAD_COMPLETE);
+  }
+
+  removedFromScene(t) {
+    if (t.parentContainer) {
+      if (t.explosion.frame.name == 'hit4.gif') {
+        t.explosion.destroy(true); // DRJ
+      }
+
+      t.parentContainer.remove(t, true);
+    }
+    
+    super.castRemoved(t);
+    if (this.scene)  this.scene.sys.displayList.remove(t); // DRJ - remove me?
   }
 }
 
@@ -1682,7 +1697,8 @@ var M = (function (t) {
               this.bulletRemoveComplete.bind(this, t)
             ),
             // this.removeChild(t);
-            this.remove(t, true);
+            // this.remove(t, true);
+            this.scene.sys.displayList.remove(t); // DRJ
         },
       },
       {
@@ -2347,7 +2363,8 @@ class Enemy extends y.prototype.constructor {
 
   explosionComplete() {
     this.explosion.destroy(),
-      this.removeChild(this.explosion),
+      // this.removeChild(this.explosion),
+      this.remove(this.explosion, true),
       this.emit(y.CUSTOM_EVENT_DEAD_COMPLETE);
   }
 
@@ -2355,204 +2372,16 @@ class Enemy extends y.prototype.constructor {
     // console.log("[Enemy] castAdded", this);
   }
 
-  castRemoved() {
-    console.log("[Enemy] castRemoved");
+  castRemoved(t) {
+    if (t.explosion.frame.name == 'explosion06.gif') {
+      t.explosion.destroy(true); // DRJ
+    }
+
+    if (t.parentContainer) t.parentContainer.remove(t, true);
+    super.castRemoved(t);
+    if (this.scene)  this.scene.sys.displayList.remove(t); // DRJ - remove me?
   }
 }
-// var Ye = (function (t) {
-//   function e(t) {
-//     var o;
-//     if (
-//       ((function (t, e) {
-//         if (!(t instanceof e))
-//           throw new TypeError("Cannot call a class as a function");
-//       })(this, e),
-//       "object" !== He(t.texture[0]))
-//     ) {
-//       for (var i = 0; i < t.texture.length; i++) {
-//         ((a = PIXI.Texture.fromFrame(t.texture[i])).baseTexture.scaleMode =
-//           PIXI.SCALE_MODES.NEAREST),
-//           (t.texture[i] = a);
-//       }
-//       if (null !== t.tamaData)
-//         for (var n = 0; n < t.tamaData.texture.length; n++) {
-//           var a;
-//           ((a = PIXI.Texture.fromFrame(
-//             t.tamaData.texture[n]
-//           )).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST),
-//             (t.tamaData.texture[n] = a);
-//         }
-//     }
-//     switch (
-//       (((o = Le(this, Ue(e).call(this, t.texture, t.explosion))).name = t.name),
-//       (o.interval = t.interval),
-//       (o.score = t.score),
-//       (o.hp = t.hp),
-//       (o.speed = t.speed),
-//       (o.cagage = t.cagage),
-//       (o.tamaData = t.tamaData),
-//       (o.itemName = t.itemName),
-//       (o.itemTexture = t.itemTexture),
-//       (o.whitefilter = new PIXI.filters.ColorMatrixFilter()),
-//       (o.whitefilter.matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]),
-//       t.name)
-//     ) {
-//       case "baraA":
-//       case "baraB":
-//         o.shadow.visible = !1;
-//         break;
-//       case "drum":
-//         o.unit.hitArea = new PIXI.Rectangle(
-//           7,
-//           2,
-//           o.unit.width - 14,
-//           o.unit.height - 2
-//         );
-//         break;
-//       case "launchpad":
-//         o.unit.hitArea = new PIXI.Rectangle(
-//           8,
-//           0,
-//           o.unit.width - 16,
-//           o.unit.height
-//         );
-//     }
-//     return (
-//       (o.shadowReverse = t.shadowReverse),
-//       (o.shadowOffsetY = t.shadowOffsetY),
-//       (o.playerBigBulletCnt = 0),
-//       (o.bulletFrameCnt = 0),
-//       (o.shootFlg = !0),
-//       (o.hardleFlg = !1),
-//       o.interval <= -1 && (o.hardleFlg = !0),
-//       (o.deadFlg = !1),
-//       o
-//     );
-//   }
-//   var o, n, a;
-//   return (
-//     (function (t, e) {
-//       if ("function" != typeof e && null !== e)
-//         throw new TypeError(
-//           "Super expression must either be null or a function"
-//         );
-//       (t.prototype = Object.create(e && e.prototype, {
-//         constructor: {
-//           value: t,
-//           writable: !0,
-//           configurable: !0,
-//         },
-//       })),
-//         e && Ve(t, e);
-//     })(e, y),
-//     (o = e),
-//     (n = [
-//       {
-//         key: "loop",
-//         value: function (t) {
-//           switch (
-//             (this.bulletFrameCnt++,
-//             this.shootFlg &&
-//               !this.hardleFlg &&
-//               this.bulletFrameCnt % this.interval == 0 &&
-//               this.shoot(),
-//             (this.unit.y += this.speed),
-//             this.name)
-//           ) {
-//             case "soliderA":
-//               this.unit.y >= i.GAME_HEIGHT / 1.5 &&
-//                 (this.unit.x += 0.005 * (D.player.unit.x - this.unit.x));
-//               break;
-//             case "soliderB":
-//               this.unit.y <= 10 &&
-//                 (this.unit.x >= i.GAME_WIDTH / 2
-//                   ? ((this.unit.x = i.GAME_WIDTH), (this.posName = "right"))
-//                   : ((this.unit.x = -this.unit.width),
-//                     (this.posName = "left"))),
-//                 this.unit.y >= i.GAME_HEIGHT / 3 &&
-//                   ("right" == this.posName
-//                     ? (this.unit.x -= 1)
-//                     : "left" == this.posName && (this.unit.x += 1));
-//           }
-//         },
-//       },
-//       {
-//         key: "shoot",
-//         value: function () {
-//           this.emit(y.CUSTOM_EVENT_TAMA_ADD),
-//             g.stop("se_shoot"),
-//             g.play("se_shoot");
-//         },
-//       },
-//       {
-//         key: "onDamage",
-//         value: function (t) {
-//           "infinity" == this.hp
-//             ? (TweenMax.to(this.character, 0.05, {
-//                 filters: [this.whitefilter],
-//               }),
-//               TweenMax.to(this.character, 0.3, {
-//                 delay: 0.1,
-//                 filters: null,
-//               }))
-//             : this.deadFlg ||
-//               ((this.hp -= t),
-//               this.hp <= 0
-//                 ? (this.dead.bind(this)(), (this.deadFlg = !0))
-//                 : (TweenMax.to(this.character, 0.1, {
-//                     tint: 16711680,
-//                   }),
-//                   TweenMax.to(this.character, 0.1, {
-//                     delay: 0.1,
-//                     tint: 16777215,
-//                   })));
-//         },
-//       },
-//       {
-//         key: "dead",
-//         value: function () {
-//           "infinity" == this.hp ||
-//             (this.emit(y.CUSTOM_EVENT_DEAD),
-//             (this.shootFlg = !1),
-//             (this.explosion.onComplete = this.explosionComplete.bind(this)),
-//             (this.explosion.x =
-//               this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
-//             (this.explosion.y =
-//               this.unit.y + this.unit.height / 2 - this.explosion.height / 2),
-//             this.addChild(this.explosion),
-//             this.explosion.play(),
-//             this.unit.removeChild(this.shadow),
-//             this.unit.removeChild(this.character),
-//             this.removeChild(this.unit),
-//             g.stop("se_damage"),
-//             g.play("se_explosion"));
-//         },
-//       },
-//       {
-//         key: "explosionComplete",
-//         value: function () {
-//           this.explosion.destroy(),
-//             this.removeChild(this.explosion),
-//             this.emit(y.CUSTOM_EVENT_DEAD_COMPLETE);
-//         },
-//       },
-//       {
-//         key: "castAdded",
-//         value: function (t) {
-//           We(Ue(e.prototype), "castAdded", this).call(this);
-//         },
-//       },
-//       {
-//         key: "castRemoved",
-//         value: function (t) {
-//           We(Ue(e.prototype), "castRemoved", this).call(this);
-//         },
-//       },
-//     ]) && Ne(o.prototype, n),
-//     a && Ne(o, a),
-//     e
-//   );
-// })();
 
 // TitleScreen (line 6593)
 class TitleScreen extends Container {

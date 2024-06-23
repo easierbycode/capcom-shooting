@@ -16,6 +16,7 @@ export class Container extends Phaser.GameObjects.Container {
 
     this.scene.time.addEvent({
       callback: () => {
+        if (!this.body) return;  // DRJ
         this.body.setSize(rect.width, rect.height);
         this.body.setOffset(rect.x, rect.y);
       },
@@ -36,7 +37,7 @@ export class Container extends Phaser.GameObjects.Container {
   }
 
   removeChild(gameObject: Phaser.GameObjects.GameObject) {
-    super.remove(gameObject);
+    super.remove(gameObject, true);
   }
 
   addedToScene() {
@@ -44,6 +45,44 @@ export class Container extends Phaser.GameObjects.Container {
   }
 
   castAdded() {}
+
+  removedFromScene(t) {
+    this.castRemoved(t);
+  }
+
+  castRemoved(t) {
+    if (t.parentContainer) {
+      t.parentContainer.remove(t, true);
+    }
+    this.scene.sys.displayList.remove(t);
+    if (this.displayList)  this.displayList.remove(this);
+  }
+
+  addHandler(gameObject) {
+    // gameObject.once(Events.DESTROY, this.remove, this);
+    gameObject.once("destroy", this.remove, this);
+
+    if (this.exclusive) {
+      if (gameObject.parentContainer) {
+        // gameObject.parentContainer.remove(gameObject);
+      }
+
+      // gameObject.removeFromDisplayList();
+      gameObject.parentContainer = this;
+    }
+  }
+
+  removeHandler(gameObject) {
+    // gameObject.off(Events.DESTROY, this.remove);
+    gameObject.off('destroy', this.remove);
+
+    if (this.exclusive) {
+      gameObject.parentContainer = null;
+      // gameObject.addToDisplayList();
+    }
+
+    if (gameObject.displayList)  gameObject.displayList.remove(gameObject); // DRJ
+  }
 }
 
 export class Sprite extends Phaser.GameObjects.Sprite {
