@@ -624,6 +624,7 @@ export default class GameScene extends Scene {
       ) {
         case 0:
           // this.boss = new so(o);
+          this.boss = new Bison(o);
           console.log("boss 0");
           break;
         case 1:
@@ -643,8 +644,8 @@ export default class GameScene extends Scene {
       //     Ze.CUSTOM_EVENT_TAMA_ADD,
       //     this.tamaAdd.bind(this, this.boss)
       //   ),
-      //   this.enemyHitTestList.push(this.boss),
-      //   this.unitContainer.addChild(this.boss);
+        this.enemyHitTestList.push(this.boss),
+        this.unitContainer.addChild(this.boss);
     }
     // (this.timeTxt = new PIXI.Sprite(PIXI.Texture.fromFrame("timeTxt.gif"))),
     //   (this.timeTxt.x = i.GAME_CENTER - this.timeTxt.width),
@@ -2380,6 +2381,465 @@ class Enemy extends y.prototype.constructor {
     if (t.parentContainer) t.parentContainer.remove(t);
     super.castRemoved(t);
     // if (this.scene)  this.scene.sys.displayList.remove(t);
+  }
+}
+
+export class Boss extends y.prototype.constructor {
+  constructor(t) {
+    super(t.anim.idle, t.explosion);
+
+    var o = this;
+
+    (o.name = t.name),
+      (o.unit.name = "boss"),
+      (o.name = t.name),
+      (o.interval = t.interval),
+      (o.score = t.score),
+      (o.hp = t.hp),
+      (o.cagage = t.cagage),
+      (o.animList = t.anim),
+      (o.tamaData = t.tamaData);
+    for (var i = [], n = 0; n < 3; n++)
+      i[n] = PIXI.Texture.fromFrame("boss_dengerous" + n + ".gif");
+    return (
+      (o.dengerousBalloon = new PIXI.extras.AnimatedSprite(
+        window.gameScene,
+        i,
+        "game_asset"
+      )),
+      (o.dengerousBalloon.animationSpeed = 0.2),
+      //   (o.dengerousBalloon.pivot.y = o.dengerousBalloon.height),
+      o.dengerousBalloon.setOrigin(0.5, 1),
+      //   o.dengerousBalloon.scale.set(0),
+      o.dengerousBalloon.setScale(0),
+      (o.shadowReverse = t.shadowReverse),
+      (o.shadowOffsetY = t.shadowOffsetY),
+      (o.shootOn = !0),
+      (o.bulletFrameCnt = 0),
+      (o.moveFlg = !1),
+      (o.deadFlg = !1),
+      (o.gokiFlg = !1),
+      (o.dengerousFlg = !1),
+      (o.unit.hitArea = new PIXI.Rectangle(
+        window.gameScene,
+        5,
+        5,
+        o.unit.width - 10,
+        o.unit.height - 10
+      )),
+      o.tlShoot,
+      o
+    );
+  }
+
+  shoot() {
+    this.emit(y.CUSTOM_EVENT_TAMA_ADD),
+      AudioManager.stop("se_shoot"),
+      AudioManager.play("se_shoot");
+  }
+
+  onTheWorld(t) {
+    t ? this.tlShoot.pause() : this.hp >= 1 && this.tlShoot.resume();
+  }
+
+  onDamage(t) {
+    this.deadFlg ||
+      ((this.hp -= t),
+      this.hp <= 0
+        ? (this.dead.bind(this)(), (this.deadFlg = !0))
+        : (TweenMax.isTweening(this.character) &&
+            TweenMax.killTweensOf(this.character, {
+              tint: !0,
+            }),
+          TweenMax.to(this.character, 0.1, {
+            tint: 16773120,
+          }),
+          TweenMax.to(this.character, 0.1, {
+            delay: 0.2,
+            tint: 16777215,
+          }),
+          this.hp <= D.caDamage &&
+            (this.dengerousFlg ||
+              (this.unit.addChild(this.dengerousBalloon),
+              this.dengerousBalloon.play(),
+              TweenMax.to(this.dengerousBalloon.scale, 1, {
+                x: 1,
+                y: 1,
+                ease: Elastic.easeOut,
+              }),
+              (this.dengerousFlg = !0)))));
+  }
+
+  dead() {
+    if (this.hp <= 0) {
+      this.gokiFlg || this.emit(y.CUSTOM_EVENT_DEAD),
+        this.character.stop(),
+        this.shadow.stop(),
+        (this.explotionCnt = 0),
+        AudioManager.stop("se_damage");
+      for (var t = 0; t < 5; t++)
+        TweenMax.delayedCall(
+          0.25 * t,
+          function () {
+            // var t = new PIXI.extras.AnimatedSprite(this.explosion.textures);
+            var t = new PIXI.extras.AnimatedSprite(
+              window.gameScene,
+              this.explosion.textures,
+              "game_asset"
+            );
+            // t.scale.set(1),
+            t.setScale(1),
+              (t.animationSpeed = 0.15),
+              (t.loop = !1),
+              //   (t.onComplete = this.explosionComplete.bind(this, t)),
+              t.on("animationcomplete", this.explosionComplete.bind(this, t)),
+              (t.x =
+                this.unit.x +
+                Math.random() * this.unit.hitArea.width -
+                t.width / 2),
+              (t.y =
+                this.unit.y +
+                Math.random() * this.unit.hitArea.height -
+                t.height / 2),
+              this.addChild(t),
+              t.play(),
+              AudioManager.play("se_explosion");
+          },
+          null,
+          this
+        );
+      var e = this.unit.x,
+        o = this.unit.y;
+      new TimelineMax()
+        .call(
+          function () {
+            (this.unit.x = e + 4), (this.unit.y = o + -2);
+          },
+          null,
+          this,
+          "+=0.0"
+        )
+        .call(
+          function () {
+            (this.unit.x = e + -3), (this.unit.y = o + 1);
+          },
+          null,
+          this,
+          "+=0.08"
+        )
+        .call(
+          function () {
+            (this.unit.x = e + 2), (this.unit.y = o + -1);
+          },
+          null,
+          this,
+          "+=0.07"
+        )
+        .call(
+          function () {
+            (this.unit.x = e + -2), (this.unit.y = o + 1);
+          },
+          null,
+          this,
+          "+=0.05"
+        )
+        .call(
+          function () {
+            (this.unit.x = e + 1), (this.unit.y = o + 1);
+          },
+          null,
+          this,
+          "+=0.05"
+        )
+        .call(
+          function () {
+            (this.unit.x = e + 0), (this.unit.y = o + 0);
+          },
+          null,
+          this,
+          "+=0.04"
+        )
+        .call(
+          function () {
+            (this.unit.x = e + 4), (this.unit.y = o + -2);
+          },
+          null,
+          this,
+          "+=0.0"
+        )
+        .call(
+          function () {
+            (this.unit.x = e + -3), (this.unit.y = o + 1);
+          },
+          null,
+          this,
+          "+=0.08"
+        )
+        .call(
+          function () {
+            (this.unit.x = e + 2), (this.unit.y = o + -1);
+          },
+          null,
+          this,
+          "+=0.07"
+        )
+        .call(
+          function () {
+            (this.unit.x = e + -2), (this.unit.y = o + 1);
+          },
+          null,
+          this,
+          "+=0.05"
+        )
+        .call(
+          function () {
+            (this.unit.x = e + 1), (this.unit.y = o + 1);
+          },
+          null,
+          this,
+          "+=0.05"
+        )
+        .call(
+          function () {
+            (this.unit.x = e + 0), (this.unit.y = o + 0);
+          },
+          null,
+          this,
+          "+=0.04"
+        )
+        .to(this.unit, 1, {
+          delay: 0.5,
+          alpha: 0,
+        }),
+        this.onDead();
+    }
+  }
+
+  explosionComplete(t) {
+    this.removeChild(t),
+      4 == this.explotionCnt &&
+        (this.unit.removeChild(this.shadow), this.removeChild(this.unit)),
+      this.explotionCnt++;
+  }
+
+  // castAdded(t) {
+  addedToScene(gameObject, scene) {
+    super.castAdded(gameObject);
+    // (this.unit.x = i.GAME_WIDTH / 2 - this.unit.width / 2),
+    //   (this.unit.y = -298),
+    //   (this.moveFlg = !0);
+    this.scene.time.addEvent({
+      callback: () => {
+        (gameObject.unit.x = i.GAME_WIDTH / 2 - gameObject.unit.width / 2),
+          (gameObject.unit.y = -298),
+          (gameObject.moveFlg = !0);
+      },
+    });
+  }
+
+  removedFromScene(t) {
+    super.castRemoved(t);
+  }
+}
+
+export class Bison extends Boss {
+  constructor(t) {
+    super(t);
+    var o = this;
+    if ("object" !== typeof t.anim.idle[0]) {
+      for (var i = 0; i < t.anim.idle.length; i++) {
+        var n = PIXI.Texture.fromFrame(t.anim.idle[i]);
+        t.anim.idle[i] = n;
+      }
+      for (var a = 0; a < t.anim.attack.length; a++) {
+        var s = PIXI.Texture.fromFrame(t.anim.attack[a]);
+        t.anim.attack[a] = s;
+      }
+    }
+    return (
+      (o.unit.hitArea = new PIXI.Rectangle(
+        window.gameScene,
+        10,
+        20,
+        o.unit.width - 20,
+        o.unit.height - 30
+      )),
+      (o.dengerousBalloon.y = 20),
+      o
+    );
+  }
+
+  update() {
+    this.moveFlg
+      ? (this.unit.y >= i.GAME_HEIGHT / 4 &&
+          ((this.unit.y = i.GAME_HEIGHT / 4), (this.moveFlg = !1)),
+        (this.unit.y += 1))
+      : (this.shootOn &&
+          this.bulletFrameCnt % this.interval == 0 &&
+          ((this.shootOn = !1),
+          AudioManager.play("boss_bison_voice_add"),
+          TweenMax.delayedCall(
+            1,
+            function () {
+              this.shootStart();
+            }.bind(this)
+          )),
+        this.bulletFrameCnt++);
+  }
+
+  shootStart() {
+    this.tlShoot && this.tlShoot.kill();
+    var t = i.GAME_HEIGHT / 4,
+      e = i.GAME_HEIGHT - this.unit.height + 30;
+    this.tlShoot = new TimelineMax({
+      delay: 0.5,
+      onComplete: this.shootStart,
+      onCompleteScope: this,
+    });
+    var o = Math.random();
+    if (o >= 0 && 0.6 >= o) {
+      var n =
+        Math.random() > 0.6
+          ? i.GAME_CENTER - this.unit.hitArea.width / 2
+          : (i.GAME_WIDTH - this.unit.hitArea.width) * Math.random();
+      this.tlShoot.to(this.unit, 0.3, {
+        x: n,
+      }),
+        this.tlShoot.addCallback(this.onStraightAttack, "+=0", null, this),
+        this.tlShoot.to(this.unit, 0.5, {
+          y: t - 10,
+        }),
+        this.tlShoot.addCallback(this.onStraightAttackVoice, "+=0", null, this),
+        this.tlShoot.to(this.unit, 0.35, {
+          y: e,
+        }),
+        this.tlShoot.to(this.unit, 0.2, {
+          y: t,
+        }),
+        this.tlShoot.addCallback(this.onIdle, "+=0.05", null, this),
+        this.tlShoot.addCallback(function () {}, "+=0.5", null, this);
+    } else
+      o >= 0.61 && 0.8 >= o
+        ? (this.tlShoot.to(this.unit, 0.4, {
+            x: 0,
+            y: t - 20,
+          }),
+          this.tlShoot.to(
+            this.unit,
+            0.4,
+            {
+              x: 170,
+              y: t + 0,
+            },
+            "+=0.2"
+          ),
+          this.tlShoot.addCallback(this.onFaintVoice, "-=0.2", null, this),
+          this.tlShoot.to(this.unit, 0.4, {
+            x: 0,
+            y: t + 30,
+          }),
+          this.tlShoot.to(this.unit, 0.4, {
+            x: 170,
+            y: t + 60,
+          }),
+          this.tlShoot.addCallback(this.onFaintAttack, "+=0", null, this),
+          this.tlShoot.to(
+            this.unit,
+            0.3,
+            {
+              x: 170,
+              y: e,
+            },
+            "+=0.2"
+          ),
+          this.tlShoot.to(this.unit, 0.2, {
+            y: t,
+          }),
+          this.tlShoot.addCallback(this.onIdle, "+=0.05", null, this),
+          this.tlShoot.addCallback(function () {}, "+=1", null, this))
+        : o >= 0.81 &&
+          1 >= o &&
+          (this.tlShoot.to(this.unit, 0.4, {
+            x: 170,
+            y: t - 20,
+          }),
+          this.tlShoot.to(
+            this.unit,
+            0.4,
+            {
+              x: 0,
+              y: t + 0,
+            },
+            "+=0.2"
+          ),
+          this.tlShoot.addCallback(this.onFaintVoice, "-=0.2", null, this),
+          this.tlShoot.to(this.unit, 0.4, {
+            x: 170,
+            y: t + 30,
+          }),
+          this.tlShoot.to(this.unit, 0.4, {
+            x: 0,
+            y: t + 60,
+          }),
+          this.tlShoot.addCallback(this.onFaintAttack, "+=0", null, this),
+          this.tlShoot.to(
+            this.unit,
+            0.3,
+            {
+              x: 0,
+              y: e,
+            },
+            "+=0.2"
+          ),
+          this.tlShoot.to(this.unit, 0.2, {
+            y: t,
+          }),
+          this.tlShoot.addCallback(this.onIdle, "+=0.05", null, this),
+          this.tlShoot.addCallback(function () {}, "+=1", null, this));
+  }
+
+  onIdle() {
+    (this.character.textures = this.animList.idle),
+      (this.shadow.textures = this.animList.idle),
+      this.character.play(),
+      this.shadow.play();
+  }
+
+  onStraightAttack() {
+    (this.character.textures = this.animList.attack),
+      (this.shadow.textures = this.animList.attack),
+      this.character.play(),
+      this.shadow.play();
+  }
+
+  onStraightAttackVoice() {
+    AudioManager.play("boss_bison_voice_punch");
+  }
+
+  onFaintVoice() {
+    AudioManager.play("boss_bison_voice_faint");
+  }
+
+  onFaintAttack() {
+    (this.character.textures = this.animList.attack),
+      (this.shadow.textures = this.animList.attack),
+      this.character.play(),
+      this.shadow.play(),
+      AudioManager.play("boss_bison_voice_faint_punch");
+  }
+
+  onDead() {
+    this.tlShoot && (this.tlShoot.pause(), this.tlShoot.kill()),
+      AudioManager.play("boss_bison_voice_ko");
+  }
+
+  castAdded(t) {
+    super.castAdded(t), (this.tlShoot = new TimelineMax());
+  }
+
+  castRemoved(t) {
+    super.castRemoved(t),
+      this.tlShoot && (this.tlShoot.pause(), this.tlShoot.kill());
   }
 }
 
