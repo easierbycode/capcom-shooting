@@ -32,6 +32,10 @@ export class Container extends Phaser.GameObjects.Container {
     };
   }
 
+  set tint(t) {
+    this.character && this.character.setTint(t);
+  }
+
   addChild(gameObject: Phaser.GameObjects.GameObject) {
     super.add(gameObject);
   }
