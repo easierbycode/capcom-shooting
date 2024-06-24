@@ -278,14 +278,7 @@ export default class GameScene extends Scene {
           o.unit.y >= i.GAME_HEIGHT) &&
           "boss" !== o.unit.name &&
           // (this.unitContainer.removeChild(o),
-          // (this.unitContainer.remove(o), this.enemyHitTestList.splice(t, 1));
-          (this.unitContainer.remove(o, true),
-          this.enemyHitTestList.splice(t, 1));
-        // DRJ
-        // ((o.active = false),
-        // o.emit(y.CUSTOM_EVENT_DEAD),
-        // this.unitContainer.remove(o, true),
-        // this.enemyHitTestList.splice(t, 1));
+          (this.unitContainer.remove(o), this.enemyHitTestList.splice(t, 1));
       }
 
       // itemHitTestList
@@ -522,8 +515,7 @@ export default class GameScene extends Scene {
         this.enemyRemoveComplete.bind(this)
       ),
       t.off(Enemy.CUSTOM_EVENT_TAMA_ADD, this.tamaAdd.bind(this)),
-      // this.unitContainer.removeChild(t);
-      this.unitContainer.remove(t, true);
+      this.unitContainer.removeChild(t);
   }
 
   bossAdd() {
@@ -679,7 +671,6 @@ export default class GameScene extends Scene {
   }
 
   playerDamage(t) {
-    console.log("[GameScene] playerDamage", t);
     new TimelineMax()
       .call(
         function () {
@@ -1043,12 +1034,9 @@ var y = (function (t) {
         value: function (t) {
           this.character.destroy(),
             this.shadow.destroy(),
-            // this.unit.removeChild(this.shadow),
-            this.unit.remove(this.shadow, true),
-            // this.unit.removeChild(this.character),
-            this.unit.remove(this.character, true),
-            // this.removeChild(this.unit);
-            this.remove(this.unit, true);
+            this.unit.removeChild(this.shadow),
+            this.unit.removeChild(this.character),
+            this.removeChild(this.unit);
         },
       },
     ]),
@@ -1069,14 +1057,14 @@ class Bullet extends y.prototype.constructor {
       (this.cagage = t.cagage),
       (this.guardTexture = t.guard),
       (this.deadFlg = !1),
-      (this.shadow.visible = !1),
-      (this.unit.hitArea = new PIXI.Rectangle(
-        window.gameScene,
-        0,
-        0,
-        this.unit.width,
-        this.unit.height
-      ));
+      (this.shadow.visible = !1); //,
+    // (this.unit.hitArea = new PIXI.Rectangle(
+    //   window.gameScene,
+    //   0,
+    //   0,
+    //   this.unit.width,
+    //   this.unit.height
+    // ));
   }
 
   update() {
@@ -1106,15 +1094,12 @@ class Bullet extends y.prototype.constructor {
           }))),
       void 0 !== this.explosion &&
         // ((this.explosion.onComplete = function (t) {
-        //   this.removeChild(t);
-        // }.bind(this, this.explosion)),
-        ((this.explosion.on('animationcomplete', function (t) {
-          t.destroy(true); // DRJ
-          // this.removeChild(t);
-          this.remove(t, true);
-          if (this.scene)  this.scene.sys.displayList.remove(t); // DRJ
-          if (this.displayList)  this.displayList.remove(t); // DRJ
-        }.bind(this, this.explosion))),
+        (this.explosion.on(
+          "animationcomplete",
+          function (t) {
+            this.removeChild(t);
+          }.bind(this, this.explosion)
+        ),
         (this.explosion.x =
           this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
         (this.explosion.y =
@@ -1155,17 +1140,22 @@ class Bullet extends y.prototype.constructor {
       this.emit(y.CUSTOM_EVENT_DEAD_COMPLETE);
   }
 
+  addedToScene(gameObject, scene) {
+    super.castAdded(gameObject);
+  }
+
   removedFromScene(t) {
     if (t.parentContainer) {
-      if (t.explosion.frame.name == 'hit4.gif') {
-        t.explosion.destroy(true); // DRJ
+      // DRJ::TODO - fix ugly hack
+      if (t.explosion.frame.name == "hit4.gif") {
+        t.explosion.destroy(true);
       }
 
-      t.parentContainer.remove(t, true);
+      t.parentContainer.remove(t);
     }
-    
+
     super.castRemoved(t);
-    if (this.scene)  this.scene.sys.displayList.remove(t); // DRJ - remove me?
+    if (this.scene) this.scene.sys.displayList.remove(t); // DRJ - remove me?
   }
 }
 
@@ -1439,8 +1429,11 @@ var M = (function (t) {
         window.gameScene,
         7,
         20,
-        o.unit.width - 14,
-        o.unit.height - 40
+        // DRJ::TODO - fix this nastiness
+        // o.unit.width - 14,
+        // o.unit.height - 40
+        o.unit.width + 14,
+        o.unit.height + 40
       )),
       (o.character.animationSpeed = 0.35),
       (o.shadow.animationSpeed = 0.35),
@@ -1573,10 +1566,14 @@ var M = (function (t) {
               case 39:
                 this.unitX += 6;
             }
-            this.unitX <= this.unit.input.hitArea.width / 2 &&
-              (this.unitX = this.unit.input.hitArea.width / 2),
-              this.unitX >= i.GAME_WIDTH - this.unit.input.hitArea.width / 2 &&
-                (this.unitX = i.GAME_WIDTH - this.unit.input.hitArea.width / 2);
+            // this.unitX <= this.unit.input.hitArea.width / 2 &&
+            //   (this.unitX = this.unit.input.hitArea.width / 2),
+            //   this.unitX >= i.GAME_WIDTH - this.unit.input.hitArea.width / 2 &&
+            //     (this.unitX = i.GAME_WIDTH - this.unit.input.hitArea.width / 2);
+            this.unitX <= this.unit.hitArea.width / 2 &&
+              (this.unitX = this.unit.hitArea.width / 2),
+              this.unitX >= i.GAME_WIDTH - this.unit.hitArea.width / 2 &&
+                (this.unitX = i.GAME_WIDTH - this.unit.hitArea.width / 2);
           }
           (this.unit.x +=
             0.09 * (this.unitX - (this.unit.x + this.unit.width / 2))),
@@ -1969,9 +1966,9 @@ var M = (function (t) {
       {
         key: "onDamage",
         value: function (t) {
-          console.log("[Player] onDamage");
           if (this.barrierFlg);
           else if (!0 !== this.damageAnimationFlg) {
+            console.log("[Player] onDamage", t);
             if (
               ((this.hp -= t),
               this.hp <= 0 && (this.hp = 0),
@@ -2045,7 +2042,11 @@ var M = (function (t) {
         value: function () {
           this.emit(y.CUSTOM_EVENT_DEAD),
             this.shootStop(),
-            (this.explosion.onComplete = this.explosionComplete.bind(this)),
+            // (this.explosion.onComplete = this.explosionComplete.bind(this)),
+            this.explosion.on(
+              "animationcomplete",
+              this.explosionComplete.bind(this)
+            ),
             (this.explosion.x =
               this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
             (this.explosion.y =
@@ -2363,8 +2364,7 @@ class Enemy extends y.prototype.constructor {
 
   explosionComplete() {
     this.explosion.destroy(),
-      // this.removeChild(this.explosion),
-      this.remove(this.explosion, true),
+      this.removeChild(this.explosion),
       this.emit(y.CUSTOM_EVENT_DEAD_COMPLETE);
   }
 
@@ -2373,13 +2373,13 @@ class Enemy extends y.prototype.constructor {
   }
 
   castRemoved(t) {
-    if (t.explosion.frame.name == 'explosion06.gif') {
-      t.explosion.destroy(true); // DRJ
+    if (t.explosion.frame.name == "explosion06.gif") {
+      t.explosion.destroy(true);
     }
 
-    if (t.parentContainer) t.parentContainer.remove(t, true);
+    if (t.parentContainer) t.parentContainer.remove(t);
     super.castRemoved(t);
-    if (this.scene)  this.scene.sys.displayList.remove(t); // DRJ - remove me?
+    // if (this.scene)  this.scene.sys.displayList.remove(t);
   }
 }
 

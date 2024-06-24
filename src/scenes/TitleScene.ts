@@ -27,8 +27,8 @@ export class Container extends Phaser.GameObjects.Container {
 
   get hitArea() {
     return {
-      height: this.body.height,
-      width: this.body.width,
+      height: (this.body?.height || 0),
+      width: (this.body?.width || 0),
     };
   }
 
