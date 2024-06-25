@@ -6,6 +6,7 @@ export class Container extends Phaser.GameObjects.Container {
   constructor(scene: Phaser.Scene, x, y, children?) {
     // super(scene, x, y, children)
     super(scene || window.gameScene, x, y, children);
+    this.exclusive = false;
     // scene.add.existing(this)
     (scene || window.gameScene).add.existing(this);
   }
@@ -44,48 +45,55 @@ export class Container extends Phaser.GameObjects.Container {
     super.remove(gameObject, true);
   }
 
-  addedToScene() {
-    this.castAdded();
-  }
+  // addedToScene(gameObject, scene) {
+  //   // console.log('[Container] addedtoScene');
+  //   this.castAdded(gameObject);
+  // }
 
-  castAdded() {}
+  // castAdded(t) {
+  //   console.log('[Container] castAdded', t.type);
+  // }
 
-  removedFromScene(t) {
-    this.castRemoved(t);
-  }
+  // removedFromScene(gameObject, scene) {
+  //   // console.log('[Container] removedFromScene');
+  //   this.castRemoved(gameObject);
+  // }
 
-  castRemoved(t) {
-    if (t.parentContainer) {
-      t.parentContainer.remove(t, true);
-    }
-    this.scene.sys.displayList.remove(t);
-    if (this.displayList)  this.displayList.remove(this);
-  }
+  // castRemoved(t) {
+  //   console.log('[Container] castRemoved', t.type);
+  //   if (t.parentContainer) {
+  //     t.parentContainer.remove(t, true);
+  //   }
+  //   this.scene.sys.displayList.remove(t);
+  //   if (this.displayList)  this.displayList.remove(this);
+  // }
 
-  addHandler(gameObject) {
-    // gameObject.once(Events.DESTROY, this.remove, this);
-    gameObject.once("destroy", this.remove, this);
+  // addHandler(gameObject) {
+  // //   // gameObject.once(Events.DESTROY, this.remove, this);
+  //   gameObject.once("destroy", this.remove, this);
 
-    if (this.exclusive) {
-      if (gameObject.parentContainer) {
-        // gameObject.parentContainer.remove(gameObject);
-      }
+  //   if (this.exclusive) {
+  //     if (gameObject.parentContainer) {
+  //       // gameObject.parentContainer.remove(gameObject);
+  //     }
 
-      // gameObject.removeFromDisplayList();
-      gameObject.parentContainer = this;
-    }
-  }
+  //     // gameObject.removeFromDisplayList();
+  //     gameObject.parentContainer = this;
+  //   }
+  // }
 
   removeHandler(gameObject) {
-    // gameObject.off(Events.DESTROY, this.remove);
-    gameObject.off('destroy', this.remove);
+    // // gameObject.off(Events.DESTROY, this.remove);
+    // gameObject.off('destroy', this.remove);
 
-    if (this.exclusive) {
-      gameObject.parentContainer = null;
-      // gameObject.addToDisplayList();
-    }
+    // if (this.exclusive) {
+      // gameObject.parentContainer = null;
+    // //   // gameObject.addToDisplayList();
+    // }
 
+    // DRJ - does work
     if (gameObject.displayList)  gameObject.displayList.remove(gameObject); // DRJ
+    
   }
 }
 

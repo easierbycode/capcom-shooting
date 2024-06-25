@@ -612,7 +612,8 @@ export class AnimatedSprite extends Phaser.GameObjects.Sprite {
   }
 
   // DRJ
-  removedFromScene() {
-    this.scene.sys.updateList.remove(this);
-  }
+  // removedFromScene(gameObject, scene) {
+  //   console.log('[AnimatedSprite] removedFromScene', gameObject);
+  //   this.scene.sys.updateList.remove(this);
+  // }
 }

@@ -794,9 +794,10 @@ var l = (function (t) {
           throw new TypeError("Cannot call a class as a function");
       })(this, e),
       ((o = s(this, r(e).call(this))).id = t),
-      // .on('addedtoscene', fn) is NOT being called
-      o.on("added", o.atCastAdded),
-      o.on("removed", o.atCastRemoved),
+      // o.on("added", o.atCastAdded),
+      o.on("addedtoscene", o.atCastAdded),
+      // o.on("removed", o.atCastRemoved),
+      o.on('removedfromscene', o.atCastRemoved),
       o
     );
   }
@@ -822,22 +823,28 @@ var l = (function (t) {
       {
         key: "atCastAdded",
         value: function (t) {
-          this.parentNode, this.castAdded();
+          console.log('[l] atCastAdded');
+          this.parentNode, this.castAdded(t);
         },
       },
       {
         key: "atCastRemoved",
         value: function (t) {
-          this.parentNode, this.castRemoved();
+          // this.parentNode, this.castRemoved();
+          this.parentNode, this.castRemoved(t);
         },
       },
       {
         key: "castAdded",
-        value: function () {},
+        value: function () {
+          console.log('[l] castAdded');
+        },
       },
       {
         key: "castRemoved",
-        value: function () {},
+        value: function (t) {
+          console.log('[l] castRemoved', t);
+        },
       },
     ]) && a(o.prototype, i),
     n && a(o, n),
@@ -1141,128 +1148,26 @@ class Bullet extends y.prototype.constructor {
       this.emit(y.CUSTOM_EVENT_DEAD_COMPLETE);
   }
 
+  // DRJ - required for shadow
   addedToScene(gameObject, scene) {
     super.castAdded(gameObject);
   }
 
-  removedFromScene(t) {
-    if (t.parentContainer) {
-      // DRJ::TODO - fix ugly hack
-      if (t.explosion.frame.name == "hit4.gif") {
-        t.explosion.destroy(true);
-      }
+  // removedFromScene(t) {
+  //   if (t.parentContainer) {
+  //     // DRJ::TODO - fix ugly hack
+  //     if (t.explosion.frame.name == "hit4.gif") {
+  //       t.explosion.destroy(true);
+  //     }
 
-      t.parentContainer.remove(t);
-    }
+  //     t.parentContainer.remove(t);
+  //   }
 
-    super.castRemoved(t);
-    if (this.scene) this.scene.sys.displayList.remove(t); // DRJ - remove me?
-  }
-}
-
-// var S = function(t) {
-//   function e(t) {
-//       var o;
-//       return function(t, e) {
-//           if (!(t instanceof e))
-//               throw new TypeError("Cannot call a class as a function")
-//       }(this, e),
-//       (o = _(this, x(e).call(this, t.texture, t.explosion))).name = t.name,
-//       o.unit.name = t.name,
-//       o.damage = t.damage,
-//       o.speed = t.speed,
-//       o.hp = t.hp,
-//       o.score = t.score,
-//       o.cagage = t.cagage,
-//       o.guardTexture = t.guard,
-//       o.deadFlg = !1,
-//       o.shadow.visible = !1,
-//       o.unit.hitArea = new PIXI.Rectangle(0,0,o.unit.width,o.unit.height),
-//       o
-//   }
-//   var o, i, n;
-//   return function(t, e) {
-//       if ("function" != typeof e && null !== e)
-//           throw new TypeError("Super expression must either be null or a function");
-//       t.prototype = Object.create(e && e.prototype, {
-//           constructor: {
-//               value: t,
-//               writable: !0,
-//               configurable: !0
-//           }
-//       }),
-//       e && T(t, e)
-//   }(e, y),
-//   o = e,
-//   (i = [{
-//       key: "loop",
-//       value: function() {
-//           this.rotX ? (this.unit.x += this.rotX * this.speed,
-//           this.unit.y += this.rotY * this.speed) : "meka" == this.name ? (this.cont++,
-//           this.cont >= this.start && (this.targetX || (this.targetX = this.player.x),
-//           this.unit.x += .009 * (this.targetX - this.unit.x),
-//           this.unit.y += Math.cos(this.cont / 5) + 2.5 * this.speed)) : this.unit.y += this.speed
-//       }
-//   }, {
-//       key: "onDamage",
-//       value: function(t, e) {
-//           this.deadFlg || (this.hp -= t,
-//           this.hp <= 0 ? (this.dead.bind(this)(e),
-//           this.deadFlg = !0) : (TweenMax.to(this.character, .1, {
-//               tint: 16711680
-//           }),
-//           TweenMax.to(this.character, .1, {
-//               delay: .1,
-//               tint: 16777215
-//           }))),
-//           void 0 !== this.explosion && (this.explosion.onComplete = function(t) {
-//               this.removeChild(t)
-//           }
-//           .bind(this, this.explosion),
-//           this.explosion.x = this.unit.x + this.unit.width / 2 - this.explosion.width / 2,
-//           this.explosion.y = this.unit.y + this.unit.height / 2 - this.explosion.height / 2 - 10,
-//           "infinity" == e && (this.explosion.textures = this.guardTexture),
-//           this.addChild(this.explosion),
-//           this.explosion.play()),
-//           "infinity" == e ? (g.stop("se_guard"),
-//           g.play("se_guard")) : this.name == M.SHOOT_NAME_NORMAL || this.name == M.SHOOT_NAME_3WAY ? (g.stop("se_damage"),
-//           g.play("se_damage")) : this.name == M.SHOOT_NAME_BIG && (g.stop("se_damage"),
-//           g.play("se_damage"))
-//       }
-//   }, {
-//       key: "dead",
-//       value: function(t) {
-//           this.emit(y.CUSTOM_EVENT_DEAD),
-//           this.unit.removeChild(this.character),
-//           this.unit.removeChild(this.shadow),
-//           this.removeChild(this.unit),
-//           void 0 !== this.explosion && (this.explosion.onComplete = this.explosionComplete.bind(this),
-//           this.explosion.x = this.unit.x + this.unit.width / 2 - this.explosion.width / 2,
-//           this.explosion.y = this.unit.y + this.unit.height / 2 - this.explosion.height / 2 - 10,
-//           this.addChild(this.explosion),
-//           this.explosion.play())
-//       }
-//   }, {
-//       key: "explosionComplete",
-//       value: function() {
-//           this.removeChild(this.explosion),
-//           this.explosion.destroy(),
-//           this.emit(y.CUSTOM_EVENT_DEAD_COMPLETE)
-//       }
-//   }, {
-//       key: "castAdded",
-//       value: function(t) {
-//           w(x(e.prototype), "castAdded", this).call(this)
-//       }
-//   }, {
-//       key: "castRemoved",
-//       value: function(t) {
-//           w(x(e.prototype), "castRemoved", this).call(this)
-//       }
-//   }]) && v(o.prototype, i),
-//   n && v(o, n),
-//   e
-// }();
+  //   super.castRemoved(t);
+  //   if (this.scene) this.scene.sys.displayList.remove(t); // DRJ - remove me?
+  // }
+  
+// }
 
 // returns the type of the value passed as an argument, with special handling for Symbol instances
 function C(t) {
@@ -2077,6 +1982,7 @@ var M = (function (t) {
         key: "addedToScene",
         // value: function (t) {
         value: function (gameObject, scene) {
+          console.log('[M] addedToScene', gameObject);
           //   I(O(e.prototype), "castAdded", this).call(this),
           //   gameObject.castAdded.call(gameObject),
           // DRJ - renamed all instances of this to 'gameObject'
@@ -2109,6 +2015,7 @@ var M = (function (t) {
         key: "removedFromScene",
         // value: function (t) {
         value: function (gameObject, scene) {
+          console.log('[M] removedFromScene', gameObject);
           //   I(O(e.prototype), "castRemoved", this).call(this),
           //     this.dragAreaRect.off(
           //       "pointerdown",
@@ -2622,24 +2529,20 @@ export class Boss extends y.prototype.constructor {
       this.explotionCnt++;
   }
 
-  // castAdded(t) {
-  addedToScene(gameObject, scene) {
-    super.castAdded(gameObject);
-    // (this.unit.x = i.GAME_WIDTH / 2 - this.unit.width / 2),
-    //   (this.unit.y = -298),
-    //   (this.moveFlg = !0);
-    this.scene.time.addEvent({
-      callback: () => {
-        (gameObject.unit.x = i.GAME_WIDTH / 2 - gameObject.unit.width / 2),
-          (gameObject.unit.y = -298),
-          (gameObject.moveFlg = !0);
-      },
-    });
-  }
+  castAdded(t) {
+      super.castAdded(t);
+      this.scene.time.addEvent({
+        callback: () => {
+          (this.unit.x = i.GAME_WIDTH / 2 - this.unit.width / 2),
+        (this.unit.y = -298),
+        (this.moveFlg = !0);
+        },
+      });
+    }
 
-  removedFromScene(t) {
-    super.castRemoved(t);
-  }
+  // removedFromScene(t) {
+  //   super.castRemoved(t);
+  // }
 }
 
 export class Bison extends Boss {
@@ -2834,10 +2737,12 @@ export class Bison extends Boss {
   }
 
   castAdded(t) {
+    console.log('[Bison] castAdded');
     super.castAdded(t), (this.tlShoot = new TimelineMax());
   }
 
   castRemoved(t) {
+    console.log('[Bison] castRemoved', t);
     super.castRemoved(t),
       this.tlShoot && (this.tlShoot.pause(), this.tlShoot.kill());
   }
