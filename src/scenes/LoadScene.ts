@@ -600,6 +600,7 @@ export class AnimatedSprite extends Phaser.GameObjects.Sprite {
   }
 
   play(key: string = "default") {
+    if (!this.anims)  return;
     if (this.frameRate || this.repeat !== null) {
       let animConfig: Phaser.Types.Animations.PlayAnimationConfig = { key };
       if (this.frameRate) animConfig.frameRate = this.frameRate;

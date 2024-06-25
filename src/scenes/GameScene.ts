@@ -282,6 +282,31 @@ export default class GameScene extends Scene {
       }
 
       // itemHitTestList
+      for (var u = 0; u < this.itemHitTestList.length; u++) {
+        var c = this.itemHitTestList[u];
+        if (c.y += 1,
+        // B.Manager.interact.hitTestRectangle(c, this.player.unit)) {
+        (this.physics.world.overlap(c, this.player.unit))) {
+            switch (c.name) {
+            case M.SHOOT_SPEED_HIGH:
+                D.shootSpeed = c.name,
+                this.player.shootSpeedChange(D.shootSpeed);
+                break;
+            case M.BARRIER:
+                this.player.barrierStart();
+                break;
+            default:
+                this.player.shootMode !== c.name && (D.shootSpeed = M.SHOOT_SPEED_NORMAL,
+                this.player.shootSpeedChange(D.shootSpeed)),
+                D.shootMode = c.name,
+                this.player.shootModeChange(D.shootMode)
+            }
+            this.unitContainer.removeChild(c),
+            this.itemHitTestList.splice(u, 1)
+        }
+        c.y >= i.GAME_HEIGHT - 10 && (this.unitContainer.removeChild(c),
+        this.itemHitTestList.splice(u, 1))
+    }
       this.stageBg.loop(this.stageBgAmountMove),
         this.enemyWaveFlg &&
           (this.frameCnt % this.waveInterval == 0 && this.enemyWave(),
@@ -562,7 +587,7 @@ export default class GameScene extends Scene {
                 for (var o = 0; o < this.enemyHitTestList.length; o++)
                   this.enemyHitTestList[o] == t &&
                     this.enemyHitTestList.splice(o, 1);
-                g.stop(this.stageBgmName);
+                AudioManager.stop(this.stageBgmName);
                 var n =
                   "boss_" +
                   B.resource.recipe.data.bossData.bossExtra.name +
@@ -570,7 +595,7 @@ export default class GameScene extends Scene {
                 this.stageBgmName = i[n].name;
                 var a = i[n].start,
                   s = i[n].end;
-                g.bgmPlay(this.stageBgmName, a, s);
+                AudioManager.bgmPlay(this.stageBgmName, a, s);
               },
               "+=2.3",
               null,
@@ -1620,7 +1645,7 @@ var M = (function (t) {
               (this.shootData = this.shoot3wayData),
                 (this.shootInterval = this.shootData.interval);
           }
-          g.play("g_powerup_voice");
+          AudioManager.play("g_powerup_voice");
         },
       },
       {
@@ -1633,7 +1658,7 @@ var M = (function (t) {
             case e.SHOOT_SPEED_HIGH:
               this.shootSpeed = 15;
           }
-          g.play("g_powerup_voice");
+          AudioManager.play("g_powerup_voice");
         },
       },
       {
@@ -1681,7 +1706,7 @@ var M = (function (t) {
       {
         key: "barrierStart",
         value: function () {
-          g.play("se_barrier_start"),
+          AudioManager.play("se_barrier_start"),
             (this.barrierFlg = !0),
             (this.barrier.alpha = 0),
             (this.barrier.visible = !0),
@@ -1689,10 +1714,14 @@ var M = (function (t) {
             (this.barrierEffect.y = this.unit.y - 15 + this.barrier.height / 2),
             (this.barrierEffect.alpha = 1),
             (this.barrierEffect.visible = !0),
-            this.barrierEffect.scale.set(0.5),
-            TweenMax.to(this.barrierEffect.scale, 0.4, {
-              x: 1,
-              y: 1,
+            // this.barrierEffect.scale.set(0.5),
+            this.barrierEffect.setScale(0.5),
+            // TweenMax.to(this.barrierEffect.scale, 0.4, {
+            TweenMax.to(this.barrierEffect, 0.4, {
+              // x: 1,
+              scaleX: 1,
+              // y: 1,
+              scaleY: 1,
               ease: Quint.easeOut,
             }),
             TweenMax.to(this.barrierEffect, 0.5, {
@@ -1704,7 +1733,7 @@ var M = (function (t) {
                 (this.barrier.visible = !1),
                   (this.barrierFlg = !1),
                   (this.barrierEffect.visible = !1),
-                  g.play("se_barrier_end");
+                  AudioManager.play("se_barrier_end");
               },
               onCompleteScope: this,
             })),
@@ -1862,7 +1891,7 @@ var M = (function (t) {
             TweenMax.to(this.barrier, 0.2, {
               tint: 16777215,
             }),
-            g.play("se_guard");
+            AudioManager.play("se_guard");
         },
       },
       {
@@ -2830,7 +2859,7 @@ class TitleScreen extends Container {
         // (o = new PIXI.Graphics()).beginFill(0, 1),
         // o.drawRect(0, 0, i.GAME_WIDTH, i.GAME_HEIGHT),
         // this.addChild(o),
-        // g.play("voice_another_fighter"))
+        // AudioManager.play("voice_another_fighter"))
         AudioManager.play("voice_another_fighter"))
       : (n = t); //,
     // (this.gameStartBg.visible = !0),
@@ -2860,7 +2889,7 @@ class TitleScreen extends Container {
     //   }),
     s.addCallback(
       function () {
-        // g.play(["voice_round" + n]);
+        // AudioManager.play(["voice_round" + n]);
         AudioManager.play(["voice_round" + n]);
       },
       "+=0",
@@ -2893,7 +2922,7 @@ class TitleScreen extends Container {
     //   ),
     //   s.addCallback(
     //     function () {
-    //       g.play("voice_fight");
+    //       AudioManager.play("voice_fight");
     //     },
     //     "+=0",
     //     null,
@@ -2995,12 +3024,12 @@ class StageBg extends Container {
   }
 
   akebonofinish() {
-    this.akebonoBg.play();
+    this.akebonoBAudioManager.play();
     this.addChild(this.akebonoBg);
   }
 
   akebonoGokifinish() {
-    this.akebonoBg.play();
+    this.akebonoBAudioManager.play();
     this.addChild(this.akebonoBg);
     this.akebonoTen = new Sprite(
       window.gameScene,
