@@ -314,6 +314,23 @@ export default class GameScene extends Scene {
     }
   }
 
+  stageClear() {
+    // F.dlog("GameScene.stageClear()"),
+    this.theWorldFlg = !0,
+    D.playerHp = this.player.hp,
+    // D.cagage = this.hud.cagageCount,
+    // D.score = this.hud.scoreCount,
+    // this.hud.caBtnDeactive(!0),
+    // D.stageId++,
+    this.sceneSwitch = 1,
+    this.player.shootStop(),
+    TweenMax.delayedCall(2.3, function() {
+        // B.Manager.game.stage.removeChild(B.Scene)
+        this.scene.stop();
+    }
+    .bind(this));
+  }
+
   enemyWave() {
     this.waveCount >= this.stageEnemyPositionList.length
       ? this.bossAdd()
@@ -664,11 +681,11 @@ export default class GameScene extends Scene {
         case 4:
           this.boss = new Wo(o);
       }
-      // this.boss.on(Ze.CUSTOM_EVENT_DEAD, this.bossRemove.bind(this, this.boss)),
-      //   this.boss.on(
-      //     Ze.CUSTOM_EVENT_TAMA_ADD,
-      //     this.tamaAdd.bind(this, this.boss)
-      //   ),
+      this.boss.on(Boss.CUSTOM_EVENT_DEAD, this.bossRemove.bind(this, this.boss)),
+        this.boss.on(
+          Boss.CUSTOM_EVENT_TAMA_ADD,
+          this.tamaAdd.bind(this, this.boss)
+        ),
         this.enemyHitTestList.push(this.boss),
         this.unitContainer.addChild(this.boss);
     }
@@ -695,6 +712,28 @@ export default class GameScene extends Scene {
     //   }),
     (this.enemyWaveFlg = !1), this.stageBg.bossScene();
   }
+
+  bossRemove(t) {
+    this.theWorldFlg = !0; //,
+    // this.hud.comboCount = 1,
+    // this.hud.scoreCount = t.score,
+    // this.hud.cagageCount = t.cagage,
+    // this.hud.scoreView(t),
+    // this.hud.caBtnDeactive();
+    for (var e = 0; e < this.player.bulletList.length; e++) {
+        var o = this.player.bulletList[e];
+        this.player.removeChild(o)
+    }
+    this.enemyHitTestList = [],
+    this.player.bulletList = [],
+    TweenMax.delayedCall(2.5, function() {
+        this.stageClear()
+    }, null, this),
+    // this.hud.caFireFlg ? (this.stageBg.akebonofinish(),
+    // this.title.akebonofinish(),
+    // D.akebonoCnt++) : this.title.stageClear()
+    this.title.stageClear()
+}
 
   playerDamage(t) {
     new TimelineMax()
@@ -2398,9 +2437,12 @@ export class Boss extends y.prototype.constructor {
             (this.dengerousFlg ||
               (this.unit.addChild(this.dengerousBalloon),
               this.dengerousBalloon.play(),
-              TweenMax.to(this.dengerousBalloon.scale, 1, {
-                x: 1,
-                y: 1,
+              // TweenMax.to(this.dengerousBalloon.scale, 1, {
+              TweenMax.to(this.dengerousBalloon, 1, {
+                // x: 1,
+                scaleX: 1,
+                // y: 1,
+                scaleY: 1,
                 ease: Elastic.easeOut,
               }),
               (this.dengerousFlg = !0)))));
@@ -2418,11 +2460,12 @@ export class Boss extends y.prototype.constructor {
           0.25 * t,
           function () {
             // var t = new PIXI.extras.AnimatedSprite(this.explosion.textures);
-            var t = new PIXI.extras.AnimatedSprite(
-              window.gameScene,
-              this.explosion.textures,
-              "game_asset"
-            );
+            // var t = new PIXI.extras.AnimatedSprite(
+            //   window.gameScene,
+            //   this.explosion.textures,
+            //   "game_asset"
+            // );
+            var t = this.explosion;
             // t.scale.set(1),
             t.setScale(1),
               (t.animationSpeed = 0.15),
@@ -2593,8 +2636,10 @@ export class Bison extends Boss {
         window.gameScene,
         10,
         20,
-        o.unit.width - 20,
-        o.unit.height - 30
+        // o.unit.width - 20,
+        // o.unit.height - 30
+        o.unit.width + 20,
+        o.unit.height + 30
       )),
       (o.dengerousBalloon.y = 20),
       o
@@ -2953,6 +2998,14 @@ class TitleScreen extends Container {
     //     },
     //     "-=0.1"
     //   );
+  }
+
+  stageClear() {
+    // this.stageClearBg.visible = !0,
+    // TweenMax.to(this.stageClearBg, .5, {
+    //     delay: .3,
+    //     alpha: 1
+    // })
   }
 }
 
