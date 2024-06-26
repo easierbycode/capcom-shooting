@@ -321,12 +321,14 @@ export default class GameScene extends Scene {
     // D.cagage = this.hud.cagageCount,
     // D.score = this.hud.scoreCount,
     // this.hud.caBtnDeactive(!0),
-    // D.stageId++,
+    D.stageId++,
     this.sceneSwitch = 1,
     this.player.shootStop(),
     TweenMax.delayedCall(2.3, function() {
         // B.Manager.game.stage.removeChild(B.Scene)
-        this.scene.stop();
+        // this.scene.stop();
+        this.nextScene();
+        this.sceneRemoved();
     }
     .bind(this));
   }
@@ -792,6 +794,27 @@ export default class GameScene extends Scene {
   gameStart() {
     // F.dlog("GameScene.gameStart()."),
     (this.enemyWaveFlg = !0), this.player.shootStart();
+  }
+
+  private sceneRemoved() {
+    // F.dlog("GameScene.sceneRemoved() Start."),
+    // Wi(Ui(e.prototype), "sceneRemoved", this).call(this);
+    super.sceneRemoved();
+    for (var t = 0; t < this.children.length; t++) {
+        var o = this.children[t];
+        this.sys.displayList.remove(o);
+    }
+    // for (var i = 0; i < this.bulletContainer.children.length; i++) {
+    //     var n = this.bulletContainer.children[i];
+    //     this.bulletContainer.removeChild(n)
+    // }
+    // AudioManager.stop(this.stageBgmName); //,
+    // 1 === this.sceneSwitch ? B.Scene = new hn : B.Scene = new Be,
+    if (1 === this.sceneSwitch) {
+      this.scene.start("adv-scene")
+    } else { this.scene.start("continue-scene") } //,
+    // B.Manager.game.stage.addChild(B.Scene),
+    // F.dlog("GameScene.sceneRemoved() End.")
   }
 }
 
@@ -2050,7 +2073,6 @@ var M = (function (t) {
         key: "addedToScene",
         // value: function (t) {
         value: function (gameObject, scene) {
-          console.log('[M] addedToScene', gameObject);
           //   I(O(e.prototype), "castAdded", this).call(this),
           //   gameObject.castAdded.call(gameObject),
           // DRJ - renamed all instances of this to 'gameObject'
