@@ -1272,7 +1272,7 @@ export class Bullet extends y.prototype.constructor {
   //   if (this.scene) this.scene.sys.displayList.remove(t); // DRJ - remove me?
   // }
 
-// }
+}
 
 // returns the type of the value passed as an argument, with special handling for Symbol instances
 function C(t) {
