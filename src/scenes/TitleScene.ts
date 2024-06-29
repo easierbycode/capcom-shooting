@@ -1,3 +1,4 @@
+import { Bullet } from "./GameScene";
 import { B, D, g, i } from "./LoadScene";
 import AudioManager from "./audio";
 
@@ -37,7 +38,7 @@ export class Container extends Phaser.GameObjects.Container {
     this.character && this.character.setTint(t);
   }
 
-  addChild(gameObject: Phaser.GameObjects.GameObject) {
+  addChild(gameObject: Phaser.GameObjects.GameObject | Bullet) {
     super.add(gameObject);
   }
 
