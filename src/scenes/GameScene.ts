@@ -1727,8 +1727,7 @@ var M = (function (t) {
               y.CUSTOM_EVENT_DEAD_COMPLETE,
               this.bulletRemoveComplete.bind(this, t)
             ),
-            // this.removeChild(t);
-            // this.remove(t, true);
+            this.removeChild(t);
             this.scene.sys.displayList.remove(t); // DRJ
         },
       },
