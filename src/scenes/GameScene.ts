@@ -119,7 +119,6 @@ export default class GameScene extends Scene {
   }
 
   create() {
-    D.stageId = 4;
     this.title.gameStart(D.stageId),
       this.stageBg.init(D.stageId),
       //   this.hud.caBtnDeactive(),
