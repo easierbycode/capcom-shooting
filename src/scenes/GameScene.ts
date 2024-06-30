@@ -119,6 +119,7 @@ export default class GameScene extends Scene {
   }
 
   create() {
+    D.stageId = 4;
     this.title.gameStart(D.stageId),
       this.stageBg.init(D.stageId),
       //   this.hud.caBtnDeactive(),
@@ -443,6 +444,10 @@ export default class GameScene extends Scene {
             (n.rotY = Math.sin((r * Math.PI) / 180)),
             (n.unit.x = t.unit.x + o),
             (n.unit.y = t.unit.y + 50),
+
+            // DRJ - added
+            n.character.on('animationcomplete', this.enemyRemoveComplete.bind(this, n)),
+
             n.on(Bullet.CUSTOM_EVENT_DEAD, this.enemyRemove.bind(this, n)),
             n.on(
               Bullet.CUSTOM_EVENT_DEAD_COMPLETE,
@@ -467,6 +472,10 @@ export default class GameScene extends Scene {
           (l.rotY = Math.sin((h * Math.PI) / 180)),
           (l.unit.x = t.unit.x + t.unit.width / 2 - 50),
           (l.unit.y = t.unit.y + 45),
+
+          // DRJ - added
+          l.character.on('animationcomplete', this.enemyRemoveComplete.bind(this, l)),
+
           l.on(Bullet.CUSTOM_EVENT_DEAD, this.enemyRemove.bind(this, l)),
           l.on(
             Bullet.CUSTOM_EVENT_DEAD_COMPLETE,
@@ -478,7 +487,7 @@ export default class GameScene extends Scene {
             "animationcomplete",
             function () {
               // l.character.gotoAndPlay(6);
-              l.character.setFrame(6), l.character.play();
+              l.character.play({ startFrame: 6, repeat: 0 });
             }.bind(this)
           ),
           this.unitContainer.addChild(l),
@@ -507,6 +516,10 @@ export default class GameScene extends Scene {
               // y: 1,
               scaleY: 1,
             }),
+
+            // DRJ - added
+            c.character.on('animationcomplete', this.enemyRemoveComplete.bind(this, c)),
+
             c.on(Bullet.CUSTOM_EVENT_DEAD, this.enemyRemove.bind(this, c)),
             c.on(
               Bullet.CUSTOM_EVENT_DEAD_COMPLETE,

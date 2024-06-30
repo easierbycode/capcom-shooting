@@ -534,6 +534,8 @@ export class AnimatedSprite extends Phaser.GameObjects.Sprite {
     if (addToScene === undefined) addToScene = true;
     if (repeatNum === undefined) repeatNum = -1;
     if (frameKeys[0] == 'hit0.gif') repeatNum = 0;
+    // DRJ::TODO - remove hack once fang bullet remove is implemented correctly
+    if (frameKeys[0].includes('fang_tama')) repeatNum = 0;
 
     super(scene, 0, 0, frameKeys[0]);
 
@@ -599,16 +601,26 @@ export class AnimatedSprite extends Phaser.GameObjects.Sprite {
     this.frameRate = 60 * percentOfSixty;
   }
 
-  play(key: string = "default") {
+  play(key: string | Phaser.Types.Animations.PlayAnimationConfig = "default") {
     if (!this.anims)  return;
-    if (this.frameRate || this.repeat !== null) {
-      let animConfig: Phaser.Types.Animations.PlayAnimationConfig = { key };
-      if (this.frameRate) animConfig.frameRate = this.frameRate;
-      if (this.repeat !== null) animConfig.repeat = this.repeat ? -1 : 0;
+    if (typeof key === "string") {
+      if (this.frameRate || this.repeat !== null) {
+        let animConfig: Phaser.Types.Animations.PlayAnimationConfig = { key };
+        if (this.frameRate) animConfig.frameRate = this.frameRate;
+        if (this.repeat !== null) animConfig.repeat = this.repeat ? -1 : 0;
 
-      super.play(animConfig);
+        super.play(animConfig);
+      } else {
+        super.play(key);
+      }
     } else {
-      super.play(key);
+      let animConfig: Phaser.Types.Animations.PlayAnimationConfig = key;
+      animConfig.key = "default";
+      if (this.frameRate) animConfig.frameRate = this.frameRate;
+      if (animConfig.repeat === undefined && this.repeat !== null) {
+        animConfig.repeat = this.repeat ? -1 : 0;
+      }
+      super.play(animConfig);
     }
   }
 
