@@ -3414,9 +3414,10 @@ class Vega extends Boss {
     });
     var a = Math.random();
     a >= 0 && 0.1 >= a
-      ? (this.tlShoot.to(this.vegaBlur, 0.1, {
-          blur: 10,
-        }),
+      // ? (this.tlShoot.to(this.vegaBlur, 0.1, {
+      ? (
+          // blur: 10,
+        // }),
         this.tlShoot.addCallback(this.onWarp, "+=0", null, this),
         this.tlShoot.addCallback(
           function () {
@@ -3426,17 +3427,17 @@ class Vega extends Boss {
           null,
           this
         ),
-        this.tlShoot.to(this.vegaBlur, 0.1, {
-          blur: 0,
-        }),
-        this.tlShoot.to(
-          this.vegaBlur,
-          0.1,
-          {
-            blur: 10,
-          },
-          "+=0.2"
-        ),
+        // this.tlShoot.to(this.vegaBlur, 0.1, {
+        //   blur: 0,
+        // }),
+        // this.tlShoot.to(
+        //   this.vegaBlur,
+        //   0.1,
+        //   {
+        //     blur: 10,
+        //   },
+        //   "+=0.2"
+        // ),
         this.tlShoot.addCallback(
           function () {
             this.unit.x = i.GAME_WIDTH - this.unit.width;
@@ -3445,17 +3446,17 @@ class Vega extends Boss {
           null,
           this
         ),
-        this.tlShoot.to(this.vegaBlur, 0.1, {
-          blur: 0,
-        }),
-        this.tlShoot.to(
-          this.vegaBlur,
-          0.1,
-          {
-            blur: 10,
-          },
-          "+=0.2"
-        ),
+        // this.tlShoot.to(this.vegaBlur, 0.1, {
+        //   blur: 0,
+        // }),
+        // this.tlShoot.to(
+        //   this.vegaBlur,
+        //   0.1,
+        //   {
+        //     blur: 10,
+        //   },
+        //   "+=0.2"
+        // ),
         this.tlShoot.addCallback(
           function () {
             this.unit.x = Math.floor(
@@ -3466,15 +3467,15 @@ class Vega extends Boss {
           null,
           this
         ),
-        this.tlShoot.to(this.vegaBlur, 0.1, {
-          blur: 0,
-        }),
+        // this.tlShoot.to(this.vegaBlur, 0.1, {
+        //   blur: 0,
+        // }),
         this.tlShoot.addCallback(function () {}, "+=0.5", null, this))
       : a >= 0.11 && 0.4 >= a
       ? ((this.tamaData = this.tamaDataA),
-        this.tlShoot.to(this.vegaBlur, 0.1, {
-          blur: 15,
-        }),
+        // this.tlShoot.to(this.vegaBlur, 0.1, {
+        //   blur: 15,
+        // }),
         this.tlShoot.addCallback(
           function () {
             (this.unit.x = 0),
@@ -3485,13 +3486,13 @@ class Vega extends Boss {
           null,
           this
         ),
-        this.tlShoot.to(this.vegaBlur, 0.1, {
-          blur: 0,
-        }),
-        this.tlShoot.to(this.vegaBlur, 0.1, {
-          delay: 0.3,
-          blur: 15,
-        }),
+        // this.tlShoot.to(this.vegaBlur, 0.1, {
+        //   blur: 0,
+        // }),
+        // this.tlShoot.to(this.vegaBlur, 0.1, {
+        //   delay: 0.3,
+        //   blur: 15,
+        // }),
         this.tlShoot.addCallback(
           function () {
             (this.unit.x = 160), this.onPsychoShoot();
@@ -3500,13 +3501,13 @@ class Vega extends Boss {
           null,
           this
         ),
-        this.tlShoot.to(this.vegaBlur, 0.1, {
-          blur: 0,
-        }),
-        this.tlShoot.to(this.vegaBlur, 0.1, {
-          delay: 0.3,
-          blur: 15,
-        }),
+        // this.tlShoot.to(this.vegaBlur, 0.1, {
+        //   blur: 0,
+        // }),
+        // this.tlShoot.to(this.vegaBlur, 0.1, {
+        //   delay: 0.3,
+        //   blur: 15,
+        // }),
         this.tlShoot.addCallback(
           function () {
             (this.unit.x = 16), this.onPsychoShoot();
@@ -3515,13 +3516,13 @@ class Vega extends Boss {
           null,
           this
         ),
-        this.tlShoot.to(this.vegaBlur, 0.1, {
-          blur: 0,
-        }),
-        this.tlShoot.to(this.vegaBlur, 0.1, {
-          delay: 0.3,
-          blur: 15,
-        }),
+        // this.tlShoot.to(this.vegaBlur, 0.1, {
+        //   blur: 0,
+        // }),
+        // this.tlShoot.to(this.vegaBlur, 0.1, {
+        //   delay: 0.3,
+        //   blur: 15,
+        // }),
         this.tlShoot.addCallback(
           function () {
             (this.unit.x = 128),
@@ -3532,13 +3533,13 @@ class Vega extends Boss {
           null,
           this
         ),
-        this.tlShoot.to(this.vegaBlur, 0.1, {
-          blur: 0,
-        }),
-        this.tlShoot.to(this.vegaBlur, 0.1, {
-          delay: 0.3,
-          blur: 15,
-        }),
+        // this.tlShoot.to(this.vegaBlur, 0.1, {
+        //   blur: 0,
+        // }),
+        // this.tlShoot.to(this.vegaBlur, 0.1, {
+        //   delay: 0.3,
+        //   blur: 15,
+        // }),
         this.tlShoot.addCallback(
           function () {
             (this.unit.x = 32), this.onPsychoShoot();
@@ -3547,13 +3548,13 @@ class Vega extends Boss {
           null,
           this
         ),
-        this.tlShoot.to(this.vegaBlur, 0.1, {
-          blur: 0,
-        }),
-        this.tlShoot.to(this.vegaBlur, 0.1, {
-          delay: 0.3,
-          blur: 15,
-        }),
+        // this.tlShoot.to(this.vegaBlur, 0.1, {
+        //   blur: 0,
+        // }),
+        // this.tlShoot.to(this.vegaBlur, 0.1, {
+        //   delay: 0.3,
+        //   blur: 15,
+        // }),
         this.tlShoot.addCallback(
           function () {
             (this.unit.x = 96), this.onPsychoShoot();
@@ -3562,13 +3563,13 @@ class Vega extends Boss {
           null,
           this
         ),
-        this.tlShoot.to(this.vegaBlur, 0.1, {
-          blur: 0,
-        }),
-        this.tlShoot.to(this.vegaBlur, 0.1, {
-          delay: 0.3,
-          blur: 15,
-        }),
+        // this.tlShoot.to(this.vegaBlur, 0.1, {
+        //   blur: 0,
+        // }),
+        // this.tlShoot.to(this.vegaBlur, 0.1, {
+        //   delay: 0.3,
+        //   blur: 15,
+        // }),
         this.tlShoot.addCallback(
           function () {
             (this.unit.x = i.GAME_CENTER - this.unit.width / 2),
@@ -3579,9 +3580,9 @@ class Vega extends Boss {
           null,
           this
         ),
-        this.tlShoot.to(this.vegaBlur, 0.1, {
-          blur: 0,
-        }),
+        // this.tlShoot.to(this.vegaBlur, 0.1, {
+        //   blur: 0,
+        // }),
         this.tlShoot.addCallback(function () {}, "+=4.0", null, this))
       : a >= 0.41 && 0.7 >= a
       ? ((this.tamaData = this.tamaDataB),
@@ -3606,9 +3607,10 @@ class Vega extends Boss {
         this.tlShoot.addCallback(function () {}, "+=3.0", null, this))
       : a >= 0.71 &&
         1 >= a &&
-        (this.tlShoot.to(this.vegaBlur, 0.1, {
-          blur: 15,
-        }),
+        // (this.tlShoot.to(this.vegaBlur, 0.1, {
+        (
+          // blur: 15,
+        // }),
         this.tlShoot.addCallback(
           function () {
             this.unit.x = o;
@@ -3617,9 +3619,9 @@ class Vega extends Boss {
           null,
           this
         ),
-        this.tlShoot.to(this.vegaBlur, 0.1, {
-          blur: 0,
-        }),
+        // this.tlShoot.to(this.vegaBlur, 0.1, {
+        //   blur: 0,
+        // }),
         this.tlShoot.to(this.unit, 0.2, {
           y: n - 20,
         }),
