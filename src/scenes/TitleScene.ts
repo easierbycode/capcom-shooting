@@ -69,32 +69,36 @@ export class Container extends Phaser.GameObjects.Container {
   //   if (this.displayList)  this.displayList.remove(this);
   // }
 
-  // addHandler(gameObject) {
-  // //   // gameObject.once(Events.DESTROY, this.remove, this);
-  //   gameObject.once("destroy", this.remove, this);
+  addHandler(gameObject) {
+    // gameObject.once(Events.DESTROY, this.onChildDestroyed, this);
+    gameObject.once('destroy', this.onChildDestroyed, this);
 
-  //   if (this.exclusive) {
-  //     if (gameObject.parentContainer) {
-  //       // gameObject.parentContainer.remove(gameObject);
-  //     }
+    if (this.exclusive) {
+      if (gameObject.parentContainer) {
+        gameObject.parentContainer.remove(gameObject);
+      }
 
-  //     // gameObject.removeFromDisplayList();
-  //     gameObject.parentContainer = this;
-  //   }
-  // }
+      gameObject.parentContainer = this;
+
+      if (!gameObject.scene) return;  // DRJ
+
+      gameObject.removeFromDisplayList();
+
+      gameObject.addedToScene();
+    }
+  }
 
   removeHandler(gameObject) {
     // // gameObject.off(Events.DESTROY, this.remove);
     // gameObject.off('destroy', this.remove);
 
     // if (this.exclusive) {
-      // gameObject.parentContainer = null;
+    // gameObject.parentContainer = null;
     // //   // gameObject.addToDisplayList();
     // }
 
     // DRJ - does work
-    if (gameObject.displayList)  gameObject.displayList.remove(gameObject); // DRJ
-    
+    if (gameObject.displayList) gameObject.displayList.remove(gameObject); // DRJ
   }
 }
 
@@ -164,7 +168,7 @@ class StartBtn extends Container {
     (this.img.scaleX = 1), (this.img.scaleY = 1);
   }
 
-  onDown() {}
+  onDown() { }
 
   onUp() {
     TweenMax.killTweensOf(this.flashCover),
@@ -307,7 +311,7 @@ export default class TitleScene extends Scene {
       (this.fadeOutBlack.alpha = 0);
 
     var e = new TimelineMax({
-      onComplete: function () {},
+      onComplete: function () { },
       onCompleteScope: this,
     });
     e.to(
@@ -320,7 +324,7 @@ export default class TitleScene extends Scene {
       },
       "+=0.0"
     ),
-      e.addCallback(function () {}, "-=0.1", null, this),
+      e.addCallback(function () { }, "-=0.1", null, this),
       e.to(
         this.logo,
         0.9,

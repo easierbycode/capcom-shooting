@@ -1051,6 +1051,19 @@ function m(t, e) {
     })(t, e);
 }
 
+function isPlayerBullet(characterName) {
+
+  // if no player return default value
+  if (!window.gameScene.player)  return true;
+
+  let playerBulletNames = [
+    ...window.gameScene.player.shootData.explosion,
+    ...window.gameScene.player.shootData.texture
+  ];
+
+  return (playerBulletNames.includes(characterName));
+}
+
 var y = (function (t) {
   function e(t, o) {
     var i;
@@ -1069,9 +1082,12 @@ var y = (function (t) {
         t,
         "game_asset"
       )),
+      // DRJ - if player bullet, or it's explosion, set [Bullet] Container.exclusive to false
+      (i.exclusive = isPlayerBullet(i.character.frame.name) ? false : true),
       (i.character.animationSpeed = 0.1),
       // i.unit = new PIXI.Container,
       (i.unit = new Container(window.gameScene)),
+      (i.unit.exclusive = true),
       (i.unit.interactive = !0),
       (i.unit.name = "unit"),
       // i.unit.hitArea = new PIXI.Rectangle(0,0,i.character.width,i.character.height),
@@ -1326,6 +1342,7 @@ function C(t) {
         })(t);
 }
 
+// ensure e is an instance of t, not a constructor fn
 function k(t, e) {
   return !e || ("object" !== C(e) && "function" != typeof e)
     ? (function (t) {
