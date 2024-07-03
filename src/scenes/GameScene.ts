@@ -97,7 +97,7 @@ export default class GameScene extends Scene {
       (this.title = new TitleScreen()),
       // this.title.on(Oi.EVENT_START, this.gameStart.bind(Yi(Yi(o)))),
       this.title.on(TitleScreen.EVENT_START, this.gameStart.bind(this)),
-      // this.addChildAt(this.title, 4),
+      this.addChildAt(this.title, 4),
       // Set up cutin container
       // this.cutinCont = new Hi,
       // Set up ca line
@@ -4235,43 +4235,51 @@ export class Fang extends Boss {
 }
 
 // TitleScreen (line 6593)
-class TitleScreen extends Container {
+// class TitleScreen extends Container {
+class TitleScreen extends Phaser.GameObjects.Layer {
   constructor(scene?, x?, y?) {
     scene = scene || window.gameScene;
     x = x || 0;
     y = y || 0;
-    super(scene, x, y);
+    super(scene);
 
     var t = this;
     // (t.interactive = !1),
     // (t.buttonMode = !1),
-    // (t.gameStartBg = new PIXI.Graphics()),
+    (t.gameStartBg = new PIXI.Graphics(window.gameScene)),
     // t.gameStartBg.beginFill(16777215, 0.2),
+    t.gameStartBg.fill(16777215, 0.2),
     // t.gameStartBg.drawRect(0, 0, i.GAME_WIDTH, i.GAME_HEIGHT),
-    // (t.gameStartBg.visible = !1),
-    // (t.gameStartBg.alpha = 0),
+    t.gameStartBg.fillRect(0, 0, i.GAME_WIDTH, i.GAME_HEIGHT),
+    (t.gameStartBg.visible = !1),
+    (t.gameStartBg.alpha = 0),
     t.stageNumList = [];
-    // for (var o = 0; o < 4; o++) {
-    //   var n = PIXI.Texture.fromFrame("stageNum" + String(o + 1) + ".gif");
-    //   (n.scaleMode = PIXI.SCALE_MODES.NEAREST), (t.stageNumList[o] = n);
-    // }
+    for (var o = 0; o < 4; o++) {
+      var n = PIXI.Texture.fromFrame("stageNum" + String(o + 1) + ".gif");
+      // (n.scaleMode = PIXI.SCALE_MODES.NEAREST), (t.stageNumList[o] = n);
+      (t.stageNumList[o] = n);
+    }
     // (t.stageNum = new PIXI.Sprite()),
+    (t.stageNum = new Sprite(scene, 0, i.GAME_HEIGHT / 2 - 20, 'game_ui', '__BASE')),
     //   (t.stageNum.x = 0),
     //   (t.stageNum.y = i.GAME_HEIGHT / 2 - 20),
-    //   (t.stageNum.visible = !1);
-    // var a = PIXI.Texture.fromFrame("stageFight.gif");
+      (t.stageNum.visible = !1);
+    var a = PIXI.Texture.fromFrame("stageFight.gif");
     return (
       // (a.scaleMode = PIXI.SCALE_MODES.NEAREST),
-      // (t.stageFight = new PIXI.Sprite(a)),
-      // (t.stageFight.x = t.stageFight.width / 2),
-      // (t.stageFight.y = i.GAME_HEIGHT / 2 + t.stageFight.height / 2 - 20),
-      // (t.stageFight.visible = !1),
+      (t.stageFight = new Sprite(scene, 0, 0, 'game_ui', a)),
+      (t.stageFight.x = t.stageFight.width / 2),
+      (t.stageFight.y = i.GAME_HEIGHT / 2 + t.stageFight.height / 2 - 20),
+      (t.stageFight.visible = !1),
       // t.stageFight.anchor.set(0.5),
-      // (t.stageClearBg = new PIXI.Graphics()),
+      t.stageFight.setOrigin(0.5),
+      (t.stageClearBg = new PIXI.Graphics(scene)),
       // t.stageClearBg.beginFill(16777215, 0.4),
+      t.stageClearBg.fill(16777215, 0.4),
       // t.stageClearBg.drawRect(0, 0, i.GAME_WIDTH, i.GAME_HEIGHT),
-      // (t.stageClearBg.visible = !1),
-      // (t.stageClearBg.alpha = 0),
+      t.stageClearBg.fillRect(0, 0, i.GAME_WIDTH, i.GAME_HEIGHT),
+      (t.stageClearBg.visible = !1),
+      (t.stageClearBg.alpha = 0),
       // (t.stageClearText = new PIXI.Sprite(
       //   PIXI.Texture.fromFrame("stageclear.gif")
       // )),
@@ -4330,102 +4338,110 @@ class TitleScreen extends Container {
       ? ((n = 3),
         (a = !0),
         // (o = new PIXI.Graphics()).beginFill(0, 1),
+        (o = new PIXI.Graphics(window.gameScene)).fill(0, 1),
         // o.drawRect(0, 0, i.GAME_WIDTH, i.GAME_HEIGHT),
-        // this.addChild(o),
-        // AudioManager.play("voice_another_fighter"))
+        o.fillRect(0, 0, i.GAME_WIDTH, i.GAME_HEIGHT),
+        this.addChild(o),
         AudioManager.play("voice_another_fighter"))
       : (n = t); //,
-    // (this.gameStartBg.visible = !0),
+    (this.gameStartBg.visible = !0),
     // (this.stageNum.texture = this.stageNumList[n]),
-    // (this.stageNum.visible = !0),
-    // (this.stageNum.alpha = 0),
-    // (this.stageFight.visible = !0),
-    // (this.stageFight.alpha = 0),
+    (this.stageNum.setTexture('game_ui', this.stageNumList[n])),
+    (this.stageNum.visible = !0),
+    (this.stageNum.alpha = 0),
+    (this.stageFight.visible = !0),
+    (this.stageFight.alpha = 0),
     // this.stageFight.scale.set(1.2);
+    this.stageFight.setScale(1.2);
     var s = new TimelineMax({
       onComplete: function () {
         // (this.gameStartBg.visible = !1), this.emit(e.EVENT_START);
-        this.emit(TitleScreen.EVENT_START);
+        (this.gameStartBg.visible = !1), this.emit(TitleScreen.EVENT_START);
       }.bind(this),
     });
-    // a &&
-    //   s.to(
-    //     o,
-    //     0.3,
-    //     {
-    //       alpha: 0,
-    //     },
-    //     "+=3"
-    //   ),
-    //   s.to(this.gameStartBg, 0.3, {
-    //     alpha: 1,
-    //   }),
+    a &&
+      s.to(
+        o,
+        0.3,
+        {
+          alpha: 0,
+        },
+        "+=3"
+      ),
+      s.to(this.gameStartBg, 0.3, {
+        alpha: 1,
+      }),
     s.addCallback(
       function () {
-        // AudioManager.play(["voice_round" + n]);
         AudioManager.play(["voice_round" + n]);
       },
       "+=0",
       null,
       this
-    ); //,
-    //   s.to(this.stageNum, 0.3, {
-    //     alpha: 1,
-    //   }),
-    //   s.to(this.stageNum, 0.1, {
-    //     delay: 1,
-    //     alpha: 0,
-    //   }),
-    //   s.to(
-    //     this.stageFight,
-    //     0.2,
-    //     {
-    //       alpha: 1,
-    //     },
-    //     "-=0.1"
-    //   ),
-    //   s.to(
-    //     this.stageFight.scale,
-    //     0.2,
-    //     {
-    //       x: 1,
-    //       y: 1,
-    //     },
-    //     "-=0.2"
-    //   ),
-    //   s.addCallback(
-    //     function () {
-    //       AudioManager.play("voice_fight");
-    //     },
-    //     "+=0",
-    //     null,
-    //     this
-    //   ),
-    //   s.to(
-    //     this.stageFight.scale,
-    //     0.2,
-    //     {
-    //       x: 1.5,
-    //       y: 1.5,
-    //     },
-    //     "+=0.4"
-    //   ),
-    //   s.to(
-    //     this.stageFight,
-    //     0.2,
-    //     {
-    //       alpha: 0,
-    //     },
-    //     "-=0.2"
-    //   ),
-    //   s.to(
-    //     this.gameStartBg,
-    //     0.2,
-    //     {
-    //       alpha: 0,
-    //     },
-    //     "-=0.1"
-    //   );
+    ),
+      s.to(this.stageNum, 0.3, {
+        alpha: 1,
+      }),
+      s.to(this.stageNum, 0.1, {
+        delay: 1,
+        alpha: 0,
+      }),
+      s.to(
+        this.stageFight,
+        0.2,
+        {
+          alpha: 1,
+        },
+        "-=0.1"
+      ),
+      s.to(
+        // this.stageFight.scale,
+        this.stageFight,
+        0.2,
+        {
+          // x: 1,
+          scaleX: 1,
+          // y: 1,
+          scaleY: 1,
+        },
+        "-=0.2"
+      ),
+      s.addCallback(
+        function () {
+          AudioManager.play("voice_fight");
+        },
+        "+=0",
+        null,
+        this
+      ),
+      s.to(
+        // this.stageFight.scale,
+        this.stageFight,
+        0.2,
+        {
+          // x: 1.5,
+          scaleX: 1.5,
+          // y: 1.5,
+          scaleY: 1.5,
+        },
+        "+=0.4"
+      ),
+      s.to(
+        this.stageFight,
+        0.2,
+        {
+          alpha: 0,
+        },
+        "-=0.2"
+      ),
+      s.to(
+        this.gameStartBg,
+        0.2,
+        {
+          alpha: 0,
+        },
+        "-=0.1"
+      );
   }
 
   akebonofinish() {
@@ -4462,11 +4478,11 @@ class TitleScreen extends Container {
   }
 
   stageClear() {
-    // this.stageClearBg.visible = !0,
-    // TweenMax.to(this.stageClearBg, .5, {
-    //     delay: .3,
-    //     alpha: 1
-    // })
+    this.stageClearBg.visible = !0,
+    TweenMax.to(this.stageClearBg, .5, {
+        delay: .3,
+        alpha: 1
+    })
   }
 }
 
