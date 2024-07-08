@@ -1266,9 +1266,11 @@ export class Bullet extends y.prototype.constructor {
           }.bind(this, this.explosion)
         ),
         (this.explosion.x =
-          this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
+          // this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
+          this.unit.x + this.unit.width / 2 - this.explosion.displayWidth / 2),
         (this.explosion.y =
-          this.unit.y + this.unit.height / 2 - this.explosion.height / 2 - 10),
+          // this.unit.y + this.unit.height / 2 - this.explosion.height / 2 - 10),
+          this.unit.y + this.unit.height / 2 - this.explosion.displayHeight / 2 - 10),
         "infinity" == e && (this.explosion.textures = this.guardTexture),
         this.addChild(this.explosion),
         this.explosion.play()),
@@ -1292,9 +1294,11 @@ export class Bullet extends y.prototype.constructor {
           this.explosionComplete.bind(this)
         ),
         (this.explosion.x =
-          this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
+          // this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
+          this.unit.x + this.unit.width / 2 - this.explosion.displayWidth / 2),
         (this.explosion.y =
-          this.unit.y + this.unit.height / 2 - this.explosion.height / 2 - 10),
+          // this.unit.y + this.unit.height / 2 - this.explosion.height / 2 - 10),
+          this.unit.y + this.unit.height / 2 - this.explosion.displayHeight / 2 - 10),
         this.addChild(this.explosion),
         this.explosion.play());
   }
@@ -2115,9 +2119,11 @@ var M = (function (t) {
               this.explosionComplete.bind(this)
             ),
             (this.explosion.x =
-              this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
+              // this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
+              this.unit.x + this.unit.width / 2 - this.explosion.displayWidth / 2),
             (this.explosion.y =
-              this.unit.y + this.unit.height / 2 - this.explosion.height / 2),
+              // this.unit.y + this.unit.height / 2 - this.explosion.height / 2),
+              this.unit.y + this.unit.height / 2 - this.explosion.displayHeight / 2),
             this.addChild(this.explosion),
             this.explosion.play(),
             this.removeChild(this.unit),
@@ -2420,11 +2426,9 @@ class Enemy extends y.prototype.constructor {
       (this.explosion.x =
         // this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
         this.unit.x + this.unit.body.width / 2 - this.explosion.displayWidth / 2),
-        // this.unit.x + this.unit.body.width / 2 - this.explosion.width / 2),
       (this.explosion.y =
         // this.unit.y + this.unit.height / 2 - this.explosion.height / 2),
         this.unit.y + this.unit.body.height / 2 - this.explosion.displayHeight / 2),
-        // this.unit.y + this.unit.body.height / 2 - this.explosion.height / 2),
       this.addChild(this.explosion),
       this.explosion.play(),
       this.unit.removeChild(this.shadow),
