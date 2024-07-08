@@ -1118,7 +1118,6 @@ var y = (function (t) {
         true
       );
       var n = (i.unit.height + 50) / i.explosion.height;
-      // debugger;
       n >= 1 && (n = 1),
         // i.explosion.scale.set(n + .2),
         i.explosion.setScale(n + 0.2),
@@ -2413,7 +2412,6 @@ class Enemy extends y.prototype.constructor {
   }
 
   dead() {
-    debugger;
     "infinity" == this.hp ||
       (this.emit(y.CUSTOM_EVENT_DEAD),
       (this.shootFlg = !1),
@@ -2437,7 +2435,6 @@ class Enemy extends y.prototype.constructor {
   }
 
   explosionComplete() {
-    // debugger;
     this.explosion.destroy(),
       this.removeChild(this.explosion),
       this.emit(y.CUSTOM_EVENT_DEAD_COMPLETE);
