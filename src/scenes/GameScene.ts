@@ -1118,6 +1118,7 @@ var y = (function (t) {
         true
       );
       var n = (i.unit.height + 50) / i.explosion.height;
+      // debugger;
       n >= 1 && (n = 1),
         // i.explosion.scale.set(n + .2),
         i.explosion.setScale(n + 0.2),
@@ -2412,15 +2413,20 @@ class Enemy extends y.prototype.constructor {
   }
 
   dead() {
+    debugger;
     "infinity" == this.hp ||
       (this.emit(y.CUSTOM_EVENT_DEAD),
       (this.shootFlg = !1),
       // (this.explosion.onComplete = this.explosionComplete.bind(this)),
       this.explosion.on("animationcomplete", this.explosionComplete.bind(this)),
       (this.explosion.x =
-        this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
+        // this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
+        this.unit.x + this.unit.body.width / 2 - this.explosion.displayWidth / 2),
+        // this.unit.x + this.unit.body.width / 2 - this.explosion.width / 2),
       (this.explosion.y =
-        this.unit.y + this.unit.height / 2 - this.explosion.height / 2),
+        // this.unit.y + this.unit.height / 2 - this.explosion.height / 2),
+        this.unit.y + this.unit.body.height / 2 - this.explosion.displayHeight / 2),
+        // this.unit.y + this.unit.body.height / 2 - this.explosion.height / 2),
       this.addChild(this.explosion),
       this.explosion.play(),
       this.unit.removeChild(this.shadow),
@@ -2431,6 +2437,7 @@ class Enemy extends y.prototype.constructor {
   }
 
   explosionComplete() {
+    // debugger;
     this.explosion.destroy(),
       this.removeChild(this.explosion),
       this.emit(y.CUSTOM_EVENT_DEAD_COMPLETE);
