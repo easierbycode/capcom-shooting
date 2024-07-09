@@ -898,6 +898,8 @@ function a(t, e) {
   }
 }
 
+// ensure e is an instance of t, not a constructor fn
+// returns e if true
 function s(t, e) {
   return !e || ("object" !== n(e) && "function" != typeof e)
     ? (function (t) {
@@ -1021,6 +1023,7 @@ function c(t, e) {
     : e;
 }
 
+// returns Object.getPrototypeOf(t)
 function f(t) {
   return (f = Object.setPrototypeOf
     ? Object.getPrototypeOf
@@ -1496,11 +1499,17 @@ var M = (function (t) {
         window.gameScene,
         7,
         20,
+        
         // DRJ::TODO - fix this nastiness
+        // o.unit.body.width/height incorrect till next tick
+        // o.unit.width/height unset till next tick
         // o.unit.width - 14,
         // o.unit.height - 40
-        o.unit.width + 14,
-        o.unit.height + 40
+        o.unit.input.hitArea.width - 14,
+        o.unit.input.hitArea.height - 40
+        
+        // o.unit.width + 14,
+        // o.unit.height + 40
       )),
       (o.character.animationSpeed = 0.35),
       (o.shadow.animationSpeed = 0.35),
