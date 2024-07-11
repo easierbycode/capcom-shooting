@@ -2764,10 +2764,15 @@ export class Bison extends Boss {
         window.gameScene,
         10,
         20,
+
+        // DRJ - should this implementation exist elsewhere? 
+        // i.e. Boss instances
+        //
         // o.unit.width - 20,
         // o.unit.height - 30
-        o.unit.width + 20,
-        o.unit.height + 30
+        o.character.width - 20,
+        o.character.height - 30
+        
       )),
       (o.dengerousBalloon.y = 20),
       o
