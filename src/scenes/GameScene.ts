@@ -4145,8 +4145,10 @@ export class Fang extends Boss {
         window.gameScene,
         35,
         55,
-        o.unit.width + 70,
-        o.unit.height + 70
+        // o.unit.width - 70,
+        // o.unit.height - 70
+        o.character.width - 70,
+        o.character.height - 70
       )),
       (o.dengerousBalloon.x = 70),
       (o.dengerousBalloon.y = 40),
@@ -4284,8 +4286,9 @@ export class Fang extends Boss {
 }
 
 // TitleScreen (line 6593)
-// class TitleScreen extends Container {
-class TitleScreen extends Phaser.GameObjects.Layer {
+class TitleScreen extends Container {
+// DRJ - layer does not have addChild method
+// class TitleScreen extends Phaser.GameObjects.Layer {
   constructor(scene?, x?, y?) {
     scene = scene || window.gameScene;
     x = x || 0;
