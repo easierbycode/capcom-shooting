@@ -3803,8 +3803,10 @@ export class Goki extends Boss {
         window.gameScene,
         15,
         20,
-        o.unit.width + 30,
-        o.unit.height + 24
+        // o.unit.width - 30,
+        // o.unit.height - 24
+        o.character.width - 30,
+        o.character.height - 24
       )),
       (o.dengerousBalloon.x = 5),
       (o.dengerousBalloon.y = 20),
