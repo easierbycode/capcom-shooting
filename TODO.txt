@@ -1,0 +1,253 @@
+
+- what calls addToDisplayList?
+
+scene.add.existing
+    this.displayList.add(child);
+
+Container.removeHandler
+    if (this.exclusive)
+        gameObject.addToDisplayList();
+
+
+
+- top level container must be added to scene displayList, children will render
+  - [yes], if child displayList is null, it will render
+  - AnimatedSprite should not need scene.add.existing, if it is in a Container
+    - no AnimatedSprite addToScene?
+
+
+    - are any AnimatedSprite instances being created outside a Container?
+      - [yes], explosion
+
+    Enemy               - in Container (gameScene.unitContainer)
+    Item                - in Container (gameScene.unitContainer)
+    dengerousBalloon    - in Container (Boss.unit)
+    Bullet.explosion    - in Container (Bullet)
+      - explosion.destroy listener calls Container.onChildDestroyed
+        - which calls Remove from Container.list
+        (when added to any list, i.e. character/shadow are added to unit, subscriber is
+        created which calls unit.onChildDestroyed to remove it from unit.list on destroy)
+          * need to remove subscriber, or remove calls to unit.remove(character || shadow)
+        - if exclusive, also calls gameObject.removedFromScene
+          - does gameObject.removedFromScene add to displayList?
+
+
+    scene.displayList - expected children
+    =====================================
+    - gameScene.unitContainer
+    - StageBg [Container]
+    - explosion [AnimatedSprite] - Enemy, Player, Boss
+
+
+
+
+
+
+
+
+
+
+
+
+
+TODO
+====
+
+- Player/M - exclusive, would set unit.parentContainer = Player, but would also 
+call unit.removeFromDisplayList() and unit.addedToScene()
+
+- Player.explosion repeat -1, should be 0 (explosion00-06.gif)
+
+- in Container.addHandler,
+  - if gameObject in player.shootData.explosion || player.shootData.texture, list
+  containing Bullet shadow/character || AnimatedSprite explosion should be set to exclusive = false
+
+- are any AnimatedSprite instances still in scene.updateList after removing from displayList?
+
+- switch from Phaser.GameObjects.DisplayList -> Phaser.GameObjects.Layer
+  - addToDisplayList:
+    - [displayList] can be {( Phaser.GameObjects.DisplayList || Phaser.GameObjects.Layer )}
+
+
+
+NOTES
+=====
+
+exclusive == false will prevent children from receiving any kind of input event or have
+their physics bodies work by default 
+
+
+
+/**
+    * Adds this Game Object to the given Display List.
+    *
+    * If no Display List is specified, it will default to the Display List owned by the Scene to which
+    * this Game Object belongs.
+    *
+    * A Game Object can only exist on one Display List at any given time, but may move freely between them.
+    *
+    * If this Game Object is already on another Display List when this method is called, it will first
+    * be removed from it, before being added to the new list.
+    *
+    * You can query which list it is on by looking at the `Phaser.GameObjects.GameObject#displayList` property.
+    *
+    * If a Game Object isn't on any display list, it will not be rendered. If you just wish to temporarly
+    * disable it from rendering, consider using the `setVisible` method, instead.
+    *
+    * @method Phaser.GameObjects.GameObject#addToDisplayList
+    * @fires Phaser.Scenes.Events#ADDED_TO_SCENE
+    * @fires Phaser.GameObjects.Events#ADDED_TO_SCENE
+    * @since 3.53.0
+    *
+    * @param {(Phaser.GameObjects.DisplayList|Phaser.GameObjects.Layer)} [displayList] - The Display List to add to. Defaults to the Scene Display List.
+    *
+    * @return {this} This Game Object.
+    */
+addToDisplayList: function (displayList)
+{
+    if (displayList === undefined) { displayList = this.scene.sys.displayList; }
+
+    if (this.displayList && this.displayList !== displayList)
+    {
+        this.removeFromDisplayList();
+    }
+
+    //  Don't repeat if it's already on this list
+    if (!displayList.exists(this))
+    {
+        this.displayList = displayList;
+
+        displayList.add(this, true);
+
+        displayList.queueDepthSort();
+
+        this.emit(Events.ADDED_TO_SCENE, this, this.scene);
+
+        displayList.events.emit(SceneEvents.ADDED_TO_SCENE, this, this.scene);
+    }
+
+    return this;
+}
+
+
+* The following code shows how to create a global repeating animation. The animation will be created
+* from all of the frames within the sprite sheet that was loaded with the key 'muybridge':
+*
+* ```javascript
+* var config = {
+*     key: 'run',
+*     frames: 'muybridge',
+*     frameRate: 15,
+*     repeat: -1
+* };
+
+
+
+/**
+    * Internal method called from `List.addCallback`.
+    *
+    * @method Phaser.GameObjects.DisplayList#addChildCallback
+    * @private
+    * @fires Phaser.Scenes.Events#ADDED_TO_SCENE
+    * @fires Phaser.GameObjects.Events#ADDED_TO_SCENE
+    * @since 3.50.0
+    *
+    * @param {Phaser.GameObjects.GameObject} gameObject - The Game Object that was added to the list.
+    */
+addChildCallback: function (gameObject)
+{
+    if (gameObject.displayList && gameObject.displayList !== this)
+    {
+        gameObject.removeFromDisplayList();
+    }
+
+    if (gameObject.parentContainer)
+    {
+        gameObject.parentContainer.remove(gameObject);
+    }
+
+    if (!gameObject.displayList)
+    {
+        this.queueDepthSort();
+
+        gameObject.displayList = this;
+
+        gameObject.emit(GameObjectEvents.ADDED_TO_SCENE, gameObject, this.scene);
+
+        this.events.emit(SceneEvents.ADDED_TO_SCENE, gameObject, this.scene);
+    }
+}
+
+
+
+// Sprite.addedToScene
+//  Overrides Game Object method
+    addedToScene: function ()
+    {
+        this.scene.sys.updateList.add(this);
+    }
+
+
+
+ /**
+    * The current state of this Game Object.
+    *
+    * Phaser itself will never modify this value, although plugins may do so.
+    *
+    * Use this property to track the state of a Game Object during its lifetime. For example, it could change from
+    * a state of 'moving', to 'attacking', to 'dead'. The state value should be an integer (ideally mapped to a constant
+    * in your game code), or a string. These are recommended to keep it light and simple, with fast comparisons.
+    * If you need to store complex data about your Game Object, look at using the Data Component instead.
+    *
+    * @name Phaser.GameObjects.GameObject#state
+    * @type {(number|string)}
+    * @since 3.16.0
+    */
+this.state = 0;
+
+
+
+/**
+    * Sets the size of this Game Object to be that of the given Frame.
+    *
+    * This will not change the size that the Game Object is rendered in-game.
+    * For that you need to either set the scale of the Game Object (`setScale`) or call the
+    * `setDisplaySize` method, which is the same thing as changing the scale but allows you
+    * to do so by giving pixel values.
+    *
+    * If you have enabled this Game Object for input, changing the size will _not_ change the
+    * size of the hit area. To do this you should adjust the `input.hitArea` object directly.
+    *
+    * @method Phaser.GameObjects.Components.Size#setSizeToFrame
+    * @since 3.0.0
+    *
+    * @param {Phaser.Textures.Frame|boolean} [frame] - The frame to base the size of this Game Object on.
+    *
+    * @return {this} This Game Object instance.
+    */
+setSizeToFrame: function (frame)
+{
+    if (!frame) { frame = this.frame; }
+
+    this.width = frame.realWidth;
+    this.height = frame.realHeight;
+
+    var input = this.input;
+
+    if (input && !input.customHitArea)
+    {
+        input.hitArea.width = this.width;
+        input.hitArea.height = this.height;
+    }
+
+    return this;
+}
+
+
+
+DONE
+====
+- [yes] Bullet.addedToScene is called before Container.addHandler
+- unit.exclusive = true
+- Bullet.character displayList/parentContainer are null
+- Bullet.unit active=false, displayList/parentContainer are null, body=undefined
