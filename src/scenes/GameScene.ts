@@ -3426,8 +3426,10 @@ class Vega extends Boss {
         window.gameScene,
         20,
         13,
-        o.unit.width + 40,
-        o.unit.height + 20
+        // o.unit.width - 40,
+        // o.unit.height - 20
+        o.character.width - 40,
+        o.character.height - 20
       )),
       (o.dengerousBalloon.y = 15),
       // o.vegaBlur = new PIXI.filters.BlurFilter,
