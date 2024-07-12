@@ -2987,8 +2987,10 @@ export class Barlog extends Boss {
         window.gameScene,
         30,
         20,
-        o.unit.width + 60,
-        o.unit.height + 30
+        // o.unit.width - 60,
+        // o.unit.height - 30
+        o.character.width - 60,
+        o.character.height - 30
       )),
       (o.dengerousBalloon.x = 30),
       (o.dengerousBalloon.y = 20),
