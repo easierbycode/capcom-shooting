@@ -1234,9 +1234,8 @@ export class Bullet extends y.prototype.constructor {
         // DRJ - should this implementation exist elsewhere?
         // this.unit.width,
         // this.unit.height
-        this.unit.input.hitArea.width,
-        this.unit.input.hitArea.height
-
+        this.character.width,
+        this.character.height
       ));
   }
 
@@ -1502,19 +1501,21 @@ var M = (function (t) {
       // o.unit.hitArea = new PIXI.Rectangle(7,20,o.unit.width - 14,o.unit.height - 40),
       (o.unit.hitArea = new PIXI.Rectangle(
         window.gameScene,
-        7,
-        20,
+
+        // since origin does not exist on Container need to manually
+        // add halfWidth and halfHeight to offset
+        // 7,
+        // 20,
+        7 + (o.character.width / 2),
+        20 + (o.character.height / 2),
 
         // DRJ::TODO - fix this nastiness
         // o.unit.body.width/height incorrect till next tick
         // o.unit.width/height unset till next tick
         // o.unit.width - 14,
         // o.unit.height - 40
-        o.unit.input.hitArea.width - 14,
-        o.unit.input.hitArea.height - 40
-
-        // o.unit.width + 14,
-        // o.unit.height + 40
+        o.character.width - 14,
+        o.character.height - 40
       )),
       (o.character.animationSpeed = 0.35),
       (o.shadow.animationSpeed = 0.35),
@@ -2243,7 +2244,7 @@ class Item extends AnimatedSprite {
     super(window.gameScene, t, "game_asset");
 
     const frameSize = getFrameSize(t[0]);
-    
+
     var o = this;
 
     return (
@@ -2772,7 +2773,7 @@ export class Bison extends Boss {
         // o.unit.height - 30
         o.character.width - 20,
         o.character.height - 30
-        
+
       )),
       (o.dengerousBalloon.y = 20),
       o
@@ -4287,8 +4288,8 @@ export class Fang extends Boss {
 
 // TitleScreen (line 6593)
 class TitleScreen extends Container {
-// DRJ - layer does not have addChild method
-// class TitleScreen extends Phaser.GameObjects.Layer {
+  // DRJ - layer does not have addChild method
+  // class TitleScreen extends Phaser.GameObjects.Layer {
   constructor(scene?, x?, y?) {
     scene = scene || window.gameScene;
     x = x || 0;
