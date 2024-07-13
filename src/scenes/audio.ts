@@ -1,5 +1,8 @@
 export default {
-  resource: {},
+  resource: {
+    // currently playing bgm
+    bgm: null,
+  },
 
   play: function (key) {
     if (!this.resource[key].isPlaying) {
@@ -14,7 +17,11 @@ export default {
   },
 
   bgmPlay: function (key, e, o) {
+    if (this.resource.bgm) this.stop(this.resource.bgm);
+
     if (!this.resource[key].isPlaying) {
+      this.resource.bgm = key;
+
       const soundConfig: Phaser.Types.Sound.SoundConfig = {
         loop: true,
       };
