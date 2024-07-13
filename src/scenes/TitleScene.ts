@@ -73,7 +73,12 @@ export class Container extends Phaser.GameObjects.Container {
     // gameObject.once(Events.DESTROY, this.onChildDestroyed, this);
     gameObject.once('destroy', this.onChildDestroyed, this);
 
-    if (this.exclusive) {
+      let isBulletExplosion = gameObject.frame?.name === 'hit0.gif';
+    
+    // the only child we add to Bullet is explosion, which is not added to scene yet
+    // set as exclusive so explosion will have parentContainer set and call addedToScene
+
+    if (this.exclusive || isBulletExplosion) {
       if (gameObject.parentContainer) {
         gameObject.parentContainer.remove(gameObject);
       }

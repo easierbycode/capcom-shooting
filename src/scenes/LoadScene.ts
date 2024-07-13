@@ -335,7 +335,7 @@ export default class LoadScene extends Phaser.Scene {
     t = this; // Mn(this, Bn(e).call(this));
     var o = ["loading0.gif", "loading1.gif", "loading2.gif"];
     return (
-      (t.loadingG = new AnimatedSprite(this, o)),
+      (t.loadingG = new AnimatedSprite(this, o, undefined, true)),
       (t.loadingG.x = i.GAME_CENTER - 64),
       (t.loadingG.y = i.GAME_MIDDLE - 64),
       (t.loadingG.animationSpeed = 0.15),
@@ -531,7 +531,7 @@ export class AnimatedSprite extends Phaser.GameObjects.Sprite {
     addToScene?: boolean,
     repeatNum?: number
   ) {
-    if (addToScene === undefined) addToScene = true;
+    // if (addToScene === undefined) addToScene = true;
     if (repeatNum === undefined) repeatNum = -1;
     if (frameKeys[0] == 'hit0.gif') repeatNum = 0;
     // DRJ::TODO - remove hack once fang bullet remove is implemented correctly
@@ -573,13 +573,12 @@ export class AnimatedSprite extends Phaser.GameObjects.Sprite {
     });
 
     if (addToScene) {
-      this.scene.time.addEvent({
-        // callback: () => this.play("default"),
-        callback: () => {this.anims && this.play("default")},
-      });
-
       scene.add.existing(this);
     }
+
+    this.scene.time.addEvent({
+      callback: () => {this.anims && this.play("default")},
+    })
   }
 
   set loop(bool: boolean) {

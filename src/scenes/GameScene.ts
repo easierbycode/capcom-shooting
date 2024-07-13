@@ -1118,7 +1118,8 @@ var y = (function (t) {
         window.gameScene,
         o,
         "game_asset",
-        true
+        false,
+        0
       );
       var n = (i.unit.height + 50) / i.explosion.height;
       n >= 1 && (n = 1),
@@ -1264,23 +1265,23 @@ export class Bullet extends y.prototype.constructor {
               delay: 0.1,
               tint: 16777215,
             }))),
-      void 0 !== this.explosion &&
-      // ((this.explosion.onComplete = function (t) {
-      (this.explosion.on(
-        "animationcomplete",
-        function (t) {
-          this.removeChild(t);
-        }.bind(this, this.explosion)
-      ),
-        (this.explosion.x =
-          // this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
-          this.unit.x + this.unit.width / 2 - this.explosion.displayWidth / 2),
-        (this.explosion.y =
-          // this.unit.y + this.unit.height / 2 - this.explosion.height / 2 - 10),
-          this.unit.y + this.unit.height / 2 - this.explosion.displayHeight / 2 - 10),
-        "infinity" == e && (this.explosion.textures = this.guardTexture),
-        this.addChild(this.explosion),
-        this.explosion.play()),
+      // void 0 !== this.explosion &&
+      // // ((this.explosion.onComplete = function (t) {
+      // (this.explosion.on(
+      //   "animationcomplete",
+      //   function (t) {
+      //     this.removeChild(t);
+      //   }.bind(this, this.explosion)
+      // ),
+      //   (this.explosion.x =
+      //     // this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
+      //     this.unit.x + this.unit.width / 2 - this.explosion.displayWidth / 2),
+      //   (this.explosion.y =
+      //     // this.unit.y + this.unit.height / 2 - this.explosion.height / 2 - 10),
+      //     this.unit.y + this.unit.height / 2 - this.explosion.displayHeight / 2 - 10),
+      //   "infinity" == e && (this.explosion.textures = this.guardTexture),
+      //   this.addChild(this.explosion),
+      //   this.explosion.play()),
       "infinity" == e
         ? (AudioManager.stop("se_guard"), AudioManager.play("se_guard"))
         : this.name == M.SHOOT_NAME_NORMAL || this.name == M.SHOOT_NAME_3WAY
@@ -1302,10 +1303,10 @@ export class Bullet extends y.prototype.constructor {
       ),
         (this.explosion.x =
           // this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
-          this.unit.x + this.unit.width / 2 - this.explosion.displayWidth / 2),
+          this.unit.x + this.character.width / 2 - this.explosion.displayWidth / 2),
         (this.explosion.y =
           // this.unit.y + this.unit.height / 2 - this.explosion.height / 2 - 10),
-          this.unit.y + this.unit.height / 2 - this.explosion.displayHeight / 2 - 10),
+          this.unit.y + this.character.height / 2 - this.explosion.displayHeight / 2 - 10),
         this.addChild(this.explosion),
         this.explosion.play());
   }
