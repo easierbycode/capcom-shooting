@@ -1391,14 +1391,6 @@ function k(t, e) {
     : e;
 }
 
-function O(t) {
-  return (O = Object.setPrototypeOf
-    ? Object.getPrototypeOf
-    : function (t) {
-        return t.__proto__ || Object.getPrototypeOf(t);
-      })(t);
-}
-
 // define properties on an object with specific attributes
 function E(t, e) {
   // loops through each element in the e array and defines a property on the t object using Object.defineProperty()
@@ -1464,8 +1456,12 @@ var M = (function (t) {
         ]);
     }
     return (
-      ((o = k(this, O(e).call(this, t.texture, t.explosion))).unit.name =
-        t.name),
+      // ((o = k(this, O(e).call(this, t.texture, t.explosion))).unit.name =
+      //   t.name),
+      ((o = k(
+        this,
+        Object.getPrototypeOf(e).call(this, t.texture, t.explosion)
+      )).unit.name = t.name),
       (o.hp = t.hp),
       (o.maxHp = t.maxHp),
       (o.shootNormalData = t.shootNormal),
@@ -2193,27 +2189,32 @@ var M = (function (t) {
         key: "addedToScene",
         // value: function (t) {
         value: function (gameObject, scene) {
-          //   I(O(e.prototype), "castAdded", this).call(this),
-          //   gameObject.castAdded.call(gameObject),
-          // DRJ - renamed all instances of this to 'gameObject'
-          // may need to revert if castAdded is used
-          // gameObject.addChild(gameObject.barrier),
-          // gameObject.addChild(gameObject.barrierEffect),
-          // gameObject.addChild(gameObject.dragAreaRect),
-          // gameObject.dragAreaRect.on(
-          //   "pointerdown",
-          //   gameObject.onScreenDragStart.bind(this)
-          // ),
-          // gameObject.dragAreaRect.on("pointerup", gameObject.onScreenDragEnd.bind(this)),
-          // gameObject.dragAreaRect.on(
-          //   "pointerupoutside",
-          //   gameObject.onScreenDragEnd.bind(this)
-          // ),
-          // gameObject.dragAreaRect.on(
-          //   "pointermove",
-          //   gameObject.onScreenDragMove.bind(this)
-          // ),
-          (gameObject.keyDownListener = gameObject.onKeyDown.bind(this)),
+          // I(O(e.prototype), "castAdded", this).call(this),
+          Reflect.get(
+            Object.getPrototypeOf(e.prototype),
+            "castAdded",
+            this
+          ).call(this),
+            //   gameObject.castAdded.call(gameObject),
+            // DRJ - renamed all instances of this to 'gameObject'
+            // may need to revert if castAdded is used
+            // gameObject.addChild(gameObject.barrier),
+            // gameObject.addChild(gameObject.barrierEffect),
+            // gameObject.addChild(gameObject.dragAreaRect),
+            // gameObject.dragAreaRect.on(
+            //   "pointerdown",
+            //   gameObject.onScreenDragStart.bind(this)
+            // ),
+            // gameObject.dragAreaRect.on("pointerup", gameObject.onScreenDragEnd.bind(this)),
+            // gameObject.dragAreaRect.on(
+            //   "pointerupoutside",
+            //   gameObject.onScreenDragEnd.bind(this)
+            // ),
+            // gameObject.dragAreaRect.on(
+            //   "pointermove",
+            //   gameObject.onScreenDragMove.bind(this)
+            // ),
+            (gameObject.keyDownListener = gameObject.onKeyDown.bind(this)),
             (gameObject.keyUpListener = gameObject.onKeyUp.bind(this)),
             document.addEventListener("keydown", gameObject.keyDownListener),
             document.addEventListener("keyup", gameObject.keyUpListener),
