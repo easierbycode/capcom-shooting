@@ -3,7 +3,6 @@ import { B, D, g, i } from "./LoadScene";
 import AudioManager from "./audio";
 
 export class Container extends Phaser.GameObjects.Container {
-
   constructor(scene: Phaser.Scene, x, y, children?) {
     // super(scene, x, y, children)
     super(scene || window.gameScene, x, y, children);
@@ -18,7 +17,7 @@ export class Container extends Phaser.GameObjects.Container {
 
     this.scene.time.addEvent({
       callback: () => {
-        if (!this.body) return;  // DRJ
+        if (!this.body) return; // DRJ
         this.body.setSize(rect.width, rect.height);
         this.body.setOffset(rect.x, rect.y);
       },
@@ -29,8 +28,8 @@ export class Container extends Phaser.GameObjects.Container {
 
   get hitArea() {
     return {
-      height: (this.body?.height || 0),
-      width: (this.body?.width || 0),
+      height: this.body?.height || 0,
+      width: this.body?.width || 0,
     };
   }
 
@@ -71,10 +70,10 @@ export class Container extends Phaser.GameObjects.Container {
 
   addHandler(gameObject) {
     // gameObject.once(Events.DESTROY, this.onChildDestroyed, this);
-    gameObject.once('destroy', this.onChildDestroyed, this);
+    gameObject.once("destroy", this.onChildDestroyed, this);
 
-      let isBulletExplosion = gameObject.frame?.name === 'hit0.gif';
-    
+    let isBulletExplosion = gameObject.frame?.name === "hit0.gif";
+
     // the only child we add to Bullet is explosion, which is not added to scene yet
     // set as exclusive so explosion will have parentContainer set and call addedToScene
 
@@ -85,7 +84,7 @@ export class Container extends Phaser.GameObjects.Container {
 
       gameObject.parentContainer = this;
 
-      if (!gameObject.scene) return;  // DRJ
+      if (!gameObject.scene) return; // DRJ
 
       gameObject.removeFromDisplayList();
 
@@ -173,7 +172,7 @@ class StartBtn extends Container {
     (this.img.scaleX = 1), (this.img.scaleY = 1);
   }
 
-  onDown() { }
+  onDown() {}
 
   onUp() {
     TweenMax.killTweensOf(this.flashCover),
@@ -316,7 +315,7 @@ export default class TitleScene extends Scene {
       (this.fadeOutBlack.alpha = 0);
 
     var e = new TimelineMax({
-      onComplete: function () { },
+      onComplete: function () {},
       onCompleteScope: this,
     });
     e.to(
@@ -329,7 +328,7 @@ export default class TitleScene extends Scene {
       },
       "+=0.0"
     ),
-      e.addCallback(function () { }, "-=0.1", null, this),
+      e.addCallback(function () {}, "-=0.1", null, this),
       e.to(
         this.logo,
         0.9,
@@ -367,6 +366,14 @@ export default class TitleScene extends Scene {
           ease: Quint.easeIn,
         },
         "-=0.9"
+      ),
+      e.addCallback(
+        function () {
+          AudioManager.play("voice_titlecall");
+        },
+        "-=0.5",
+        null,
+        this
       );
   }
 
