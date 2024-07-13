@@ -14,20 +14,19 @@ export default {
   },
 
   bgmPlay: function (key, e, o) {
-    // console.log({
-    //     start: e / 48e3,
-    //     end: o / 48e3
-    // })
-    // if (!this.resource[key].isPlaying) {
-    //     const soundConfig: Phaser.Types.Sound.SoundConfig = {
-    //         loop: true
-    //     }
-    //     this.resource[key].play(
-    //         key,
-    //         {
-    //             loop: true
-    //         }
-    //     )
-    // }
+    if (!this.resource[key].isPlaying) {
+      const soundConfig: Phaser.Types.Sound.SoundConfig = {
+        loop: true,
+      };
+
+      this.resource[key].addMarker({
+        name: "default",
+        start: e / 48e3,
+        duration: o / 48e3 - e / 48e3,
+        config: soundConfig,
+      });
+
+      this.resource[key].play("default");
+    }
   },
 };
