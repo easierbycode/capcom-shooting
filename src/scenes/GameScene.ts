@@ -188,7 +188,7 @@ export default class GameScene extends Scene {
       // this.hud.comboTimeCnt = 0,
       // D.combo = 0,
       (this.enemyWaveFlg = !1),
-      // this.theWorldFlg = !1,
+      this.theWorldFlg = !1,
       (this.waveCount = 0),
       (this.waveInterval = 80),
       (this.frameCnt = 0),
