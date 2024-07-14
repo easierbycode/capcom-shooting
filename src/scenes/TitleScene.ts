@@ -188,7 +188,7 @@ class StartBtn extends Container {
       (t.img.x = i.GAME_CENTER),
       (t.img.y = 330),
       t.img.setOrigin(0.5),
-      (t.flashCover = new Phaser.GameObjects.Graphics(scene)),
+      (t.flashCover = new Graphics(scene)),
       t.flashCover.fillStyle(16777215, 1),
       t.flashCover.fillRect(0, 0, i.GAME_WIDTH, i.GAME_HEIGHT - 120),
       (t.flashCover.alpha = 0),
@@ -221,21 +221,23 @@ class StartBtn extends Container {
       });
   }
 
-  addedToScene() {
-    this.tl = new TimelineMax({
-      repeat: -1,
-      yoyo: !0,
-    });
+  addedToScene(gameObject, scene) {
     this.scene.time.addEvent({
       callback: () => {
-        this.tl
-          .to(this.img, 0.3, {
-            delay: 0.1,
-            alpha: 0,
-          })
-          .to(this.img, 0.8, {
-            alpha: 1,
-          });
+        this.addChild(this.img),
+          this.addChild(this.flashCover),
+          (this.tl = new TimelineMax({
+            repeat: -1,
+            yoyo: !0,
+          })),
+          this.tl
+            .to(this.img, 0.3, {
+              delay: 0.1,
+              alpha: 0,
+            })
+            .to(this.img, 0.8, {
+              alpha: 1,
+            });
       },
     });
     this.on("pointerover", this.onOver.bind(this)),
@@ -406,6 +408,18 @@ export default class TitleScene extends Scene {
           AudioManager.play("voice_titlecall");
         },
         "-=0.5",
+        null,
+        this
+      ),
+      // e.to(this.startBtn, 0.1, {
+      //   alpha: 1,
+      // }),
+      e.addCallback(
+        function () {
+          // (this.startBtn.interactive = !0),
+          this.startBtn.onFlash.bind(this.startBtn)();
+        },
+        "+=0.3",
         null,
         this
       );
