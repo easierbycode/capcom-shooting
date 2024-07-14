@@ -1,0 +1,1 @@
+node C:\Users\phatm\AppData\Roaming\npm\node_modules\parcel\bin\cli.js build src/index.html --no-minify --out-dir www --public-url /android_asset/www/ && C:\Users\phatm\AppData\Roaming\npm\node_modules\cordova\bin\cordova.cmd build android
