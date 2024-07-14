@@ -4,7 +4,7 @@
 	"description": "A typescript template project for Phaser 3 using Parceljs",
 	"scripts": {
 		"build:pages": "rimraf docs && parcel build src/index.html --no-minify --out-dir docs --public-url /2019/",
-		"build:android": "rimraf www && parcel build src/index.html --out-dir www --public-url /android_asset/www/ && cordova build android",
+		"build:android": "rimraf www && parcel build src/index.html --no-minify --out-dir www --public-url /android_asset/www/ && cordova build android",
 		"start": "parcel src/index.html -p 8000",
 		"build": "parcel build src/index.html --out-dir dist",
 		"test": "echo \"Error: no test specified\" && exit 1",
@@ -18,16 +18,13 @@
 	},
 	"homepage": "https://github.com/ourcade/phaser3-parcel-template",
 	"devDependencies": {
-		"@typescript-eslint/eslint-plugin": "^2.29.0",
-		"@typescript-eslint/parser": "^2.29.0",
-		"eslint": "^6.8.0",
-		"minimist": ">=1.2.2",
-		"parcel-plugin-clean-easy": "^1.0.2",
-		"parcel-plugin-static-files-copy": "^2.4.3",
-		"typescript": "^3.8.3"
+		"cordova-android": "^10.1.2",
+		"cssnano": "^7.0.4",
+		"postcss": "^8.4.39",
+		"typescript": "^5.5.3"
 	},
 	"dependencies": {
-		"phaser": "^3.85.0-beta.1"
+		"phaser": "3.60.0"
 	},
 	"parcelCleanPaths": [
 		"dist"
@@ -35,5 +32,10 @@
 	"staticFiles": {
 		"staticPath": "public",
 		"watcherGlob": "**"
+	},
+	"cordova": {
+		"platforms": [
+			"android"
+		]
 	}
 }
