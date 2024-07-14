@@ -4384,8 +4384,18 @@ class TitleScreen extends Container {
       // (t.stageClearText = new PIXI.Sprite(
       //   PIXI.Texture.fromFrame("stageclear.gif")
       // )),
-      // (t.stageClearText.x = i.GAME_WIDTH / 2 - t.stageClearText.width / 2),
-      // (t.stageClearText.y = i.GAME_HEIGHT / 2 - t.stageClearText.height),
+      (t.stageClearText = new Sprite(
+        scene,
+        0,
+        0,
+        "game_ui",
+        PIXI.Texture.fromFrame("stageclear.gif")
+      )),
+      (t.stageClearText.x = i.GAME_WIDTH / 2 - t.stageClearText.width / 2),
+      (t.stageClearText.y = i.GAME_HEIGHT / 2 - t.stageClearText.height),
+      // DRJ - added
+      (t.stageClearText.visible = !1),
+      (t.stageClearText.alpha = 0),
       // (t.stageTimeoverBg = new PIXI.Graphics()),
       // t.stageTimeoverBg.beginFill(16777215, 0.4),
       // t.stageTimeoverBg.drawRect(0, 0, i.GAME_WIDTH, i.GAME_HEIGHT),
@@ -4579,11 +4589,30 @@ class TitleScreen extends Container {
   }
 
   stageClear() {
-    (this.stageClearBg.visible = !0),
-      TweenMax.to(this.stageClearBg, 0.5, {
+    // (this.stageClearBg.visible = !0),
+    (this.stageClearText.visible = !0),
+      // TweenMax.to(this.stageClearBg, 0.5, {
+      TweenMax.to(this.stageClearText, 0.5, {
         delay: 0.3,
         alpha: 1,
       });
+  }
+
+  addedToScene(gameObject, scene): void {
+    this.scene.time.addEvent({
+      callback: () => {
+        this.addChild(this.gameStartBg),
+          // this.gameStartBg.addChild(this.stageNum),
+          // this.gameStartBg.addChild(this.stageFight),
+          this.addChild(this.stageClearBg),
+          // DRJ - need to decide what to do with Graphics that add children
+          this.addChild(this.stageClearText), // this.stageClearBg.addChild(this.stageClearText),
+          // this.addChild(this.stageTimeoverBg),
+          // this.stageTimeoverBg.addChild(this.stageTimeoverText),
+          this.addChild(this.knockoutK),
+          this.addChild(this.knockoutO);
+      },
+    });
   }
 }
 
