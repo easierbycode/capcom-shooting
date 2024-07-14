@@ -106,6 +106,40 @@ export class Container extends Phaser.GameObjects.Container {
   }
 }
 
+export class Graphics extends Phaser.GameObjects.Graphics {
+  rect?: Phaser.GameObjects.Rectangle;
+
+  constructor(scene) {
+    super(scene);
+  }
+
+  fill(color: number, alpha?: number): this {
+    super.fillStyle(color, alpha);
+    return this;
+  }
+
+  fillRect(x: number, y: number, width: number, height: number): this {
+    this.rect = new Phaser.GameObjects.Rectangle(
+      this.scene,
+      x,
+      y,
+      width,
+      height
+    );
+    super.fillRect(x, y, width, height);
+    return this;
+  }
+
+  setInteractive(
+    hitArea?: Phaser.Types.Input.InputConfiguration | any,
+    callback?: Phaser.Types.Input.HitAreaCallback,
+    dropZone?: boolean
+  ): this {
+    super.setInteractive(this.rect, Phaser.Geom.Rectangle.Contains, dropZone);
+    return this;
+  }
+}
+
 export class Sprite extends Phaser.GameObjects.Sprite {
   constructor(scene, x, y, texture, frame?) {
     super(scene, x, y, texture, frame);

@@ -1,4 +1,4 @@
-import { Container, Scene, Sprite, Texture } from "./TitleScene";
+import { Container, Graphics, Scene, Sprite, Texture } from "./TitleScene";
 import { AnimatedSprite, B, D, i } from "./LoadScene";
 import AudioManager from "./audio";
 
@@ -15,7 +15,7 @@ const PIXI = {
     AnimatedSprite: AnimatedSprite,
   },
   Rectangle: Phaser.GameObjects.Rectangle,
-  Graphics: Phaser.GameObjects.Graphics,
+  Graphics,
 };
 
 export default class GameScene extends Scene {
@@ -1619,18 +1619,24 @@ var M = (function (t) {
     P(e, [
       {
         key: "onScreenDragStart",
-        value: function (t) {
-          (this.unitX =
-            B.Manager.game.renderer.plugins.interaction.eventData.data.global.x),
-            (this.screenDragFlg = !0);
+        value: function (pointer, localX, localY, event) {
+          // (this.unitX =
+          //   B.Manager.game.renderer.plugins.interaction.eventData.data.global.x),
+          //   (this.screenDragFlg = !0);
+          (this.unitX = localX), (this.screenDragFlg = !0);
         },
       },
       {
         key: "onScreenDragMove",
-        value: function (t) {
+        value: function (pointer, localX, localY, event) {
           this.screenDragFlg &&
-            ((this.unitX =
-              B.Manager.game.renderer.plugins.interaction.eventData.data.global.x),
+            //   ((this.unitX =
+            //     B.Manager.game.renderer.plugins.interaction.eventData.data.global.x),
+            //   this.unitX <= this.unit.hitArea.width / 2 &&
+            //     (this.unitX = this.unit.hitArea.width / 2),
+            //   this.unitX >= i.GAME_WIDTH - this.unit.hitArea.width / 2 &&
+            //     (this.unitX = i.GAME_WIDTH - this.unit.hitArea.width / 2));
+            ((this.unitX = localX),
             this.unitX <= this.unit.hitArea.width / 2 &&
               (this.unitX = this.unit.hitArea.width / 2),
             this.unitX >= i.GAME_WIDTH - this.unit.hitArea.width / 2 &&
@@ -2195,25 +2201,31 @@ var M = (function (t) {
             "castAdded",
             this
           ).call(this),
-            //   gameObject.castAdded.call(gameObject),
             // DRJ - renamed all instances of this to 'gameObject'
             // may need to revert if castAdded is used
-            // gameObject.addChild(gameObject.barrier),
-            // gameObject.addChild(gameObject.barrierEffect),
-            // gameObject.addChild(gameObject.dragAreaRect),
-            // gameObject.dragAreaRect.on(
-            //   "pointerdown",
-            //   gameObject.onScreenDragStart.bind(this)
-            // ),
-            // gameObject.dragAreaRect.on("pointerup", gameObject.onScreenDragEnd.bind(this)),
-            // gameObject.dragAreaRect.on(
-            //   "pointerupoutside",
-            //   gameObject.onScreenDragEnd.bind(this)
-            // ),
-            // gameObject.dragAreaRect.on(
-            //   "pointermove",
-            //   gameObject.onScreenDragMove.bind(this)
-            // ),
+            scene.time.addEvent({
+              callback: () => {
+                gameObject.addChild(gameObject.barrier),
+                  gameObject.addChild(gameObject.barrierEffect),
+                  gameObject.addChild(gameObject.dragAreaRect),
+                  gameObject.dragAreaRect.on(
+                    "pointerdown",
+                    gameObject.onScreenDragStart.bind(this)
+                  ),
+                  gameObject.dragAreaRect.on(
+                    "pointerup",
+                    gameObject.onScreenDragEnd.bind(this)
+                  ),
+                  gameObject.dragAreaRect.on(
+                    "pointerupoutside",
+                    gameObject.onScreenDragEnd.bind(this)
+                  ),
+                  gameObject.dragAreaRect.on(
+                    "pointermove",
+                    gameObject.onScreenDragMove.bind(this)
+                  );
+              },
+            }),
             (gameObject.keyDownListener = gameObject.onKeyDown.bind(this)),
             (gameObject.keyUpListener = gameObject.onKeyUp.bind(this)),
             document.addEventListener("keydown", gameObject.keyDownListener),
