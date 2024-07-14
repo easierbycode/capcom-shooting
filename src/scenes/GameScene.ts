@@ -44,6 +44,7 @@ export default class GameScene extends Scene {
   }
 
   addChildAt(gameObj, depth) {
+    this.add.existing(gameObj);
     gameObj.setDepth(depth);
   }
 
@@ -177,7 +178,7 @@ export default class GameScene extends Scene {
       (this.player.unit.y = i.GAME_HEIGHT - this.player.unit.height - 30),
       (this.player.unitX = i.GAME_WIDTH / 2),
       (this.player.unitY = this.player.unit.y),
-      // this.addChildAt(this.player, 2),
+      this.addChildAt(this.player, 2),
       // this.hud.setPercent(this.player.percent),
       // this.hud.scoreCount = D.score,
       // this.hud.highScore = D.highScore,

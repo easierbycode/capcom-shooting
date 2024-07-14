@@ -8,7 +8,7 @@ export class Container extends Phaser.GameObjects.Container {
     super(scene || window.gameScene, x, y, children);
     this.exclusive = false;
     // scene.add.existing(this)
-    (scene || window.gameScene).add.existing(this);
+    // (scene || window.gameScene).add.existing(this);
   }
 
   // set hitArea(rect: Phaser.GameObjects.Rectangle) {
