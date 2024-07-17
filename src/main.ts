@@ -29,6 +29,23 @@ const config: Phaser.Types.Core.GameConfig = {
   },
 };
 
-const game = (window.game = new Phaser.Game(config));
+document.addEventListener('deviceready', onDeviceReady, false);
 
-export default game;
+function onDeviceReady() {
+    // Cordova is now initialized. Have fun!
+
+    document.getElementById('deviceready').classList.add('ready');
+
+    window.game = new Phaser.Game(config);
+
+    document.getElementById('app').style.display = 'none';  
+}
+
+
+if (!window.cordova) {
+    setTimeout(() => {
+        const e = document.createEvent('Events')
+        e.initEvent('deviceready', true, false);
+        document.dispatchEvent(e);
+    }, 50);
+}
