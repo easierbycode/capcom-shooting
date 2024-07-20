@@ -91,7 +91,9 @@ export default class GameScene extends Scene {
       this.addChildAt(this.bulletContainer, 2),
       // Set up HUD
       // this.hud = new wi,
+      this.hud = new HUD(),
       // this.hud.on(wi.CUSTOM_EVENT_CA_FIRE, this.caFire.bind(Yi(Yi(o)))),
+      // this.hud.on(HUD.CUSTOM_EVENT_CA_FIRE, this.caFire.bind(Yi(Yi(o)))),
       // this.addChildAt(this.hud, 3),
       // Set up title screen
       // this.title = new Oi,
@@ -129,13 +131,13 @@ export default class GameScene extends Scene {
       o = i[t].end;
     4 == D.stageId
       ? TweenMax.delayedCall(
-          3,
-          function (t) {
-            AudioManager.bgmPlay(this.stageBgmName, e, o);
-          },
-          null,
-          this
-        )
+        3,
+        function (t) {
+          AudioManager.bgmPlay(this.stageBgmName, e, o);
+        },
+        null,
+        this
+      )
       : AudioManager.bgmPlay(this.stageBgmName, e, o),
       this.title.gameStart(D.stageId),
       this.stageBg.init(D.stageId),
@@ -150,7 +152,7 @@ export default class GameScene extends Scene {
     var n = B.resource.recipe.data["stage" + D.stageId].enemylist.slice();
     (this.stageEnemyPositionList = n.reverse()),
       "true" == D.shortFlg &&
-        ((this.stageEnemyPositionList = []),
+      ((this.stageEnemyPositionList = []),
         this.stageEnemyPositionList.push([
           "00",
           "00",
@@ -229,9 +231,9 @@ export default class GameScene extends Scene {
                       r.onDamage(1, o.hp))
                     : (o["bulletframeCnt" + r.id]++,
                       o["bulletframeCnt" + r.id] % 15 == 0 &&
-                        (o["bulletid" + r.id]++,
+                      (o["bulletid" + r.id]++,
                         o["bulletid" + r.id] <= 1 &&
-                          (o.onDamage(r.damage), r.onDamage(1, o.hp))));
+                        (o.onDamage(r.damage), r.onDamage(1, o.hp))));
                   break;
                 case M.SHOOT_NAME_3WAY:
                   o.onDamage(r.damage), r.onDamage(1, o.hp);
@@ -304,8 +306,8 @@ export default class GameScene extends Scene {
         var c = this.itemHitTestList[u];
         if (
           ((c.y += 1),
-          // B.Manager.interact.hitTestRectangle(c, this.player.unit)) {
-          this.physics.world.overlap(c, this.player.unit))
+            // B.Manager.interact.hitTestRectangle(c, this.player.unit)) {
+            this.physics.world.overlap(c, this.player.unit))
         ) {
           switch (c.name) {
             case M.SHOOT_SPEED_HIGH:
@@ -318,7 +320,7 @@ export default class GameScene extends Scene {
             default:
               this.player.shootMode !== c.name &&
                 ((D.shootSpeed = M.SHOOT_SPEED_NORMAL),
-                this.player.shootSpeedChange(D.shootSpeed)),
+                  this.player.shootSpeedChange(D.shootSpeed)),
                 (D.shootMode = c.name),
                 this.player.shootModeChange(D.shootMode);
           }
@@ -326,11 +328,11 @@ export default class GameScene extends Scene {
         }
         c.y >= i.GAME_HEIGHT - 10 &&
           (this.unitContainer.removeChild(c),
-          this.itemHitTestList.splice(u, 1));
+            this.itemHitTestList.splice(u, 1));
       }
       this.stageBg.loop(this.stageBgAmountMove),
         this.enemyWaveFlg &&
-          (this.frameCnt % this.waveInterval == 0 && this.enemyWave(),
+        (this.frameCnt % this.waveInterval == 0 && this.enemyWave(),
           (this.frameCnt += this.frameCntUp));
     }
   }
@@ -586,7 +588,7 @@ export default class GameScene extends Scene {
     }
   }
 
-  tamaAllRemove() {}
+  tamaAllRemove() { }
 
   enemyRemove(t) {
     if (
@@ -725,8 +727,8 @@ export default class GameScene extends Scene {
     } else {
       var o;
       switch (
-        (((o = B.resource.recipe.data.bossData["boss" + D.stageId]).explosion =
-          this.explosionTextures),
+      (((o = B.resource.recipe.data.bossData["boss" + D.stageId]).explosion =
+        this.explosionTextures),
         D.stageId)
       ) {
         case 0:
@@ -864,6 +866,79 @@ export default class GameScene extends Scene {
     // this.hud.onDamage(this.player.percent);
   }
 
+  caFire() {
+    this.theWorldFlg = !0,
+      this.hud.caFireFlg = !0,
+      this.boss && this.boss.onTheWorld(this.theWorldFlg); //,
+      // this.addChild(this.cutinCont),
+      // this.cutinCont.start(),
+      // this.caLine.x = this.player.unit.x + 12,
+      // this.caLine.y = this.player.unit.y + 5,
+      // this.unitContainer.addChild(this.caLine);
+    for (var t = 0; t < this.player.bulletList.length; t++) {
+      var e = this.player.bulletList[t];
+      this.player.bulletRemove(e),
+        this.player.bulletRemoveComplete(e)
+    }
+    var o = new TimelineMax;
+    o.call(function () {
+      AudioManager.play("g_ca_voice")
+    }, null, this, "+=0.2"); //,
+      // o.call(function () {
+      //   this.removeChild(this.cutinCont)
+      // }, null, this, "+=1.7"),
+      // o.to(this.caLine, .3, {
+      //   height: i.GAME_HEIGHT
+      // }),
+      // o.to(this.caLine, .3, {
+      //   y: 0,
+      //   height: 0
+      // }).call(function () {
+      //   for (var t = this, e = 0, o = 0, n = function (n) {
+      //     n % 8 == 0 && (e = o % 2 == 0 ? -30 : -45,
+      //       o++);
+      //     var a = new PIXI.extras.AnimatedSprite(t.caExplosionTextures);
+      //     a.animationSpeed = .2,
+      //       a.loop = !1,
+      //       a.x = e,
+      //       a.y = i.GAME_HEIGHT - 45 * o - 120,
+      //       a.onComplete = function (t) {
+      //         t.destroy(),
+      //           this.unitContainer.removeChild(t)
+      //       }
+      //         .bind(t, a),
+      //       e += 30,
+      //       TweenMax.delayedCall(.01 * n, function () {
+      //         this.unitContainer.addChild(a),
+      //           a.play(),
+      //           n % 16 == 0 && g.play("se_ca_explosion")
+      //       }, null, t)
+      //   }, a = 0; a < 64; a++)
+      //     n(a)
+      // }, null, this, "-=0.1").call(function () {
+      //   var t = this
+      //     , e = this.enemyHitTestList.slice();
+      //   if (e.length >= 100)
+      //     for (var o = 0; o < e.length; o++) {
+      //       var n = e[o];
+      //       n.unit.x >= -n.unit.width / 2 && n.unit.x <= i.GAME_WIDTH && n.unit.y >= 20 && n.unit.y <= i.GAME_HEIGHT && n.onDamage(D.caDamage)
+      //     }
+      //   else
+      //     for (var a = function (o) {
+      //       var n = e[o];
+      //       n.unit.x >= -n.unit.width / 2 && n.unit.x <= i.GAME_WIDTH && n.unit.y >= 20 && n.unit.y <= i.GAME_HEIGHT && TweenMax.delayedCall(.005 * o, function () {
+      //         n.onDamage(D.caDamage)
+      //       }, null, t)
+      //     }, s = 0; s < e.length; s++)
+      //       a(s)
+      // }, null, this, "+=0.8").call(function () {
+      //   this.unitContainer.removeChild(this.caLine),
+      //     this.theWorldFlg = !1,
+      //     this.hud.caFireFlg = !1,
+      //     this.boss && (this.boss.hp <= 0 ? this.theWorldFlg = !0 : this.boss.onTheWorld(this.theWorldFlg))
+      // }, null, this, "+=0.7")
+  }
+
   gameStart() {
     // F.dlog("GameScene.gameStart()."),
     (this.enemyWaveFlg = !0), this.player.shootStart();
@@ -897,16 +972,16 @@ function n(t) {
   return (n =
     "function" == typeof Symbol && "symbol" == typeof Symbol.iterator
       ? function (t) {
-          return typeof t;
-        }
+        return typeof t;
+      }
       : function (t) {
-          return t &&
-            "function" == typeof Symbol &&
-            t.constructor === Symbol &&
-            t !== Symbol.prototype
-            ? "symbol"
-            : typeof t;
-        })(t);
+        return t &&
+          "function" == typeof Symbol &&
+          t.constructor === Symbol &&
+          t !== Symbol.prototype
+          ? "symbol"
+          : typeof t;
+      })(t);
 }
 
 function a(t, e) {
@@ -924,12 +999,12 @@ function a(t, e) {
 function s(t, e) {
   return !e || ("object" !== n(e) && "function" != typeof e)
     ? (function (t) {
-        if (void 0 === t)
-          throw new ReferenceError(
-            "this hasn't been initialised - super() hasn't been called"
-          );
-        return t;
-      })(t)
+      if (void 0 === t)
+        throw new ReferenceError(
+          "this hasn't been initialised - super() hasn't been called"
+        );
+      return t;
+    })(t)
     : e;
 }
 
@@ -937,8 +1012,8 @@ function r(t) {
   return (r = Object.setPrototypeOf
     ? Object.getPrototypeOf
     : function (t) {
-        return t.__proto__ || Object.getPrototypeOf(t);
-      })(t);
+      return t.__proto__ || Object.getPrototypeOf(t);
+    })(t);
 }
 
 function h(t, e) {
@@ -1020,27 +1095,27 @@ function u(t) {
   return (u =
     "function" == typeof Symbol && "symbol" == typeof Symbol.iterator
       ? function (t) {
-          return typeof t;
-        }
+        return typeof t;
+      }
       : function (t) {
-          return t &&
-            "function" == typeof Symbol &&
-            t.constructor === Symbol &&
-            t !== Symbol.prototype
-            ? "symbol"
-            : typeof t;
-        })(t);
+        return t &&
+          "function" == typeof Symbol &&
+          t.constructor === Symbol &&
+          t !== Symbol.prototype
+          ? "symbol"
+          : typeof t;
+      })(t);
 }
 
 function c(t, e) {
   return !e || ("object" !== u(e) && "function" != typeof e)
     ? (function (t) {
-        if (void 0 === t)
-          throw new ReferenceError(
-            "this hasn't been initialised - super() hasn't been called"
-          );
-        return t;
-      })(t)
+      if (void 0 === t)
+        throw new ReferenceError(
+          "this hasn't been initialised - super() hasn't been called"
+        );
+      return t;
+    })(t)
     : e;
 }
 
@@ -1049,8 +1124,8 @@ function f(t) {
   return (f = Object.setPrototypeOf
     ? Object.getPrototypeOf
     : function (t) {
-        return t.__proto__ || Object.getPrototypeOf(t);
-      })(t);
+      return t.__proto__ || Object.getPrototypeOf(t);
+    })(t);
 }
 
 function d(t, e) {
@@ -1095,43 +1170,43 @@ var y = (function (t) {
         if (!(t instanceof e))
           throw new TypeError("Cannot call a class as a function");
       })(this, e),
-      ((i = c(this, f(e).call(this))).shadowReverse = !0),
-      (i.speed = 0),
-      (i.hp = 1),
-      (i.deadFlg = !1),
-      // i.character = new PIXI.extras.AnimatedSprite(t),
-      (i.character = new PIXI.extras.AnimatedSprite(
-        window.gameScene,
-        t,
-        "game_asset"
-      )),
-      // DRJ - if player bullet, or it's explosion, set [Bullet] Container.exclusive to false
-      (i.exclusive = isPlayerBullet(i.character.frame.name) ? false : true),
-      (i.character.animationSpeed = 0.1),
-      // i.unit = new PIXI.Container,
-      (i.unit = new Container(window.gameScene)),
-      (i.unit.exclusive = true),
-      (i.unit.interactive = !0),
-      (i.unit.name = "unit"),
-      // i.unit.hitArea = new PIXI.Rectangle(0,0,i.character.width,i.character.height),
-      (i.unit.hitArea = new PIXI.Rectangle(
-        window.gameScene,
-        0,
-        0,
-        i.character.width,
-        i.character.height
-      )),
-      (i.shadowOffsetY = 0),
-      // i.shadow = new PIXI.extras.AnimatedSprite(t),
-      (i.shadow = new PIXI.extras.AnimatedSprite(
-        window.gameScene,
-        t,
-        "game_asset"
-      )),
-      (i.shadow.animationSpeed = 0.1),
-      (i.shadow.tint = 0),
-      (i.shadow.alpha = 0.5),
-      void 0 !== o)
+        ((i = c(this, f(e).call(this))).shadowReverse = !0),
+        (i.speed = 0),
+        (i.hp = 1),
+        (i.deadFlg = !1),
+        // i.character = new PIXI.extras.AnimatedSprite(t),
+        (i.character = new PIXI.extras.AnimatedSprite(
+          window.gameScene,
+          t,
+          "game_asset"
+        )),
+        // DRJ - if player bullet, or it's explosion, set [Bullet] Container.exclusive to false
+        (i.exclusive = isPlayerBullet(i.character.frame.name) ? false : true),
+        (i.character.animationSpeed = 0.1),
+        // i.unit = new PIXI.Container,
+        (i.unit = new Container(window.gameScene)),
+        (i.unit.exclusive = true),
+        (i.unit.interactive = !0),
+        (i.unit.name = "unit"),
+        // i.unit.hitArea = new PIXI.Rectangle(0,0,i.character.width,i.character.height),
+        (i.unit.hitArea = new PIXI.Rectangle(
+          window.gameScene,
+          0,
+          0,
+          i.character.width,
+          i.character.height
+        )),
+        (i.shadowOffsetY = 0),
+        // i.shadow = new PIXI.extras.AnimatedSprite(t),
+        (i.shadow = new PIXI.extras.AnimatedSprite(
+          window.gameScene,
+          t,
+          "game_asset"
+        )),
+        (i.shadow.animationSpeed = 0.1),
+        (i.shadow.tint = 0),
+        (i.shadow.alpha = 0.5),
+        void 0 !== o)
     ) {
       // i.explosion = new PIXI.extras.AnimatedSprite(o);
       i.explosion = new PIXI.extras.AnimatedSprite(
@@ -1200,7 +1275,7 @@ var y = (function (t) {
               this.character.play(),
                 this.shadow.play(),
                 "true" == D.hitAreaFlg &&
-                  ((this.hitbox = new PIXI.Graphics()),
+                ((this.hitbox = new PIXI.Graphics()),
                   this.hitbox.lineStyle(1, 16773120),
                   this.hitbox.drawRect(
                     this.unit.hitArea.x,
@@ -1265,26 +1340,26 @@ export class Bullet extends y.prototype.constructor {
       ? ((this.unit.x += this.rotX * this.speed),
         (this.unit.y += this.rotY * this.speed))
       : "meka" == this.name
-      ? (this.cont++,
-        this.cont >= this.start &&
+        ? (this.cont++,
+          this.cont >= this.start &&
           (this.targetX || (this.targetX = this.player.x),
-          (this.unit.x += 0.009 * (this.targetX - this.unit.x)),
-          (this.unit.y += Math.cos(this.cont / 5) + 2.5 * this.speed)))
-      : (this.unit.y += this.speed);
+            (this.unit.x += 0.009 * (this.targetX - this.unit.x)),
+            (this.unit.y += Math.cos(this.cont / 5) + 2.5 * this.speed)))
+        : (this.unit.y += this.speed);
   }
 
   onDamage(t, e) {
     this.deadFlg ||
       ((this.hp -= t),
-      this.hp <= 0
-        ? (this.dead.bind(this)(e), (this.deadFlg = !0))
-        : (TweenMax.to(this.character, 0.1, {
+        this.hp <= 0
+          ? (this.dead.bind(this)(e), (this.deadFlg = !0))
+          : (TweenMax.to(this.character, 0.1, {
             tint: 16711680,
           }),
-          TweenMax.to(this.character, 0.1, {
-            delay: 0.1,
-            tint: 16777215,
-          }))),
+            TweenMax.to(this.character, 0.1, {
+              delay: 0.1,
+              tint: 16777215,
+            }))),
       // void 0 !== this.explosion &&
       // // ((this.explosion.onComplete = function (t) {
       // (this.explosion.on(
@@ -1305,8 +1380,8 @@ export class Bullet extends y.prototype.constructor {
       "infinity" == e
         ? (AudioManager.stop("se_guard"), AudioManager.play("se_guard"))
         : this.name == M.SHOOT_NAME_NORMAL || this.name == M.SHOOT_NAME_3WAY
-        ? (AudioManager.stop("se_damage"), AudioManager.play("se_damage"))
-        : this.name == M.SHOOT_NAME_BIG &&
+          ? (AudioManager.stop("se_damage"), AudioManager.play("se_damage"))
+          : this.name == M.SHOOT_NAME_BIG &&
           (AudioManager.stop("se_damage"), AudioManager.play("se_damage"));
   }
 
@@ -1316,11 +1391,11 @@ export class Bullet extends y.prototype.constructor {
       this.unit.removeChild(this.shadow),
       this.removeChild(this.unit),
       void 0 !== this.explosion &&
-        // ((this.explosion.onComplete = this.explosionComplete.bind(this)),
-        (this.explosion.on(
-          "animationcomplete",
-          this.explosionComplete.bind(this)
-        ),
+      // ((this.explosion.onComplete = this.explosionComplete.bind(this)),
+      (this.explosion.on(
+        "animationcomplete",
+        this.explosionComplete.bind(this)
+      ),
         (this.explosion.x =
           // this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
           this.unit.x +
@@ -1367,28 +1442,28 @@ function C(t) {
   return (C =
     "function" == typeof Symbol && "symbol" == typeof Symbol.iterator
       ? function (t) {
-          return typeof t;
-        }
+        return typeof t;
+      }
       : function (t) {
-          return t &&
-            "function" == typeof Symbol &&
-            t.constructor === Symbol &&
-            t !== Symbol.prototype
-            ? "symbol"
-            : typeof t;
-        })(t);
+        return t &&
+          "function" == typeof Symbol &&
+          t.constructor === Symbol &&
+          t !== Symbol.prototype
+          ? "symbol"
+          : typeof t;
+      })(t);
 }
 
 // ensure e is an instance of t, not a constructor fn
 function k(t, e) {
   return !e || ("object" !== C(e) && "function" != typeof e)
     ? (function (t) {
-        if (void 0 === t)
-          throw new ReferenceError(
-            "this hasn't been initialised - super() hasn't been called"
-          );
-        return t;
-      })(t)
+      if (void 0 === t)
+        throw new ReferenceError(
+          "this hasn't been initialised - super() hasn't been called"
+        );
+      return t;
+    })(t)
     : e;
 }
 
@@ -1431,7 +1506,7 @@ var M = (function (t) {
         if (!(t instanceof e))
           throw new TypeError("Cannot call a class as a function");
       })(this, e),
-      "object" !== C(t.texture[0]))
+        "object" !== C(t.texture[0]))
     ) {
       for (var n = 0; n < t.texture.length; n++) {
         (a = t.texture[n]), (t.texture[n] = a);
@@ -1638,9 +1713,9 @@ var M = (function (t) {
             //   this.unitX >= i.GAME_WIDTH - this.unit.hitArea.width / 2 &&
             //     (this.unitX = i.GAME_WIDTH - this.unit.hitArea.width / 2));
             ((this.unitX = localX),
-            this.unitX <= this.unit.hitArea.width / 2 &&
+              this.unitX <= this.unit.hitArea.width / 2 &&
               (this.unitX = this.unit.hitArea.width / 2),
-            this.unitX >= i.GAME_WIDTH - this.unit.hitArea.width / 2 &&
+              this.unitX >= i.GAME_WIDTH - this.unit.hitArea.width / 2 &&
               (this.unitX = i.GAME_WIDTH - this.unit.hitArea.width / 2));
         },
       },
@@ -1683,7 +1758,7 @@ var M = (function (t) {
             this.unitX <= this.unit.hitArea.width / 2 &&
               (this.unitX = this.unit.hitArea.width / 2),
               this.unitX >= i.GAME_WIDTH - this.unit.hitArea.width / 2 &&
-                (this.unitX = i.GAME_WIDTH - this.unit.hitArea.width / 2);
+              (this.unitX = i.GAME_WIDTH - this.unit.hitArea.width / 2);
           }
           (this.unit.x +=
             0.09 * (this.unitX - (this.unit.x + this.unit.width / 2))),
@@ -1693,9 +1768,9 @@ var M = (function (t) {
             (this.barrier.y = this.unit.y - 15),
             this.bulletFrameCnt++,
             this.shootOn &&
-              this.bulletFrameCnt % (this.shootInterval - this.shootSpeed) ==
-                0 &&
-              this.shoot();
+            this.bulletFrameCnt % (this.shootInterval - this.shootSpeed) ==
+            0 &&
+            this.shoot();
           for (var t = 0; t < this.bulletList.length; t++) {
             var e = this.bulletList[t];
             (e.unit.x += 3.5 * Math.cos(e.unit.rotation)),
@@ -1703,7 +1778,7 @@ var M = (function (t) {
               (e.unit.y <= 40 ||
                 e.unit.x <= -e.unit.width ||
                 e.unit.x >= i.GAME_WIDTH) &&
-                (this.bulletRemove(e), this.bulletRemoveComplete(e));
+              (this.bulletRemove(e), this.bulletRemoveComplete(e));
           }
         },
       },
@@ -1762,17 +1837,17 @@ var M = (function (t) {
                     (o.unit.y =
                       this.unit.y + 5 * Math.sin(o.unit.rotation) + 11))
                   : 1 == t
-                  ? ((o.unit.rotation = (270 * Math.PI) / 180),
-                    (o.unit.x =
-                      this.unit.x + 5 * Math.cos(o.unit.rotation) + 10),
-                    (o.unit.y =
-                      this.unit.y + 5 * Math.sin(o.unit.rotation) + 11))
-                  : 2 == t &&
+                    ? ((o.unit.rotation = (270 * Math.PI) / 180),
+                      (o.unit.x =
+                        this.unit.x + 5 * Math.cos(o.unit.rotation) + 10),
+                      (o.unit.y =
+                        this.unit.y + 5 * Math.sin(o.unit.rotation) + 11))
+                    : 2 == t &&
                     ((o.unit.rotation = (260 * Math.PI) / 180),
-                    (o.unit.x =
-                      this.unit.x + 5 * Math.cos(o.unit.rotation) + 6),
-                    (o.unit.y =
-                      this.unit.y + 5 * Math.sin(o.unit.rotation) + 11)),
+                      (o.unit.x =
+                        this.unit.x + 5 * Math.cos(o.unit.rotation) + 6),
+                      (o.unit.y =
+                        this.unit.y + 5 * Math.sin(o.unit.rotation) + 11)),
                   (o.id = this.bulletIdCnt++),
                   (o.shadowReverse = !1),
                   (o.shadowOffsetY = 0),
@@ -1844,7 +1919,7 @@ var M = (function (t) {
         key: "setUp",
         value: function (t, o, i) {
           switch (
-            ((this.hp = t),
+          ((this.hp = t),
             (this._percent = this.hp / this.maxHp),
             (this.shootMode = o),
             this.shootMode)
@@ -2075,7 +2150,7 @@ var M = (function (t) {
       },
       {
         key: "caFire",
-        value: function () {},
+        value: function () { },
       },
       {
         key: "onDamage",
@@ -2085,9 +2160,9 @@ var M = (function (t) {
             console.log("[Player] onDamage", t);
             if (
               ((this.hp -= t),
-              this.hp <= 0 && (this.hp = 0),
-              (this._percent = this.hp / this.maxHp),
-              this.hp <= 0)
+                this.hp <= 0 && (this.hp = 0),
+                (this._percent = this.hp / this.maxHp),
+                this.hp <= 0)
             )
               this.dead();
             else {
@@ -2322,17 +2397,17 @@ function He(t) {
     // return the type of t using the typeof operator.
     "function" == typeof Symbol && "symbol" == typeof Symbol.iterator
       ? function (t) {
-          return typeof t;
-        }
+        return typeof t;
+      }
       : // does not fully support ES6
-        function (t) {
-          return t &&
-            "function" == typeof Symbol &&
-            t.constructor === Symbol &&
-            t !== Symbol.prototype
-            ? "symbol"
-            : typeof t;
-        })(t);
+      function (t) {
+        return t &&
+          "function" == typeof Symbol &&
+          t.constructor === Symbol &&
+          t !== Symbol.prototype
+          ? "symbol"
+          : typeof t;
+      })(t);
 }
 
 // add properties to an object t based on an array of property descriptors e
@@ -2383,7 +2458,7 @@ class Enemy extends y.prototype.constructor {
 
     // switch ((o = Le(this, Ue(e).call(this, t.texture, t.explosion))).name = t.name,
     switch (
-      ((o.name = t.name),
+    ((o.name = t.name),
       (o.interval = t.interval),
       (o.score = t.score),
       (o.hp = t.hp),
@@ -2436,11 +2511,11 @@ class Enemy extends y.prototype.constructor {
   // loop
   update() {
     switch (
-      (this.bulletFrameCnt++,
+    (this.bulletFrameCnt++,
       this.shootFlg &&
-        !this.hardleFlg &&
-        this.bulletFrameCnt % this.interval == 0 &&
-        this.shoot(),
+      !this.hardleFlg &&
+      this.bulletFrameCnt % this.interval == 0 &&
+      this.shoot(),
       (this.unit.y += this.speed),
       this.name)
     ) {
@@ -2454,9 +2529,9 @@ class Enemy extends y.prototype.constructor {
             ? ((this.unit.x = i.GAME_WIDTH), (this.posName = "right"))
             : ((this.unit.x = -this.unit.width), (this.posName = "left"))),
           this.unit.y >= i.GAME_HEIGHT / 3 &&
-            ("right" == this.posName
-              ? (this.unit.x -= 1)
-              : "left" == this.posName && (this.unit.x += 1));
+          ("right" == this.posName
+            ? (this.unit.x -= 1)
+            : "left" == this.posName && (this.unit.x += 1));
     }
   }
 
@@ -2469,19 +2544,19 @@ class Enemy extends y.prototype.constructor {
   onDamage(t) {
     "infinity" == this.hp
       ? (TweenMax.to(this.character, 0.05, {
-          filters: [this.whitefilter],
-        }),
+        filters: [this.whitefilter],
+      }),
         TweenMax.to(this.character, 0.3, {
           delay: 0.1,
           filters: null,
         }))
       : this.deadFlg ||
-        ((this.hp -= t),
+      ((this.hp -= t),
         this.hp <= 0
           ? (this.dead.bind(this)(), (this.deadFlg = !0))
           : (TweenMax.to(this.character, 0.1, {
-              tint: 16711680,
-            }),
+            tint: 16711680,
+          }),
             TweenMax.to(this.character, 0.1, {
               delay: 0.1,
               tint: 16777215,
@@ -2491,26 +2566,26 @@ class Enemy extends y.prototype.constructor {
   dead() {
     "infinity" == this.hp ||
       (this.emit(y.CUSTOM_EVENT_DEAD),
-      (this.shootFlg = !1),
-      // (this.explosion.onComplete = this.explosionComplete.bind(this)),
-      this.explosion.on("animationcomplete", this.explosionComplete.bind(this)),
-      (this.explosion.x =
-        // this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
-        this.unit.x +
-        this.unit.body.width / 2 -
-        this.explosion.displayWidth / 2),
-      (this.explosion.y =
-        // this.unit.y + this.unit.height / 2 - this.explosion.height / 2),
-        this.unit.y +
-        this.unit.body.height / 2 -
-        this.explosion.displayHeight / 2),
-      this.addChild(this.explosion),
-      this.explosion.play(),
-      this.unit.removeChild(this.shadow),
-      this.unit.removeChild(this.character),
-      this.removeChild(this.unit),
-      AudioManager.stop("se_damage"),
-      AudioManager.play("se_explosion"));
+        (this.shootFlg = !1),
+        // (this.explosion.onComplete = this.explosionComplete.bind(this)),
+        this.explosion.on("animationcomplete", this.explosionComplete.bind(this)),
+        (this.explosion.x =
+          // this.unit.x + this.unit.width / 2 - this.explosion.width / 2),
+          this.unit.x +
+          this.unit.body.width / 2 -
+          this.explosion.displayWidth / 2),
+        (this.explosion.y =
+          // this.unit.y + this.unit.height / 2 - this.explosion.height / 2),
+          this.unit.y +
+          this.unit.body.height / 2 -
+          this.explosion.displayHeight / 2),
+        this.addChild(this.explosion),
+        this.explosion.play(),
+        this.unit.removeChild(this.shadow),
+        this.unit.removeChild(this.character),
+        this.removeChild(this.unit),
+        AudioManager.stop("se_damage"),
+        AudioManager.play("se_explosion"));
   }
 
   explosionComplete() {
@@ -2595,32 +2670,32 @@ export class Boss extends y.prototype.constructor {
   onDamage(t) {
     this.deadFlg ||
       ((this.hp -= t),
-      this.hp <= 0
-        ? (this.dead.bind(this)(), (this.deadFlg = !0))
-        : (TweenMax.isTweening(this.character) &&
+        this.hp <= 0
+          ? (this.dead.bind(this)(), (this.deadFlg = !0))
+          : (TweenMax.isTweening(this.character) &&
             TweenMax.killTweensOf(this.character, {
               tint: !0,
             }),
-          TweenMax.to(this.character, 0.1, {
-            tint: 16773120,
-          }),
-          TweenMax.to(this.character, 0.1, {
-            delay: 0.2,
-            tint: 16777215,
-          }),
-          this.hp <= D.caDamage &&
+            TweenMax.to(this.character, 0.1, {
+              tint: 16773120,
+            }),
+            TweenMax.to(this.character, 0.1, {
+              delay: 0.2,
+              tint: 16777215,
+            }),
+            this.hp <= D.caDamage &&
             (this.dengerousFlg ||
               (this.unit.addChild(this.dengerousBalloon),
-              this.dengerousBalloon.play(),
-              // TweenMax.to(this.dengerousBalloon.scale, 1, {
-              TweenMax.to(this.dengerousBalloon, 1, {
-                // x: 1,
-                scaleX: 1,
-                // y: 1,
-                scaleY: 1,
-                ease: Elastic.easeOut,
-              }),
-              (this.dengerousFlg = !0)))));
+                this.dengerousBalloon.play(),
+                // TweenMax.to(this.dengerousBalloon.scale, 1, {
+                TweenMax.to(this.dengerousBalloon, 1, {
+                  // x: 1,
+                  scaleX: 1,
+                  // y: 1,
+                  scaleY: 1,
+                  ease: Elastic.easeOut,
+                }),
+                (this.dengerousFlg = !0)))));
   }
 
   dead() {
@@ -2772,7 +2847,7 @@ export class Boss extends y.prototype.constructor {
   explosionComplete(t) {
     this.removeChild(t),
       4 == this.explotionCnt &&
-        (this.unit.removeChild(this.shadow), this.removeChild(this.unit)),
+      (this.unit.removeChild(this.shadow), this.removeChild(this.unit)),
       this.explotionCnt++;
   }
 
@@ -2828,11 +2903,11 @@ export class Bison extends Boss {
   update() {
     this.moveFlg
       ? (this.unit.y >= i.GAME_HEIGHT / 4 &&
-          ((this.unit.y = i.GAME_HEIGHT / 4), (this.moveFlg = !1)),
+        ((this.unit.y = i.GAME_HEIGHT / 4), (this.moveFlg = !1)),
         (this.unit.y += 1))
       : (this.shootOn &&
-          this.bulletFrameCnt % this.interval == 0 &&
-          ((this.shootOn = !1),
+        this.bulletFrameCnt % this.interval == 0 &&
+        ((this.shootOn = !1),
           AudioManager.play("boss_bison_voice_add"),
           TweenMax.delayedCall(
             1,
@@ -2873,13 +2948,13 @@ export class Bison extends Boss {
           y: t,
         }),
         this.tlShoot.addCallback(this.onIdle, "+=0.05", null, this),
-        this.tlShoot.addCallback(function () {}, "+=0.5", null, this);
+        this.tlShoot.addCallback(function () { }, "+=0.5", null, this);
     } else
       o >= 0.61 && 0.8 >= o
         ? (this.tlShoot.to(this.unit, 0.4, {
-            x: 0,
-            y: t - 20,
-          }),
+          x: 0,
+          y: t - 20,
+        }),
           this.tlShoot.to(
             this.unit,
             0.4,
@@ -2912,13 +2987,13 @@ export class Bison extends Boss {
             y: t,
           }),
           this.tlShoot.addCallback(this.onIdle, "+=0.05", null, this),
-          this.tlShoot.addCallback(function () {}, "+=1", null, this))
+          this.tlShoot.addCallback(function () { }, "+=1", null, this))
         : o >= 0.81 &&
-          1 >= o &&
-          (this.tlShoot.to(this.unit, 0.4, {
-            x: 170,
-            y: t - 20,
-          }),
+        1 >= o &&
+        (this.tlShoot.to(this.unit, 0.4, {
+          x: 170,
+          y: t - 20,
+        }),
           this.tlShoot.to(
             this.unit,
             0.4,
@@ -2951,7 +3026,7 @@ export class Bison extends Boss {
             y: t,
           }),
           this.tlShoot.addCallback(this.onIdle, "+=0.05", null, this),
-          this.tlShoot.addCallback(function () {}, "+=1", null, this));
+          this.tlShoot.addCallback(function () { }, "+=1", null, this));
   }
 
   onIdle() {
@@ -3047,11 +3122,11 @@ export class Barlog extends Boss {
   update() {
     this.moveFlg
       ? (this.unit.y >= i.GAME_HEIGHT / 4 &&
-          ((this.unit.y = i.GAME_HEIGHT / 4), (this.moveFlg = !1)),
+        ((this.unit.y = i.GAME_HEIGHT / 4), (this.moveFlg = !1)),
         (this.unit.y += 1))
       : (this.shootOn &&
-          this.bulletFrameCnt % this.interval == 0 &&
-          ((this.shootOn = !1),
+        this.bulletFrameCnt % this.interval == 0 &&
+        ((this.shootOn = !1),
           this.character.stop(),
           this.shadow.stop(),
           AudioManager.play("boss_barlog_voice_add"),
@@ -3070,7 +3145,7 @@ export class Barlog extends Boss {
       o = t.x + t.width / 2 - this.unit.width / 2;
     o - e / 2 <= -e / 2 && (o = -e / 2),
       o >= i.GAME_WIDTH - this.unit.hitArea.width - e / 2 &&
-        (o = i.GAME_WIDTH - this.unit.hitArea.width - e / 2);
+      (o = i.GAME_WIDTH - this.unit.hitArea.width - e / 2);
     var n = i.GAME_HEIGHT / 4,
       a = i.GAME_HEIGHT - this.unit.height + 34;
     this.tlShoot && this.tlShoot.kill(),
@@ -3098,8 +3173,8 @@ export class Barlog extends Boss {
           this.tlShoot.addCallback(this.onShoot, "+=0.4", null, this),
           this.tlShoot.addCallback(this.onMoveStop, "+=0.5", null, this))
         : s >= 0.81 &&
-          1 >= s &&
-          (this.tlShoot.addCallback(this.onMove, "+=0.0", null, this),
+        1 >= s &&
+        (this.tlShoot.addCallback(this.onMove, "+=0.0", null, this),
           this.tlShoot.to(this.unit, 0.5, {
             x: o,
           }),
@@ -3166,7 +3241,7 @@ export class Barlog extends Boss {
       AudioManager.play("boss_barlog_voice_barcelona");
   }
 
-  onAttackVoice() {}
+  onAttackVoice() { }
 
   onShoot() {
     (this.character.textures = this.animList.shoot),
@@ -3243,11 +3318,11 @@ class Sagat extends Boss {
   update() {
     this.moveFlg
       ? (this.unit.y >= i.GAME_HEIGHT / 4 &&
-          ((this.unit.y = i.GAME_HEIGHT / 4), (this.moveFlg = !1)),
+        ((this.unit.y = i.GAME_HEIGHT / 4), (this.moveFlg = !1)),
         (this.unit.y += 1))
       : (this.shootOn &&
-          this.bulletFrameCnt % this.interval == 0 &&
-          ((this.shootOn = !1),
+        this.bulletFrameCnt % this.interval == 0 &&
+        ((this.shootOn = !1),
           AudioManager.play("boss_sagat_voice_add"),
           TweenMax.delayedCall(
             1,
@@ -3265,7 +3340,7 @@ class Sagat extends Boss {
       o = t.x + t.width / 2 - this.unit.width / 2;
     o - e / 2 <= -e / 2 && (o = -e / 2),
       o >= i.GAME_WIDTH - this.unit.hitArea.width - e / 2 &&
-        (o = i.GAME_WIDTH - this.unit.hitArea.width - e / 2);
+      (o = i.GAME_WIDTH - this.unit.hitArea.width - e / 2);
     var n = i.GAME_HEIGHT / 4,
       a = i.GAME_HEIGHT - this.unit.height + 70;
     this.tlShoot = new TimelineMax({
@@ -3315,72 +3390,72 @@ class Sagat extends Boss {
           this
         ))
       : s >= 0.31 && 0.6 >= s
-      ? ((this.tamaData = this.tamaDataA),
-        this.tlShoot.to(this.unit, 0.25, {
-          x: o,
-        }),
-        this.tlShoot.addCallback(this.onCharge, "+=0", null, this),
-        this.tlShoot.addCallback(this.onShoot, "+=0.2", null, this),
-        this.tlShoot.addCallback(this.onCharge, "+=0.2", null, this),
-        this.tlShoot.addCallback(this.onShoot, "+=0.2", null, this),
-        this.tlShoot.addCallback(this.onCharge, "+=0.2", null, this),
-        this.tlShoot.addCallback(this.onShoot, "+=0.2", null, this),
-        this.tlShoot.addCallback(this.onCharge, "+=0.2", null, this),
-        this.tlShoot.addCallback(this.onShoot, "+=0.2", null, this),
-        this.tlShoot.addCallback(this.onCharge, "+=0.2", null, this),
-        this.tlShoot.addCallback(this.onShoot, "+=0.2", null, this),
-        this.tlShoot.addCallback(this.onCharge, "+=0.2", null, this),
-        this.tlShoot.addCallback(this.onShoot, "+=0.2", null, this),
-        this.tlShoot.addCallback(this.onCharge, "+=0.2", null, this),
-        this.tlShoot.addCallback(this.onShoot, "+=0.2", null, this),
-        this.tlShoot.addCallback(
-          function () {
-            this.onIdle();
-          },
-          "+=0.3",
-          null,
-          this
-        ))
-      : s >= 0.61 && 0.8 >= s
-      ? ((this.tamaData = this.tamaDataB),
-        this.tlShoot.to(this.unit, 0.25, {
-          x: o,
-        }),
-        this.tlShoot.addCallback(this.onCharge, "+=0", null, this),
-        this.tlShoot.addCallback(this.onBigShoot, "+=1.3", null, this),
-        this.tlShoot.addCallback(
-          function () {
-            this.onIdle();
-          },
-          "+=0.3",
-          null,
-          this
-        ))
-      : s >= 0.81 &&
-        1 >= s &&
-        (this.tlShoot.to(this.unit, 0.4, {
-          x: o,
-          y: n - 20,
-        }),
-        this.tlShoot.addCallback(this.onTigerKnee, "+=0.0", null, this),
-        this.tlShoot.to(
-          this.unit,
-          0.3,
-          {
-            y: a,
-          },
-          "+=0.5"
-        ),
-        this.tlShoot.addCallback(this.onTigerKneeVoice, "-=0.2", null, this),
-        this.tlShoot.to(
-          this.unit,
-          0.2,
-          {
-            y: n,
-          },
-          "+=0.05"
-        ),
-        this.tlShoot.addCallback(this.onIdle, "+=0.0", null, this));
+        ? ((this.tamaData = this.tamaDataA),
+          this.tlShoot.to(this.unit, 0.25, {
+            x: o,
+          }),
+          this.tlShoot.addCallback(this.onCharge, "+=0", null, this),
+          this.tlShoot.addCallback(this.onShoot, "+=0.2", null, this),
+          this.tlShoot.addCallback(this.onCharge, "+=0.2", null, this),
+          this.tlShoot.addCallback(this.onShoot, "+=0.2", null, this),
+          this.tlShoot.addCallback(this.onCharge, "+=0.2", null, this),
+          this.tlShoot.addCallback(this.onShoot, "+=0.2", null, this),
+          this.tlShoot.addCallback(this.onCharge, "+=0.2", null, this),
+          this.tlShoot.addCallback(this.onShoot, "+=0.2", null, this),
+          this.tlShoot.addCallback(this.onCharge, "+=0.2", null, this),
+          this.tlShoot.addCallback(this.onShoot, "+=0.2", null, this),
+          this.tlShoot.addCallback(this.onCharge, "+=0.2", null, this),
+          this.tlShoot.addCallback(this.onShoot, "+=0.2", null, this),
+          this.tlShoot.addCallback(this.onCharge, "+=0.2", null, this),
+          this.tlShoot.addCallback(this.onShoot, "+=0.2", null, this),
+          this.tlShoot.addCallback(
+            function () {
+              this.onIdle();
+            },
+            "+=0.3",
+            null,
+            this
+          ))
+        : s >= 0.61 && 0.8 >= s
+          ? ((this.tamaData = this.tamaDataB),
+            this.tlShoot.to(this.unit, 0.25, {
+              x: o,
+            }),
+            this.tlShoot.addCallback(this.onCharge, "+=0", null, this),
+            this.tlShoot.addCallback(this.onBigShoot, "+=1.3", null, this),
+            this.tlShoot.addCallback(
+              function () {
+                this.onIdle();
+              },
+              "+=0.3",
+              null,
+              this
+            ))
+          : s >= 0.81 &&
+          1 >= s &&
+          (this.tlShoot.to(this.unit, 0.4, {
+            x: o,
+            y: n - 20,
+          }),
+            this.tlShoot.addCallback(this.onTigerKnee, "+=0.0", null, this),
+            this.tlShoot.to(
+              this.unit,
+              0.3,
+              {
+                y: a,
+              },
+              "+=0.5"
+            ),
+            this.tlShoot.addCallback(this.onTigerKneeVoice, "-=0.2", null, this),
+            this.tlShoot.to(
+              this.unit,
+              0.2,
+              {
+                y: n,
+              },
+              "+=0.05"
+            ),
+            this.tlShoot.addCallback(this.onIdle, "+=0.0", null, this));
   }
 
   onCharge() {
@@ -3491,11 +3566,11 @@ class Vega extends Boss {
   update() {
     this.moveFlg
       ? (this.unit.y >= i.GAME_HEIGHT / 4 &&
-          ((this.unit.y = i.GAME_HEIGHT / 4), (this.moveFlg = !1)),
+        ((this.unit.y = i.GAME_HEIGHT / 4), (this.moveFlg = !1)),
         (this.unit.y += 1))
       : (this.shootOn &&
-          this.bulletFrameCnt % this.interval == 0 &&
-          ((this.shootOn = !1),
+        this.bulletFrameCnt % this.interval == 0 &&
+        ((this.shootOn = !1),
           this.gokiFlg
             ? this.emit(Vega.CUSTOM_EVENT_GOKI)
             : (AudioManager.play("boss_vega_voice_add"),
@@ -3515,7 +3590,7 @@ class Vega extends Boss {
       o = t.x + t.width / 2 - this.unit.width / 2;
     o - e / 2 <= -e / 2 && (o = -e / 2),
       o >= i.GAME_WIDTH - this.unit.hitArea.width - e / 2 &&
-        (o = i.GAME_WIDTH - this.unit.hitArea.width - e / 2);
+      (o = i.GAME_WIDTH - this.unit.hitArea.width - e / 2);
     var n = i.GAME_HEIGHT / 4;
     this.tlShoot = new TimelineMax({
       delay: 0.5,
@@ -3525,9 +3600,9 @@ class Vega extends Boss {
     var a = Math.random();
     a >= 0 && 0.1 >= a
       ? // ? (this.tlShoot.to(this.vegaBlur, 0.1, {
-        // blur: 10,
-        // }),
-        (this.tlShoot.addCallback(this.onWarp, "+=0", null, this),
+      // blur: 10,
+      // }),
+      (this.tlShoot.addCallback(this.onWarp, "+=0", null, this),
         this.tlShoot.addCallback(
           function () {
             this.unit.x = 0;
@@ -3579,178 +3654,178 @@ class Vega extends Boss {
         // this.tlShoot.to(this.vegaBlur, 0.1, {
         //   blur: 0,
         // }),
-        this.tlShoot.addCallback(function () {}, "+=0.5", null, this))
+        this.tlShoot.addCallback(function () { }, "+=0.5", null, this))
       : a >= 0.11 && 0.4 >= a
-      ? ((this.tamaData = this.tamaDataA),
-        // this.tlShoot.to(this.vegaBlur, 0.1, {
-        //   blur: 15,
-        // }),
-        this.tlShoot.addCallback(
-          function () {
-            (this.unit.x = 0),
-              AudioManager.play("boss_vega_voice_tama"),
-              this.onPsychoShoot();
-          },
-          "+=0",
-          null,
-          this
-        ),
-        // this.tlShoot.to(this.vegaBlur, 0.1, {
-        //   blur: 0,
-        // }),
-        // this.tlShoot.to(this.vegaBlur, 0.1, {
-        //   delay: 0.3,
-        //   blur: 15,
-        // }),
-        this.tlShoot.addCallback(
-          function () {
-            (this.unit.x = 160), this.onPsychoShoot();
-          },
-          "+=0",
-          null,
-          this
-        ),
-        // this.tlShoot.to(this.vegaBlur, 0.1, {
-        //   blur: 0,
-        // }),
-        // this.tlShoot.to(this.vegaBlur, 0.1, {
-        //   delay: 0.3,
-        //   blur: 15,
-        // }),
-        this.tlShoot.addCallback(
-          function () {
-            (this.unit.x = 16), this.onPsychoShoot();
-          },
-          "+=0",
-          null,
-          this
-        ),
-        // this.tlShoot.to(this.vegaBlur, 0.1, {
-        //   blur: 0,
-        // }),
-        // this.tlShoot.to(this.vegaBlur, 0.1, {
-        //   delay: 0.3,
-        //   blur: 15,
-        // }),
-        this.tlShoot.addCallback(
-          function () {
-            (this.unit.x = 128),
-              AudioManager.play("boss_vega_voice_tama"),
-              this.onPsychoShoot();
-          },
-          "+=0",
-          null,
-          this
-        ),
-        // this.tlShoot.to(this.vegaBlur, 0.1, {
-        //   blur: 0,
-        // }),
-        // this.tlShoot.to(this.vegaBlur, 0.1, {
-        //   delay: 0.3,
-        //   blur: 15,
-        // }),
-        this.tlShoot.addCallback(
-          function () {
-            (this.unit.x = 32), this.onPsychoShoot();
-          },
-          "+=0",
-          null,
-          this
-        ),
-        // this.tlShoot.to(this.vegaBlur, 0.1, {
-        //   blur: 0,
-        // }),
-        // this.tlShoot.to(this.vegaBlur, 0.1, {
-        //   delay: 0.3,
-        //   blur: 15,
-        // }),
-        this.tlShoot.addCallback(
-          function () {
-            (this.unit.x = 96), this.onPsychoShoot();
-          },
-          "+=0",
-          null,
-          this
-        ),
-        // this.tlShoot.to(this.vegaBlur, 0.1, {
-        //   blur: 0,
-        // }),
-        // this.tlShoot.to(this.vegaBlur, 0.1, {
-        //   delay: 0.3,
-        //   blur: 15,
-        // }),
-        this.tlShoot.addCallback(
-          function () {
-            (this.unit.x = i.GAME_CENTER - this.unit.width / 2),
-              AudioManager.play("boss_vega_voice_tama"),
-              this.onPsychoShoot();
-          },
-          "+=0",
-          null,
-          this
-        ),
-        // this.tlShoot.to(this.vegaBlur, 0.1, {
-        //   blur: 0,
-        // }),
-        this.tlShoot.addCallback(function () {}, "+=4.0", null, this))
-      : a >= 0.41 && 0.7 >= a
-      ? ((this.tamaData = this.tamaDataB),
-        this.tlShoot.to(this.unit, 0.3, {
-          x: i.GAME_CENTER - this.unit.width / 2,
-          y: n + 10,
-        }),
-        this.tlShoot.addCallback(
-          function () {
-            this.onPsychoFieldAttack();
-          },
-          "+=0.5",
-          null,
-          this
-        ),
-        this.tlShoot.addCallback(this.onPsychoShoot, "+=0.3", null, this),
-        this.tlShoot.addCallback(this.onPsychoShoot, "+=1", null, this),
-        this.tlShoot.addCallback(this.onPsychoShoot, "+=1", null, this),
-        this.tlShoot.addCallback(this.onPsychoShoot, "+=1", null, this),
-        this.tlShoot.addCallback(this.onPsychoShoot, "+=1", null, this),
-        this.tlShoot.addCallback(this.onIdle, "+=0.0", null, this),
-        this.tlShoot.addCallback(function () {}, "+=3.0", null, this))
-      : a >= 0.71 &&
-        1 >= a &&
-        // (this.tlShoot.to(this.vegaBlur, 0.1, {
-        // blur: 15,
-        // }),
-        (this.tlShoot.addCallback(
-          function () {
-            this.unit.x = o;
-          },
-          "+=0",
-          null,
-          this
-        ),
-        // this.tlShoot.to(this.vegaBlur, 0.1, {
-        //   blur: 0,
-        // }),
-        this.tlShoot.to(this.unit, 0.2, {
-          y: n - 20,
-        }),
-        this.tlShoot.addCallback(this.onAttack, "+=0", null, this),
-        this.tlShoot.to(this.unit, 0.9, {
-          y: i.GAME_HEIGHT - 15,
-        }),
-        this.tlShoot.addCallback(this.onIdle, "+=0.0", null, this),
-        this.tlShoot.addCallback(
-          function () {
-            (this.unit.x = i.GAME_CENTER - this.unit.width / 2),
-              (this.unit.y = -this.unit.height);
-          },
-          "+=0.0",
-          null,
-          this
-        ),
-        this.tlShoot.to(this.unit, 1, {
-          y: n,
-        }),
-        this.tlShoot.addCallback(function () {}, "+=1", null, this));
+        ? ((this.tamaData = this.tamaDataA),
+          // this.tlShoot.to(this.vegaBlur, 0.1, {
+          //   blur: 15,
+          // }),
+          this.tlShoot.addCallback(
+            function () {
+              (this.unit.x = 0),
+                AudioManager.play("boss_vega_voice_tama"),
+                this.onPsychoShoot();
+            },
+            "+=0",
+            null,
+            this
+          ),
+          // this.tlShoot.to(this.vegaBlur, 0.1, {
+          //   blur: 0,
+          // }),
+          // this.tlShoot.to(this.vegaBlur, 0.1, {
+          //   delay: 0.3,
+          //   blur: 15,
+          // }),
+          this.tlShoot.addCallback(
+            function () {
+              (this.unit.x = 160), this.onPsychoShoot();
+            },
+            "+=0",
+            null,
+            this
+          ),
+          // this.tlShoot.to(this.vegaBlur, 0.1, {
+          //   blur: 0,
+          // }),
+          // this.tlShoot.to(this.vegaBlur, 0.1, {
+          //   delay: 0.3,
+          //   blur: 15,
+          // }),
+          this.tlShoot.addCallback(
+            function () {
+              (this.unit.x = 16), this.onPsychoShoot();
+            },
+            "+=0",
+            null,
+            this
+          ),
+          // this.tlShoot.to(this.vegaBlur, 0.1, {
+          //   blur: 0,
+          // }),
+          // this.tlShoot.to(this.vegaBlur, 0.1, {
+          //   delay: 0.3,
+          //   blur: 15,
+          // }),
+          this.tlShoot.addCallback(
+            function () {
+              (this.unit.x = 128),
+                AudioManager.play("boss_vega_voice_tama"),
+                this.onPsychoShoot();
+            },
+            "+=0",
+            null,
+            this
+          ),
+          // this.tlShoot.to(this.vegaBlur, 0.1, {
+          //   blur: 0,
+          // }),
+          // this.tlShoot.to(this.vegaBlur, 0.1, {
+          //   delay: 0.3,
+          //   blur: 15,
+          // }),
+          this.tlShoot.addCallback(
+            function () {
+              (this.unit.x = 32), this.onPsychoShoot();
+            },
+            "+=0",
+            null,
+            this
+          ),
+          // this.tlShoot.to(this.vegaBlur, 0.1, {
+          //   blur: 0,
+          // }),
+          // this.tlShoot.to(this.vegaBlur, 0.1, {
+          //   delay: 0.3,
+          //   blur: 15,
+          // }),
+          this.tlShoot.addCallback(
+            function () {
+              (this.unit.x = 96), this.onPsychoShoot();
+            },
+            "+=0",
+            null,
+            this
+          ),
+          // this.tlShoot.to(this.vegaBlur, 0.1, {
+          //   blur: 0,
+          // }),
+          // this.tlShoot.to(this.vegaBlur, 0.1, {
+          //   delay: 0.3,
+          //   blur: 15,
+          // }),
+          this.tlShoot.addCallback(
+            function () {
+              (this.unit.x = i.GAME_CENTER - this.unit.width / 2),
+                AudioManager.play("boss_vega_voice_tama"),
+                this.onPsychoShoot();
+            },
+            "+=0",
+            null,
+            this
+          ),
+          // this.tlShoot.to(this.vegaBlur, 0.1, {
+          //   blur: 0,
+          // }),
+          this.tlShoot.addCallback(function () { }, "+=4.0", null, this))
+        : a >= 0.41 && 0.7 >= a
+          ? ((this.tamaData = this.tamaDataB),
+            this.tlShoot.to(this.unit, 0.3, {
+              x: i.GAME_CENTER - this.unit.width / 2,
+              y: n + 10,
+            }),
+            this.tlShoot.addCallback(
+              function () {
+                this.onPsychoFieldAttack();
+              },
+              "+=0.5",
+              null,
+              this
+            ),
+            this.tlShoot.addCallback(this.onPsychoShoot, "+=0.3", null, this),
+            this.tlShoot.addCallback(this.onPsychoShoot, "+=1", null, this),
+            this.tlShoot.addCallback(this.onPsychoShoot, "+=1", null, this),
+            this.tlShoot.addCallback(this.onPsychoShoot, "+=1", null, this),
+            this.tlShoot.addCallback(this.onPsychoShoot, "+=1", null, this),
+            this.tlShoot.addCallback(this.onIdle, "+=0.0", null, this),
+            this.tlShoot.addCallback(function () { }, "+=3.0", null, this))
+          : a >= 0.71 &&
+          1 >= a &&
+          // (this.tlShoot.to(this.vegaBlur, 0.1, {
+          // blur: 15,
+          // }),
+          (this.tlShoot.addCallback(
+            function () {
+              this.unit.x = o;
+            },
+            "+=0",
+            null,
+            this
+          ),
+            // this.tlShoot.to(this.vegaBlur, 0.1, {
+            //   blur: 0,
+            // }),
+            this.tlShoot.to(this.unit, 0.2, {
+              y: n - 20,
+            }),
+            this.tlShoot.addCallback(this.onAttack, "+=0", null, this),
+            this.tlShoot.to(this.unit, 0.9, {
+              y: i.GAME_HEIGHT - 15,
+            }),
+            this.tlShoot.addCallback(this.onIdle, "+=0.0", null, this),
+            this.tlShoot.addCallback(
+              function () {
+                (this.unit.x = i.GAME_CENTER - this.unit.width / 2),
+                  (this.unit.y = -this.unit.height);
+              },
+              "+=0.0",
+              null,
+              this
+            ),
+            this.tlShoot.to(this.unit, 1, {
+              y: n,
+            }),
+            this.tlShoot.addCallback(function () { }, "+=1", null, this));
   }
 
   onIdle() {
@@ -3864,7 +3939,7 @@ export class Goki extends Boss {
     return o;
   }
 
-  update() {}
+  update() { }
 
   shootStart() {
     this.tlShoot && this.tlShoot.kill();
@@ -3873,7 +3948,7 @@ export class Goki extends Boss {
       o = t.x + t.width / 2 - this.unit.width / 2;
     o - e / 2 <= -e / 2 && (o = -e / 2),
       o >= i.GAME_WIDTH - this.unit.hitArea.width - e / 2 &&
-        (o = i.GAME_WIDTH - this.unit.hitArea.width - e / 2),
+      (o = i.GAME_WIDTH - this.unit.hitArea.width - e / 2),
       (this.tlShoot = new TimelineMax({
         delay: 0.5,
         onComplete: this.shootStart,
@@ -4208,8 +4283,8 @@ export class Fang extends Boss {
     this.moveFlg
       ? (this.unit.y >= 48 && (this.moveFlg = !1), (this.unit.y += 0.7))
       : (this.shootOn &&
-          this.bulletFrameCnt % this.interval == 0 &&
-          ((this.shootOn = !1),
+        this.bulletFrameCnt % this.interval == 0 &&
+        ((this.shootOn = !1),
           AudioManager.play("boss_fang_voice_add"),
           TweenMax.delayedCall(
             1,
@@ -4238,31 +4313,31 @@ export class Fang extends Boss {
         this.tlShoot.addCallback(this.onShoot, "+=0.5", null, this),
         this.tlShoot.addCallback(this.onBeamVoice2, "+=0.0", null, this),
         this.tlShoot.addCallback(this.onIdle, "+=0.3", null, this),
-        this.tlShoot.addCallback(function () {}, "+=1", null, this))
+        this.tlShoot.addCallback(function () { }, "+=1", null, this))
       : t >= 0.31 && 0.7 >= t
-      ? ((this.tamaData = this.tamaDataC),
-        AudioManager.play("boss_fang_voice_beam1"),
-        this.tlShoot.addCallback(this.shoot, "+=0.0", null, this),
-        this.tlShoot.addCallback(this.onWait, "+=0.5", null, this),
-        this.tlShoot.addCallback(function () {}, "+=4", null, this))
-      : t >= 0.71 &&
+        ? ((this.tamaData = this.tamaDataC),
+          AudioManager.play("boss_fang_voice_beam1"),
+          this.tlShoot.addCallback(this.shoot, "+=0.0", null, this),
+          this.tlShoot.addCallback(this.onWait, "+=0.5", null, this),
+          this.tlShoot.addCallback(function () { }, "+=4", null, this))
+        : t >= 0.71 &&
         1 >= t &&
         ((this.tamaData = this.tamaDataB),
-        this.tlShoot.addCallback(this.onSmoke, "+=0", null, this),
-        this.tlShoot.addCallback(this.onWait, "+=1.0", null, this),
-        this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
-        this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
-        this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
-        this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
-        this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
-        this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
-        this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
-        this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
-        this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
-        this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
-        this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
-        this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
-        this.tlShoot.addCallback(function () {}, "+=7", null, this));
+          this.tlShoot.addCallback(this.onSmoke, "+=0", null, this),
+          this.tlShoot.addCallback(this.onWait, "+=1.0", null, this),
+          this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
+          this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
+          this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
+          this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
+          this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
+          this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
+          this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
+          this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
+          this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
+          this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
+          this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
+          this.tlShoot.addCallback(this.shoot, "+=0.3", null, this),
+          this.tlShoot.addCallback(function () { }, "+=7", null, this));
   }
 
   onCharge() {
@@ -4326,6 +4401,472 @@ export class Fang extends Boss {
   castRemoved(t) {
     super.castRemoved(t),
       this.tlShoot && (this.tlShoot.pause(), this.tlShoot.kill());
+  }
+}
+
+// pi (line 6080)
+class CagaBtn extends l.prototype.constructor {
+  constructor(t) {
+    super(t),
+      (this.hudCabtnBg1 = new Sprite(window.gameScene, 0, 0, PIXI.Texture.fromFrame("hudCabtnBg1.gif"))),
+      (this.hudCabtnBg1.x = 32),
+      (this.hudCabtnBg1.y = 32),
+      (this.hudCabtnBg1.alpha = 0),
+      // (this.hudCabtnBg1.anchor.set(.5)),
+      (this.hudCabtnBg1.setOrigin(0.5)),
+      (this.hudCabtnBg0 = new Sprite(window.gameScene, 0, 0, PIXI.Texture.fromFrame("hudCabtnBg0.gif"))),
+      (this.hudCabtnBg0.x = -18),
+      (this.hudCabtnBg0.y = -18),
+      (this.hudCabtnBg0.alpha = 0),
+      (this.caGageBarBg = new Sprite(window.gameScene, 0, 0, PIXI.Texture.fromFrame("hudCabtn100per.gif"))),
+      (this.caGageBarMask = new PIXI.Graphics(window.gameScene)),
+      // this.caGageBarMask.drawRect(0, 0, 50, -50),
+      this.caGageBarMask.fillRect(0, 0, 50, -50), // DRJ - height is -50?
+      (this.caGageBarMask.x = 8),
+      (this.caGageBarMask.y = 58),
+      // (this.caGageBarMask.scale.y = 0),
+      (this.caGageBarMask.scaleY = 0),
+      (this.caGageBar = new Sprite(window.gameScene, 0, 0, PIXI.Texture.fromFrame("hudCabtn0per.gif"))),
+      (this.caGageBar.mask = this.caGageBarMask),
+      (this.overCircle = new PIXI.Graphics(window.gameScene)),
+      // this.overCircle.beginFill(16777215),
+      this.overCircle.fill(16777215),
+      // this.overCircle.drawCircle(33, 33, 28),
+      this.overCircle.fillCircle(33, 33, 28),
+      // this.overCircle.endFill(),
+      (this.overCircle.alpha = 0),
+      (this.okFlg = !1),
+      (this.isClear = !1),
+      (this.timeline = new TimelineMax({
+        repeat: -1,
+        yoyo: this
+      })),
+      this.timeline.to(this.hudCabtnBg1, .4, {
+        alpha: 1
+      }),
+      this.timeline.to(this.hudCabtnBg1, .4, {
+        alpha: 0
+      }),
+      this.timeline.pause(),
+      (this.hitArea = new PIXI.Rectangle(window.gameScene, 5, 5, this.caGageBarBg.width - 10, this.caGageBarBg.height - 12));
+  }
+
+  onOver(t) {
+    TweenMax.to(this.overCircle, .1, {
+      alpha: .65
+    }),
+      TweenMax.to(this.overCircle, .3, {
+        delay: .1,
+        alpha: 0
+      })
+  }
+
+  onDown(t) {
+    var e = this.x
+      , o = this.y;
+    TweenMax.to(this, .001, {
+      delay: 0,
+      x: e,
+      y: o - 1
+    }),
+      TweenMax.to(this, .001, {
+        delay: .05,
+        x: e - 1,
+        y: o + 1
+      }),
+      TweenMax.to(this, .001, {
+        delay: .1,
+        x: e + 1,
+        y: o - 1
+      }),
+      TweenMax.to(this, .001, {
+        delay: .15,
+        x: e,
+        y: o
+      })
+  }
+
+  setPercent(t) {
+    // this.caGageBarMask.scale.y = t,
+    this.caGageBarMask.scaleY = t,
+      t >= 1 && (this.okFlg || this.onPrepearOk(),
+        this.okFlg = !0)
+  }
+
+  onPrepearOk() {
+    this.hudCabtnBg0.alpha = 1,
+      this.hudCabtnBg1.alpha = 1,
+      // this.hudCabtnBg1.scale.set(1.4),
+      this.hudCabtnBg1.setScale(1.4),
+      // TweenMax.to(this.hudCabtnBg1.scale, .5, {
+      TweenMax.to(this.hudCabtnBg1, .5, {
+        // x: 1,
+        scaleX: 1,
+        // y: 1
+        scaleY: 1
+      }),
+      this.timeline.resume(),
+      this.isClear || this.onActive()
+  }
+
+  caFire() {
+    this.onDeactive.bind(this)(),
+      this.okFlg = !1,
+      this.timeline.pause(),
+      this.hudCabtnBg1.alpha = 0,
+      this.hudCabtnBg0.alpha = 0
+  }
+
+  onActive() {
+    this.interactive = !0,
+      this.buttonMode = !0,
+      this.on("pointerover", this.onOver.bind(this)),
+      this.on("pointerdown", this.onDown.bind(this))
+  }
+
+  onDeactive() {
+    this.interactive = !1,
+      this.buttonMode = !1,
+      this.off("pointerover", this.onOver.bind(this)),
+      this.off("pointerdown", this.onDown.bind(this))
+  }
+
+  castAdded(t) {
+    // ui(ci(e.prototype), "castAdded", this).call(this),
+    super.castAdded(t),
+      this.addChild(this.hudCabtnBg1),
+      this.addChild(this.hudCabtnBg0),
+      this.addChild(this.caGageBarBg),
+      this.addChild(this.caGageBarMask),
+      this.addChild(this.caGageBar),
+      this.addChild(this.overCircle)
+  }
+
+  castRemoved(t) {
+    // ui(ci(e.prototype), "castRemoved", this).call(this),
+    super.castRemoved(t),
+      this.removeChild(this.hudCabtnBg1),
+      this.removeChild(this.hudCabtnBg0),
+      this.removeChild(this.caGageBarBg),
+      this.removeChild(this.caGageBarMask),
+      this.removeChild(this.caGageBar),
+      this.removeChild(this.overCircle)
+  }
+}
+
+class ScoreNum {
+  constructor(t) {
+    this.maxDigit = t,
+      this.textureList = [];
+    for (var e = 0; e <= 9; e++)
+      this.textureList[e] = PIXI.Texture.fromFrame("smallNum" + String(e) + ".gif");
+    this.numSpList = [];
+    for (var o = 0; o < t; o++) {
+      var i = new PIXI.Sprite(window.gameScene, (t - 1 - o) * (i.width - 2), 0, this.textureList[0]);
+      // i.x = (t - 1 - o) * (i.width - 2),
+      this.addChild(i),
+        this.numSpList[o] = i
+    }
+  }
+
+  setNum(t) {
+    for (var e = String(t), o = 0; o < this.maxDigit; o++) {
+      var i = e.substr(o, 1);
+      // i ? (this.numSpList[e.length - 1 - o].texture = this.textureList[Number(i)],
+      i ? (this.numSpList[e.length - 1 - o].setTexture(this.textureList[Number(i)]),
+        // this.numSpList[o].alpha = 1) : (this.numSpList[o].texture = this.textureList[0],
+        this.numSpList[o].alpha = 1) : (this.numSpList[o].setTexture(this.textureList[0]),
+          this.numSpList[o].alpha = .5)
+    }
+  }
+
+  castAdded(t) { }
+
+  castRemoved(t) { }
+}
+
+class ComboNum extends l.prototype.constructor {
+  constructor(t) {
+    super(t),
+      this.numTextureList = [];
+    for (var e = 0; e <= 9; e++)
+      this.numTextureList[e] = PIXI.Texture.fromFrame("comboNum" + String(e) + ".gif");
+    this.nowDisplayNumList = []
+  }
+
+  setNum(t) {
+    if (this.nowDisplayNumList.length)
+      for (var e = 0; e < this.nowDisplayNumList.length; e++)
+        this.removeChild(this.nowDisplayNumList[e]);
+    for (var o = String(t), i = 0; i < o.length; i++) {
+      var n = o.substr(i, 1)
+        , a = new PIXI.Sprite(window.gameScene, i * a.width, 0, this.numTextureList[n]);
+      // a.x = i * a.width,
+      this.addChild(a),
+        this.nowDisplayNumList[i] = a
+    }
+  }
+
+  castAdded(t) { }
+
+  castRemoved(t) { }
+}
+
+// wi (line 6291)
+class HUD extends l.prototype.constructor {
+  constructor() {
+    super(),
+      (this.hudBg = new Sprite(
+        window.gameScene,
+        0,
+        0,
+        PIXI.Texture.fromFrame("hudBg0.gif")
+      )),
+      (this.hudDamageBg = new Sprite(
+        window.gameScene,
+        0,
+        0, 
+        PIXI.Texture.fromFrame("hudBg1.gif")
+      )),
+      (this.hudDamageBg.alpha = 0),
+      (this.hpBar = new Sprite(
+        window.gameScene,
+        0,
+        0,
+        PIXI.Texture.fromFrame("hpBar.gif")
+      )),
+      (this.hpBar.x = 49),
+      (this.hpBar.y = 7),
+      // (this.hpBar.scale.x = 0.5),
+      (this.hpBar.scaleX = 0.5),
+      (this.cagaBtn = new CagaBtn()),
+      (this.cagaBtn.x = GAME_WIDTH - 70),
+      (this.cagaBtn.y = GAME_MIDDLE + 15),
+      (this.scoreTitleTxt = new Sprite(
+        window.gameScene,
+        0,
+        0,
+        PIXI.Texture.fromFrame("smallScoreTxt.gif")
+      )),
+      (this.scoreTitleTxt.x = 30),
+      (this.scoreTitleTxt.y = 25),
+      (this.scoreNumTxt = new ScoreNum(10)),
+      (this.scoreNumTxt.x = this.scoreTitleTxt.x + this.scoreTitleTxt.width + 2),
+      (this.scoreNumTxt.y = this.scoreTitleTxt.y),
+      this.scoreNumTxt.setNum(99),
+      (this.comboBar = new Sprite(window.gameScene,
+        0,
+        0,
+        PIXI.Texture.fromFrame("comboBar.gif")
+      )),
+      (this.comboBar.x = 149),
+      (this.comboBar.y = 32),
+      (this.comboNumTxt = new ComboNum(2)),
+      (this.comboNumTxt.x = 194),
+      (this.comboNumTxt.y = 19),
+      this.comboNumTxt.setNum(99),
+      (this.comboTimeCnt = 0),
+      (this.comboFlg = !1),
+      (this._scoreRatio = 0),
+      (this._scoreCount = 0),
+      (this._highScore = 0),
+      (this._comboCount = 0),
+      (this._maxComb = 0),
+      (this._cagageCount = 0),
+      (this.cagageFlg = !1),
+      (this.caFireFlg = !1),
+      (this.scoreViewWrap = new Container(window.gameScene));
+  }
+
+  static CUSTOM_EVENT_CA_FIRE = "customEventCaFire";
+
+  onKeyUp(t) {
+    switch (t.keyCode) {
+      case 32:
+        this.cagageFlg && this.caFire.bind(this)()
+    }
+    t.preventDefault()
+  }
+
+  scoreView(t) {
+    var e = new zo(t.score, this._scoreRatio);
+    this.scoreViewWrap.addChild(e),
+      e.x = Math.floor(t.unit.x + t.unit.width / 2 - e.width / 2),
+      e.y = Math.floor(t.unit.y + t.unit.height / 2 - e.height),
+      TweenMax.to(e, .8, {
+        y: e.y - 20,
+        onComplete: function () {
+          this.scoreViewWrap.removeChild(e)
+        },
+        onCompleteScope: this
+      })
+  }
+
+  // loop
+  update() {
+    this.comboTimeCnt -= .1,
+      this.comboTimeCnt <= 0 && (this.comboTimeCnt = 0,
+        1 == this.comboFlg && (this.comboCount = 0,
+          this.comboFlg = !1)),
+      // this.comboBar.scale.x = this.comboTimeCnt / 100
+      this.comboBar.scaleX = this.comboTimeCnt / 100
+  }
+
+  caPrepareOk() {
+    var t = new TimelineMax;
+    t.to(this.hpBar, .1, {
+      tint: 16711680,
+      ease: Linear.easeNone
+    }),
+      t.to(this.hpBar, .4, {
+        tint: 16777215,
+        ease: Linear.easeNone
+      }),
+      this.cagageFlg = !0
+  }
+
+  caFire() {
+    this.cagageFlg && (g.play("se_ca"),
+      this.cagageCount = 0,
+      this.cagageFlg = !1,
+      this.cagaBtn.caFire(),
+      this.emit(e.CUSTOM_EVENT_CA_FIRE))
+  }
+
+  onDamage(t) {
+    // TweenMax.to(this.hpBar.scale, .5, {
+    TweenMax.to(this.hpBar, .5, {
+      // x: t
+      scaleX: t
+    });
+    var e = new TimelineMax;
+    e.to(this.hudDamageBg, .1, {
+      alpha: 1
+    }),
+      e.to(this.hudDamageBg, .1, {
+        alpha: 0
+      }, "+=0.1"),
+      e.to(this.hudDamageBg, .1, {
+        alpha: 1
+      }, "+=0.1"),
+      e.to(this.hudDamageBg, .1, {
+        alpha: 0
+      }, "+=0.1"),
+      e.to(this.hpBar, .1, {
+        tint: 16711680,
+        ease: Linear.easeNone
+      }, "-=0.7"),
+      e.to(this.hpBar, .4, {
+        tint: 16777215,
+        ease: Linear.easeNone
+      }, "-=0.6")
+  }
+
+  recovery(t) {
+    // TweenMax.to(this.hpBar.scale, 1, {
+    TweenMax.to(this.hpBar, 1, {
+      // x: t
+      scaleX: t
+    })
+  }
+
+  caBtnActive() {
+    this.cagaBtn.onActive(),
+      this.cagaBtn.on("pointerup", this.caFire.bind(this)),
+      document.addEventListener("keyup", this.onKeyUpListener)
+  }
+
+  caBtnDeactive() {
+    arguments.length > 0 && void 0 !== arguments[0] && arguments[0] && (this.cagaBtn.isClear = !0),
+      this.cagaBtn.onDeactive(),
+      this.cagaBtn.off("pointerup", this.caFire.bind(this)),
+      document.removeEventListener("keyup", this.onKeyUpListener)
+  }
+
+  setPercent(t) {
+    // this.hpBar.scale.x = t
+    this.hpBar.scaleX = t
+  }
+
+  castAdded(t) {
+    this.cagageFlg = !1,
+      this.caFireFlg = !1,
+      this.comboTimeCnt = 0,
+      this.addChild(this.hudBg),
+      this.addChild(this.hudDamageBg),
+      this.addChild(this.hpBar),
+      this.addChild(this.cagaBtn),
+      this.addChild(this.scoreTitleTxt),
+      this.addChild(this.scoreNumTxt),
+      this.addChild(this.comboBar),
+      this.addChild(this.comboNumTxt),
+      this.addChildAt(this.scoreViewWrap, 5),
+      this.onKeyUpListener = this.onKeyUp.bind(this)
+  }
+
+  castRemoved(t) {
+    this.removeChild(this.hudBg),
+      this.removeChild(this.hudDamageBg),
+      this.removeChild(this.hpBar),
+      this.removeChild(this.cagaBtn),
+      this.removeChild(this.scoreTitleTxt),
+      this.removeChild(this.scoreNumTxt),
+      this.removeChild(this.comboBar),
+      this.removeChild(this.comboNumTxt),
+      this.removeChild(this.scoreViewWrap),
+      this.onKeyUpListener = null
+  }
+
+  get cagageCount() {
+    return this._cagageCount
+  }
+
+  set cagageCount(t) {
+    this.caFireFlg || (0 == t ? this._cagageCount = t : this._cagageCount += t,
+      this._cagageCount >= 100 && (this._cagageCount = 100,
+        this.cagageFlg || (this.caPrepareOk(),
+          this.cagageFlg)),
+      this.cagaBtn.setPercent(this._cagageCount / 100))
+  }
+
+  get scoreCount() {
+    return this._scoreCount
+  }
+
+  set scoreCount(t) {
+    this._scoreRatio = Math.ceil(this._comboCount / 10),
+      this._scoreRatio <= 1 && (this._scoreRatio = 1),
+      0 == t ? this._scoreCount = t : this._scoreCount += t * this._scoreRatio,
+      this.scoreNumTxt.setNum(this._scoreCount),
+      this._highScore < this._scoreCount && (this._highScore = this._scoreCount)
+  }
+
+  get highScore() {
+    return this._highScore
+  }
+
+  set highScore(t) {
+    this._highScore = t
+  }
+
+  get comboCount() {
+    return this._comboCount
+  }
+
+  set comboCount(t) {
+    0 == t ? this._comboCount = 0 : (this.comboTimeCnt = 100,
+      this._comboCount += t,
+      this.comboFlg = !0),
+      this.comboNumTxt.setNum(this._comboCount),
+      this._comboCount >= this._maxComb && (this._maxComb = this._comboCount)
+  }
+
+  get maxCombCount() {
+    return this._maxComb
+  }
+
+  set maxCombCount(t) {
+    this._maxComb = t
   }
 }
 
@@ -4732,7 +5273,7 @@ class StageBg extends Container {
     this.akebonoBg &&
       (this.akebonoBg.destroy(), this.removeChild(this.akebonoBg)),
       this.akebonoTen &&
-        (this.removeChild(this.akebonoTen),
+      (this.removeChild(this.akebonoTen),
         this.removeChild(this.akebonoTenShock)),
       this.removeChild(this.bg),
       this.removeChild(this.bgEnd);
