@@ -4460,13 +4460,6 @@ class CagaBtn extends l.prototype.constructor {
         "game_ui",
         PIXI.Texture.fromFrame("hudCabtn0per.gif")
       )),
-      // DRJ - added
-      (this.caGageBarMask as Phaser.GameObjects.Graphics).generateTexture(
-        "caGageBarMask",
-        50,
-        50
-      );
-
     // (this.caGageBar.mask = this.caGageBarMask),
     this.caGageBar.setMask(this.caGageBarMask.createGeometryMask()),
       (this.overCircle = new PIXI.Graphics(window.gameScene)),
