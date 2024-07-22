@@ -863,8 +863,8 @@ export default class GameScene extends Scene {
         this,
         "+=0.04"
       ),
-      this.player.onDamage(t); //,
-    // this.hud.onDamage(this.player.percent);
+      this.player.onDamage(t),
+      this.hud.onDamage(this.player.percent);
   }
 
   caFire() {
@@ -4585,14 +4585,15 @@ class CagaBtn extends l.prototype.constructor {
 
   // DRJ - for some reason mask does not display otherwise
   // while other Graphics instance (overCircle) does
-  // 
+  //
   setPosition(x, y) {
     super.setPosition(x, y);
 
-    if (this.caGageBarMask) this.caGageBarMask.setPosition(
-      this.caGageBarMask.x + x,
-      this.caGageBarMask.y + y
-    )
+    if (this.caGageBarMask)
+      this.caGageBarMask.setPosition(
+        this.caGageBarMask.x + x,
+        this.caGageBarMask.y + y
+      );
   }
 
   castRemoved(t) {
@@ -4769,7 +4770,7 @@ class HUD extends l.prototype.constructor {
       (this.cagaBtn = new CagaBtn()),
       // (this.cagaBtn.x = i.GAME_WIDTH - 70),
       // (this.cagaBtn.y = i.GAME_MIDDLE + 15),
-      (this.cagaBtn.setPosition(i.GAME_WIDTH - 70, i.GAME_MIDDLE + 15)),
+      this.cagaBtn.setPosition(i.GAME_WIDTH - 70, i.GAME_MIDDLE + 15),
       (this.scoreTitleTxt = new Sprite(
         window.gameScene,
         0,
