@@ -4581,10 +4581,18 @@ class CagaBtn extends l.prototype.constructor {
       this.addChild(this.caGageBarMask),
       this.addChild(this.caGageBar),
       this.addChild(this.overCircle);
+  }
 
-    // DRJ - no good very bad hack
-    this.caGageBarMask.x = 194;
-    this.caGageBarMask.y = 313;
+  // DRJ - for some reason mask does not display otherwise
+  // while other Graphics instance (overCircle) does
+  // 
+  setPosition(x, y) {
+    super.setPosition(x, y);
+
+    if (this.caGageBarMask) this.caGageBarMask.setPosition(
+      this.caGageBarMask.x + x,
+      this.caGageBarMask.y + y
+    )
   }
 
   castRemoved(t) {
@@ -4759,8 +4767,9 @@ class HUD extends l.prototype.constructor {
       // (this.hpBar.scale.x = 0.5),
       (this.hpBar.scaleX = 0.5),
       (this.cagaBtn = new CagaBtn()),
-      (this.cagaBtn.x = i.GAME_WIDTH - 70),
-      (this.cagaBtn.y = i.GAME_MIDDLE + 15),
+      // (this.cagaBtn.x = i.GAME_WIDTH - 70),
+      // (this.cagaBtn.y = i.GAME_MIDDLE + 15),
+      (this.cagaBtn.setPosition(i.GAME_WIDTH - 70, i.GAME_MIDDLE + 15)),
       (this.scoreTitleTxt = new Sprite(
         window.gameScene,
         0,
