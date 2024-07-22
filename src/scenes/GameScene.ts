@@ -4460,8 +4460,8 @@ class CagaBtn extends l.prototype.constructor {
         "game_ui",
         PIXI.Texture.fromFrame("hudCabtn0per.gif")
       )),
-    // (this.caGageBar.mask = this.caGageBarMask),
-    this.caGageBar.setMask(this.caGageBarMask.createGeometryMask()),
+      // (this.caGageBar.mask = this.caGageBarMask),
+      this.caGageBar.setMask(this.caGageBarMask.createGeometryMask()),
       (this.overCircle = new PIXI.Graphics(window.gameScene)),
       // this.overCircle.beginFill(16777215),
       this.overCircle.fill(16777215),
@@ -4583,8 +4583,8 @@ class CagaBtn extends l.prototype.constructor {
       this.addChild(this.overCircle);
 
     // DRJ - no good very bad hack
-    this.caGageBar.mask.geometryMask.x = 194;
-    this.caGageBar.mask.geometryMask.y = 313;
+    this.caGageBarMask.x = 194;
+    this.caGageBarMask.y = 313;
   }
 
   castRemoved(t) {
