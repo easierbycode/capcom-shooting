@@ -3,10 +3,10 @@ import { B, D, g, i } from "./LoadScene";
 import AudioManager from "./audio";
 
 export class Container extends Phaser.GameObjects.Container {
-  constructor(scene: Phaser.Scene, x, y, children?) {
+  constructor(scene: Phaser.Scene, x, y, children?, isExclusive?) {
     // super(scene, x, y, children)
     super(scene || window.gameScene, x, y, children);
-    this.exclusive = false;
+    this.exclusive = isExclusive ? isExclusive : false;
     // scene.add.existing(this)
     // (scene || window.gameScene).add.existing(this);
   }
@@ -35,6 +35,10 @@ export class Container extends Phaser.GameObjects.Container {
 
   set tint(t) {
     this.character && this.character.setTint(t);
+  }
+
+  addChildAt(gameObject: Phaser.GameObjects.GameObject, index: number) {
+    super.addAt(gameObject, index);
   }
 
   addChild(gameObject: Phaser.GameObjects.GameObject | Bullet) {
