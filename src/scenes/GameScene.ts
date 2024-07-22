@@ -43,6 +43,14 @@ export default class GameScene extends Scene {
     window.gameScene = this;
   }
 
+  addChild(gameObj) {
+    this.add.existing(gameObj);
+  }
+
+  removeChild(gameObj) {
+    this.children.remove(gameObj);
+  }
+
   addChildAt(gameObj, depth) {
     this.add.existing(gameObj);
     gameObj.setDepth(depth);
@@ -93,7 +101,7 @@ export default class GameScene extends Scene {
       // this.hud = new wi,
       (this.hud = new HUD()),
       // this.hud.on(wi.CUSTOM_EVENT_CA_FIRE, this.caFire.bind(Yi(Yi(o)))),
-      // this.hud.on(HUD.CUSTOM_EVENT_CA_FIRE, this.caFire.bind(Yi(Yi(o)))),
+      this.hud.on(HUD.CUSTOM_EVENT_CA_FIRE, this.caFire.bind(this)),
       this.addChildAt(this.hud, 3),
       // Set up title screen
       // this.title = new Oi,
@@ -103,11 +111,15 @@ export default class GameScene extends Scene {
       this.addChildAt(this.title, 4),
       // Set up cutin container
       // this.cutinCont = new Hi,
+      (this.cutinCont = new CutinContainer()),
       // Set up ca line
-      // this.caLine = new PIXI.Graphics,
+      (this.caLine = new PIXI.Graphics(window.gameScene)),
       // this.caLine.beginFill(16711680),
+      this.caLine.fill(16711680),
       // this.caLine.drawRect(0, 0, 3, 3),
+      this.caLine.fillRect(0, 0, 3, 3),
       // this.caLine.pivot.y = 3,
+      (this.caLine.displayOriginY = 1),
       // this.caLine.endFill(),
       // Set up cover
       // this.cover = new PIXI.extras.TilingSprite(PIXI.Texture.fromFrame("stagebgOver.gif"),i.STAGE_WIDTH,i.STAGE_HEIGHT),
@@ -870,12 +882,12 @@ export default class GameScene extends Scene {
   caFire() {
     (this.theWorldFlg = !0),
       (this.hud.caFireFlg = !0),
-      this.boss && this.boss.onTheWorld(this.theWorldFlg); //,
-    // this.addChild(this.cutinCont),
-    // this.cutinCont.start(),
-    // this.caLine.x = this.player.unit.x + 12,
-    // this.caLine.y = this.player.unit.y + 5,
-    // this.unitContainer.addChild(this.caLine);
+      this.boss && this.boss.onTheWorld(this.theWorldFlg),
+      this.addChild(this.cutinCont),
+      this.cutinCont.start(),
+      (this.caLine.x = this.player.unit.x + 12),
+      (this.caLine.y = this.player.unit.y + 5),
+      this.unitContainer.addChild(this.caLine);
     for (var t = 0; t < this.player.bulletList.length; t++) {
       var e = this.player.bulletList[t];
       this.player.bulletRemove(e), this.player.bulletRemoveComplete(e);
@@ -888,60 +900,129 @@ export default class GameScene extends Scene {
       null,
       this,
       "+=0.2"
-    ); //,
-    // o.call(function () {
-    //   this.removeChild(this.cutinCont)
-    // }, null, this, "+=1.7"),
-    // o.to(this.caLine, .3, {
-    //   height: i.GAME_HEIGHT
-    // }),
-    // o.to(this.caLine, .3, {
-    //   y: 0,
-    //   height: 0
-    // }).call(function () {
-    //   for (var t = this, e = 0, o = 0, n = function (n) {
-    //     n % 8 == 0 && (e = o % 2 == 0 ? -30 : -45,
-    //       o++);
-    //     var a = new PIXI.extras.AnimatedSprite(t.caExplosionTextures);
-    //     a.animationSpeed = .2,
-    //       a.loop = !1,
-    //       a.x = e,
-    //       a.y = i.GAME_HEIGHT - 45 * o - 120,
-    //       a.onComplete = function (t) {
-    //         t.destroy(),
-    //           this.unitContainer.removeChild(t)
-    //       }
-    //         .bind(t, a),
-    //       e += 30,
-    //       TweenMax.delayedCall(.01 * n, function () {
-    //         this.unitContainer.addChild(a),
-    //           a.play(),
-    //           n % 16 == 0 && g.play("se_ca_explosion")
-    //       }, null, t)
-    //   }, a = 0; a < 64; a++)
-    //     n(a)
-    // }, null, this, "-=0.1").call(function () {
-    //   var t = this
-    //     , e = this.enemyHitTestList.slice();
-    //   if (e.length >= 100)
-    //     for (var o = 0; o < e.length; o++) {
-    //       var n = e[o];
-    //       n.unit.x >= -n.unit.width / 2 && n.unit.x <= i.GAME_WIDTH && n.unit.y >= 20 && n.unit.y <= i.GAME_HEIGHT && n.onDamage(D.caDamage)
-    //     }
-    //   else
-    //     for (var a = function (o) {
-    //       var n = e[o];
-    //       n.unit.x >= -n.unit.width / 2 && n.unit.x <= i.GAME_WIDTH && n.unit.y >= 20 && n.unit.y <= i.GAME_HEIGHT && TweenMax.delayedCall(.005 * o, function () {
-    //         n.onDamage(D.caDamage)
-    //       }, null, t)
-    //     }, s = 0; s < e.length; s++)
-    //       a(s)
-    // }, null, this, "+=0.8").call(function () {
-    //   this.unitContainer.removeChild(this.caLine),
-    //     this.theWorldFlg = !1,
-    //     this.hud.caFireFlg = !1,
-    //     this.boss && (this.boss.hp <= 0 ? this.theWorldFlg = !0 : this.boss.onTheWorld(this.theWorldFlg))
-    // }, null, this, "+=0.7")
+    ),
+      o.call(
+        function () {
+          this.removeChild(this.cutinCont);
+        },
+        null,
+        this,
+        "+=1.7"
+      ),
+      o.to(this.caLine, 0.3, {
+        height: i.GAME_HEIGHT,
+      }),
+      o
+        .to(this.caLine, 0.3, {
+          y: 0,
+          height: 0,
+        })
+        .call(
+          function () {
+            for (
+              var t = this,
+                e = 0,
+                o = 0,
+                n = function (n) {
+                  n % 8 == 0 && ((e = o % 2 == 0 ? -30 : -45), o++);
+                  var a = new PIXI.extras.AnimatedSprite(
+                    window.gameScene,
+                    t.caExplosionTextures,
+                    "game_asset",
+                    true,
+                    0
+                  );
+                  (a.animationSpeed = 0.2),
+                    (a.loop = !1),
+                    (a.x = e),
+                    (a.y = i.GAME_HEIGHT - 45 * o - 120),
+                    // a.onComplete = function (t) {
+                    //   t.destroy(),
+                    //     this.unitContainer.removeChild(t)
+                    // }
+                    //   .bind(t, a),
+                    a.on(
+                      "animationcomplete",
+                      function (t) {
+                        t.destroy(), this.unitContainer.removeChild(t);
+                      }.bind(t, a)
+                    ),
+                    (e += 30),
+                    TweenMax.delayedCall(
+                      0.01 * n,
+                      function () {
+                        this.unitContainer.addChild(a),
+                          a.play(),
+                          n % 16 == 0 && AudioManager.play("se_ca_explosion");
+                      },
+                      null,
+                      t
+                    );
+                },
+                a = 0;
+              a < 64;
+              a++
+            )
+              n(a);
+          },
+          null,
+          this,
+          "-=0.1"
+        )
+        .call(
+          function () {
+            var t = this,
+              e = this.enemyHitTestList.slice();
+            if (e.length >= 100)
+              for (var o = 0; o < e.length; o++) {
+                var n = e[o];
+                n.unit.x >= -n.unit.width / 2 &&
+                  n.unit.x <= i.GAME_WIDTH &&
+                  n.unit.y >= 20 &&
+                  n.unit.y <= i.GAME_HEIGHT &&
+                  n.onDamage(D.caDamage);
+              }
+            else
+              for (
+                var a = function (o) {
+                    var n = e[o];
+                    n.unit.x >= -n.unit.width / 2 &&
+                      n.unit.x <= i.GAME_WIDTH &&
+                      n.unit.y >= 20 &&
+                      n.unit.y <= i.GAME_HEIGHT &&
+                      TweenMax.delayedCall(
+                        0.005 * o,
+                        function () {
+                          n.onDamage(D.caDamage);
+                        },
+                        null,
+                        t
+                      );
+                  },
+                  s = 0;
+                s < e.length;
+                s++
+              )
+                a(s);
+          },
+          null,
+          this,
+          "+=0.8"
+        )
+        .call(
+          function () {
+            this.unitContainer.removeChild(this.caLine),
+              (this.theWorldFlg = !1),
+              (this.hud.caFireFlg = !1),
+              this.boss &&
+                (this.boss.hp <= 0
+                  ? (this.theWorldFlg = !0)
+                  : this.boss.onTheWorld(this.theWorldFlg));
+          },
+          null,
+          this,
+          "+=0.7"
+        );
   }
 
   gameStart() {
@@ -5395,7 +5476,7 @@ class StageBg extends Container {
   }
 
   akebonofinish() {
-    this.akebonoBAudioManager.play();
+    this.akebonoBg.play();
     this.addChild(this.akebonoBg);
   }
 
@@ -5426,11 +5507,39 @@ class StageBg extends Container {
     this.akebonoTenShock.y = 113 + this.akebonoTenShock.height / 2;
     this.akebonoTenShock.alpha = 0;
     this.addChild(this.akebonoTenShock);
-    TweenMax.to(this.akebonoTenShock, 0.5, {
-      alpha: 1,
-      repeat: -1,
-      yoyo: true,
-    });
+    var t = new TimelineMax();
+    // t.to(this.akebonoTen.scale, 0.3, {
+    t.to(this.akebonoTen, 0.3, {
+      // x: 1,
+      scaleX: 1,
+      // y: 1,
+      scaleY: 1,
+      ease: Quint.easeIn,
+    }),
+      t.to(this.akebonoTenShock, 0.001, {
+        alpha: 1,
+      }),
+      t.to(this.akebonoTenShock, 0.6, {
+        alpha: 0,
+        ease: Quint.easeOut,
+      }),
+      t.to(
+        // this.akebonoTenShock.scale,
+        this.akebonoTenShock,
+        0.4,
+        {
+          // x: 1.5,
+          scaleX: 1.5,
+          // y: 1.5,
+          scaleY: 1.5,
+          ease: Quint.easeOut,
+        },
+        "-=0.6"
+      ),
+      t.to(this.akebonoTen, 0.3, {
+        alpha: 0,
+        ease: Quint.easeOut,
+      });
   }
 
   castAdded(t) {
@@ -5447,4 +5556,154 @@ class StageBg extends Container {
       this.removeChild(this.bg),
       this.removeChild(this.bgEnd);
   }
+}
+
+// Hi (line 7027)
+class CutinContainer extends l.prototype.constructor {
+  constructor() {
+    super(undefined, true);
+    this.cutinBg = new PIXI.Graphics(window.gameScene);
+    // this.cutinBg.beginFill(0, 0.9);
+    this.cutinBg.fill(0, 0.9);
+    // this.cutinBg.drawRect(0, 0, i.GAME_WIDTH, i.GAME_HEIGHT);
+    this.cutinBg.fillRect(0, 0, i.GAME_WIDTH, i.GAME_HEIGHT);
+    this.addChild(this.cutinBg);
+    // this.cutin = new PIXI.Sprite;
+    this.cutin = new Sprite(window.gameScene, 0, 0, "__NORMAL");
+    this.cutin.y = i.GAME_HEIGHT / 2 - 71;
+    this.addChild(this.cutin);
+    this.flash = new PIXI.Graphics(window.gameScene);
+    // this.flash.beginFill(15658734, 1);
+    this.flash.fill(15658734, 1);
+    // this.flash.drawRect(0, 0, i.GAME_WIDTH, i.GAME_HEIGHT);
+    this.flash.fillRect(0, 0, i.GAME_WIDTH, i.GAME_HEIGHT);
+    this.addChild(this.flash);
+  }
+
+  start() {
+    (this.cutinBg.alpha = 0),
+      (this.flash.alpha = 0),
+      // (this.cutin.texture = null),
+      this.cutin.setTexture("__NORMAL"),
+      new TimelineMax()
+        .to(this.cutinBg, 0.25, {
+          alpha: 1,
+        })
+        .call(
+          function () {
+            // this.cutin.texture = PIXI.Texture.fromFrame("cutin0.gif");
+            this.cutin.setTexture(
+              "game_asset",
+              PIXI.Texture.fromFrame("cutin0.gif")
+            );
+          },
+          null,
+          this,
+          "+=0.00"
+        )
+        .call(
+          function () {
+            // this.cutin.texture = PIXI.Texture.fromFrame("cutin1.gif");
+            this.cutin.setTexture(
+              "game_asset",
+              PIXI.Texture.fromFrame("cutin1.gif")
+            );
+          },
+          null,
+          this,
+          "+=0.08"
+        )
+        .call(
+          function () {
+            // this.cutin.texture = PIXI.Texture.fromFrame("cutin2.gif");
+            this.cutin.setTexture(
+              "game_asset",
+              PIXI.Texture.fromFrame("cutin2.gif")
+            );
+          },
+          null,
+          this,
+          "+=0.08"
+        )
+        .call(
+          function () {
+            // this.cutin.texture = PIXI.Texture.fromFrame("cutin3.gif");
+            this.cutin.setTexture(
+              "game_asset",
+              PIXI.Texture.fromFrame("cutin3.gif")
+            );
+          },
+          null,
+          this,
+          "+=0.08"
+        )
+        .call(
+          function () {
+            // this.cutin.texture = PIXI.Texture.fromFrame("cutin4.gif");
+            this.cutin.setTexture(
+              "game_asset",
+              PIXI.Texture.fromFrame("cutin4.gif")
+            );
+          },
+          null,
+          this,
+          "+=0.08"
+        )
+        .call(
+          function () {
+            // this.cutin.texture = PIXI.Texture.fromFrame("cutin5.gif");
+            this.cutin.setTexture(
+              "game_asset",
+              PIXI.Texture.fromFrame("cutin5.gif")
+            );
+          },
+          null,
+          this,
+          "+=0.08"
+        )
+        .call(
+          function () {
+            // this.cutin.texture = PIXI.Texture.fromFrame("cutin6.gif");
+            this.cutin.setTexture(
+              "game_asset",
+              PIXI.Texture.fromFrame("cutin6.gif")
+            );
+          },
+          null,
+          this,
+          "+=0.3"
+        )
+        .call(
+          function () {
+            // this.cutin.texture = PIXI.Texture.fromFrame("cutin7.gif");
+            this.cutin.setTexture(
+              "game_asset",
+              PIXI.Texture.fromFrame("cutin7.gif")
+            );
+          },
+          null,
+          this,
+          "+=0.1"
+        )
+        .call(
+          function () {
+            // this.cutin.texture = PIXI.Texture.fromFrame("cutin8.gif");
+            this.cutin.setTexture(
+              "game_asset",
+              PIXI.Texture.fromFrame("cutin8.gif")
+            );
+          },
+          null,
+          this,
+          "+=0.1"
+        )
+        .to(this.flash, 0.3, {
+          delay: 0.3,
+          alpha: 1,
+        });
+  }
+
+  castAdded(t) {}
+
+  castRemoved(t) {}
 }
