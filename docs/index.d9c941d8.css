@@ -1,0 +1,93 @@
+* {
+  -webkit-tap-highlight-color: #0000;
+}
+
+body {
+  -webkit-touch-callout: none;
+  -webkit-text-size-adjust: none;
+  -webkit-user-select: none;
+  padding: 0;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+  text-transform: uppercase;
+  background-color: #000;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  font-family: system-ui, -apple-system, -apple-system-font, Segoe UI, Roboto, sans-serif;
+  font-size: 12px;
+  overflow: hidden;
+}
+
+#app {
+  text-align: center;
+  background: url("logo.f892822b.png") top no-repeat;
+  width: 225px;
+  height: 50px;
+  margin: -115px 0 0 -112px;
+  padding: 180px 0 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+@media screen and (aspect-ratio >= 1) and (width >= 400px) {
+  #app {
+    background-position: 0;
+    margin: -90px 0 0 -198px;
+    padding: 75px 0 75px 170px;
+  }
+}
+
+h1 {
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  font-size: 24px;
+  font-weight: normal;
+  overflow: visible;
+}
+
+.event {
+  color: #fff;
+  border-radius: 4px;
+  margin: 0 30px;
+  padding: 2px 0;
+  font-size: 12px;
+}
+
+.event.listening {
+  background-color: #333;
+  display: block;
+}
+
+.event.received {
+  background-color: #4b946a;
+  display: none;
+}
+
+#deviceready.ready .event.listening {
+  display: none;
+}
+
+#deviceready.ready .event.received {
+  display: block;
+}
+
+@keyframes fade {
+  from {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: .4;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.blink {
+  animation: 3s infinite fade;
+}
+/*# sourceMappingURL=index.d9c941d8.css.map */
