@@ -828,7 +828,8 @@ export default class GameScene extends Scene {
     new TimelineMax()
       .call(
         function () {
-          (this.x = 4), (this.y = -2);
+          // (this.x = 4), (this.y = -2);
+          (this.cameras.main.x = 4), (this.cameras.main.y = -2);
         },
         null,
         this,
@@ -836,7 +837,8 @@ export default class GameScene extends Scene {
       )
       .call(
         function () {
-          (this.x = -3), (this.y = 1);
+          // (this.x = -3), (this.y = 1);
+          (this.cameras.main.x = -3), (this.cameras.main.y = 1);
         },
         null,
         this,
@@ -844,7 +846,8 @@ export default class GameScene extends Scene {
       )
       .call(
         function () {
-          (this.x = 2), (this.y = -1);
+          // (this.x = 2), (this.y = -1);
+          (this.cameras.main.x = 2), (this.cameras.main.y = -1);
         },
         null,
         this,
@@ -852,7 +855,8 @@ export default class GameScene extends Scene {
       )
       .call(
         function () {
-          (this.x = -2), (this.y = 1);
+          // (this.x = -2), (this.y = 1);
+          (this.cameras.main.x = -2), (this.cameras.main.y = 1);
         },
         null,
         this,
@@ -860,7 +864,8 @@ export default class GameScene extends Scene {
       )
       .call(
         function () {
-          (this.x = 1), (this.y = 1);
+          // (this.x = 1), (this.y = 1);
+          (this.cameras.main.x = 1), (this.cameras.main.y = 1);
         },
         null,
         this,
@@ -868,7 +873,8 @@ export default class GameScene extends Scene {
       )
       .call(
         function () {
-          (this.x = 0), (this.y = 0);
+          // (this.x = 0), (this.y = 0);
+          (this.cameras.main.x = 0), (this.cameras.main.y = 0);
         },
         null,
         this,
@@ -2242,6 +2248,7 @@ var M = (function (t) {
       {
         key: "barrierHitEffect",
         value: function () {
+          navigator.vibrate(30),
           (this.barrier.tint = 16711680),
             TweenMax.to(this.barrier, 0.2, {
               tint: 16777215,
@@ -2265,8 +2272,9 @@ var M = (function (t) {
               (this._percent = this.hp / this.maxHp),
               this.hp <= 0)
             )
-              this.dead();
+              navigator.vibrate(777), this.dead();
             else {
+              navigator.vibrate(150);
               var e = new TimelineMax({
                 onComplete: function () {
                   this.damageAnimationFlg = !1;
