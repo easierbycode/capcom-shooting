@@ -1,5 +1,5 @@
 import { Bullet } from "./GameScene";
-import { B, D, g, i } from "./LoadScene";
+import { B, D, i } from "./LoadScene";
 import AudioManager from "./audio";
 
 export class Container extends Phaser.GameObjects.Container {
@@ -301,6 +301,56 @@ export class Scene extends Phaser.Scene {
   }
 }
 
+// class BigNum extends l.prototype.constructor {
+class BigNum extends Container {
+  constructor(t, scene) {
+    // super(t);
+    super(
+      scene,
+      0,
+      0,
+      undefined,
+      true
+    )
+
+    this.maxDigit = t;
+    this.textureList = [];
+
+    for (let i = 0; i <= 9; i++) {
+      this.textureList[i] = "bigNum" + String(i) + ".gif";
+    }
+
+    this.numSpList = [];
+
+    for (let n = 0; n < t; n++) {
+      // const a = new PIXI.Sprite(this.textureList[0]);
+      // const a = new Sprite(this.scene, 0, 0, "game_ui", this.textureList[0]);
+      const a = new Sprite(scene, 0, 0, "game_ui", this.textureList[0]);
+      a.x = (t - 1 - n) * (a.width - 1);
+      this.addChild(a);
+      this.numSpList[n] = a;
+    }
+  }
+
+  setNum(t) {
+    for (let e = String(t), o = 0; o < this.maxDigit; o++) {
+      const i = e.substr(o, 1);
+      i
+        ? // ? (this.numSpList[e.length - 1 - o].texture = this.textureList[Number(i)])
+          this.numSpList[e.length - 1 - o].setTexture(
+            "game_ui",
+            this.textureList[Number(i)]
+          )
+        : // : (this.numSpList[o].texture = this.textureList[0]);
+          this.numSpList[o].setTexture("game_ui", this.textureList[0]);
+    }
+  }
+
+  castAdded(t) {}
+
+  castRemoved(t) {}
+}
+
 export default class TitleScene extends Scene {
   // variables
   private belt: Phaser.GameObjects.Graphics;
@@ -364,11 +414,11 @@ export default class TitleScene extends Scene {
       (this.scoreTitleTxt.y = this.copyright.y - 66);
 
     // this.bigNumTxt = new qt(10),
-    // this.bigNumTxt = new BigNum(10),
-    // this.bigNumTxt.x = this.scoreTitleTxt.x + this.scoreTitleTxt.width + 3,
-    // this.bigNumTxt.y = this.scoreTitleTxt.y - 2,
-    // this.bigNumTxt.setNum(D.highScore),
-    // this.addChild(this.bigNumTxt),
+    this.bigNumTxt = new BigNum(10, this),
+    this.bigNumTxt.x = this.scoreTitleTxt.x + this.scoreTitleTxt.width + 3,
+    this.bigNumTxt.y = this.scoreTitleTxt.y - 2,
+    this.bigNumTxt.setNum(D.highScore),
+    this.addChild(this.bigNumTxt),
 
     (this.fadeOutBlack = this.add.graphics()),
       this.fadeOutBlack.fillStyle(0),

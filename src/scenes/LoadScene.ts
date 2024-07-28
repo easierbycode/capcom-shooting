@@ -345,7 +345,7 @@ export default class LoadScene extends Phaser.Scene {
       (t.loadingBgFlipCnt = 0),
       document.cookie.split(";").forEach(function (t) {
         var e = t.split("=");
-        "afc2021_highScore" == e[0] && (D.highScore = +e[1]);
+        "afc2019_highScore" == e[0] && (D.highScore = +e[1]);
       }),
       t
     );
