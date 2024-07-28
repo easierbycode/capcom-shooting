@@ -612,6 +612,8 @@ export class AnimatedSprite extends Phaser.GameObjects.Sprite {
       } else {
         super.play(key);
       }
+
+    // DRJ::TODO - fix this (unreachable since key is set by default)
     } else {
       let animConfig: Phaser.Types.Animations.PlayAnimationConfig = key;
       animConfig.key = "default";

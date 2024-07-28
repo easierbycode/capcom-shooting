@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import AdvScene from "./scenes/AdvScene";
+import { ContinueScene } from "./scenes/ContinueScene";
 import GameScene from "./scenes/GameScene";
 import GameoverScene from "./scenes/GameoverScene";
 import LoadScene from "./scenes/LoadScene";
@@ -16,7 +17,7 @@ const config: Phaser.Types.Core.GameConfig = {
       debug: new URL(window.location.href).searchParams.get("debug") == "1",
     },
   },
-  scene: [LoadScene, TitleScene, AdvScene, GameScene, GameoverScene],
+  scene: [LoadScene, TitleScene, AdvScene, GameScene, GameoverScene, ContinueScene],
   scale: {
     autoCenter: Phaser.Scale.Center.CENTER_HORIZONTALLY,
     mode: Phaser.Scale.ScaleModes.FIT,

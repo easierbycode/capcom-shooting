@@ -76,12 +76,14 @@ export class Container extends Phaser.GameObjects.Container {
     // gameObject.once(Events.DESTROY, this.onChildDestroyed, this);
     gameObject.once("destroy", this.onChildDestroyed, this);
 
-    let isBulletExplosion = gameObject.frame?.name === "hit0.gif";
+    let isPlayerOrBulletExplosion = ["hit0.gif", "explosion00.gif"].includes(
+      gameObject.frame?.name
+    );
 
-    // the only child we add to Bullet is explosion, which is not added to scene yet
+    // Player/Bullet explosion are not added to scene yet
     // set as exclusive so explosion will have parentContainer set and call addedToScene
 
-    if (this.exclusive || isBulletExplosion) {
+    if (this.exclusive || isPlayerOrBulletExplosion) {
       if (gameObject.parentContainer) {
         gameObject.parentContainer.remove(gameObject);
       }
@@ -257,6 +259,19 @@ export class Scene extends Phaser.Scene {
     super(sceneKey);
   }
 
+  addChild(gameObj) {
+    this.add.existing(gameObj);
+  }
+
+  removeChild(gameObj) {
+    this.children.remove(gameObj);
+  }
+
+  addChildAt(gameObj, depth) {
+    this.add.existing(gameObj);
+    gameObj.setDepth(depth);
+  }
+
   init() {
     this.events.once("shutdown", this.sceneRemoved, this);
   }
@@ -332,8 +347,7 @@ export default class TitleScene extends Scene {
     (this.startBtn = new StartBtn(this)),
       this.startBtn.on("pointerup", this.titleStart.bind(this)),
       // this.startBtn.interactive = !1,
-      // this.startBtn.alpha = 0,
-
+      (this.startBtn.alpha = 0),
       (this.copyright = this.add
         .text(0, 0, "© CodeMonkey.Games 2021", {
           fontFamily: "Press Start 2P",
@@ -348,6 +362,13 @@ export default class TitleScene extends Scene {
         .setOrigin(0)),
       (this.scoreTitleTxt.x = 32),
       (this.scoreTitleTxt.y = this.copyright.y - 66);
+
+    // this.bigNumTxt = new qt(10),
+    // this.bigNumTxt = new BigNum(10),
+    // this.bigNumTxt.x = this.scoreTitleTxt.x + this.scoreTitleTxt.width + 3,
+    // this.bigNumTxt.y = this.scoreTitleTxt.y - 2,
+    // this.bigNumTxt.setNum(D.highScore),
+    // this.addChild(this.bigNumTxt),
 
     (this.fadeOutBlack = this.add.graphics()),
       this.fadeOutBlack.fillStyle(0),
@@ -415,9 +436,9 @@ export default class TitleScene extends Scene {
         null,
         this
       ),
-      // e.to(this.startBtn, 0.1, {
-      //   alpha: 1,
-      // }),
+      e.to(this.startBtn, 0.1, {
+        alpha: 1,
+      }),
       e.addCallback(
         function () {
           // (this.startBtn.interactive = !0),

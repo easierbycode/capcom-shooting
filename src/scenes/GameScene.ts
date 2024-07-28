@@ -43,19 +43,6 @@ export default class GameScene extends Scene {
     window.gameScene = this;
   }
 
-  addChild(gameObj) {
-    this.add.existing(gameObj);
-  }
-
-  removeChild(gameObj) {
-    this.children.remove(gameObj);
-  }
-
-  addChildAt(gameObj, depth) {
-    this.add.existing(gameObj);
-    gameObj.setDepth(depth);
-  }
-
   init() {
     for (var s = 0; s < 7; s++) {
       // var r = PIXI.Texture.fromFrame("explosion0" + s + ".gif");
@@ -88,7 +75,11 @@ export default class GameScene extends Scene {
       (d.explosion = this.explosionTextures),
       (this.player = new M(d)),
       // this.player.on(M.CUSTOM_EVENT_DEAD, this.gameover.bind(Yi(Yi(o)))),
-      // this.player.on(M.CUSTOM_EVENT_DEAD_COMPLETE, this.gameoverComplete.bind(Yi(Yi(o)))),
+      this.player.on(M.CUSTOM_EVENT_DEAD, this.gameover.bind(this)),
+      this.player.on(
+        M.CUSTOM_EVENT_DEAD_COMPLETE,
+        this.gameoverComplete.bind(this)
+      ),
       (D.player = this.player),
       // Set up containers
       // this.unitContainer = new PIXI.Container,
@@ -369,6 +360,14 @@ export default class GameScene extends Scene {
           this.sceneRemoved();
         }.bind(this)
       );
+  }
+
+  gameover() {
+    // F.dlog("GameScene.gameOver()"),
+    (this.theWorldFlg = !0),
+      (D.score = this.hud.scoreCount),
+      this.hud.caBtnDeactive(),
+      this.boss && this.boss.onTheWorld(!0);
   }
 
   enemyWave() {
@@ -1025,6 +1024,18 @@ export default class GameScene extends Scene {
         );
   }
 
+  gameoverComplete() {
+    this.boss && this.boss.onTheWorld(!0),
+      this.removeChild(this.player),
+      TweenMax.delayedCall(
+        2,
+        function () {
+          // B.Manager.game.stage.removeChild(B.Scene);
+          this.sceneRemoved();
+        }.bind(this)
+      );
+  }
+
   gameStart() {
     // F.dlog("GameScene.gameStart()."),
     (this.enemyWaveFlg = !0), this.player.shootStart();
@@ -1110,7 +1121,7 @@ function h(t, e) {
     })(t, e);
 }
 
-var l = (function (t) {
+export var l = (function (t) {
   function e(t, isExclusive) {
     var o;
     return (
