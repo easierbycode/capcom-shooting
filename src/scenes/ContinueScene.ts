@@ -1,18 +1,7 @@
-import { l } from "./GameScene";
-import { AnimatedSprite, B, D, i } from "./LoadScene";
-import { Graphics, Scene, Sprite } from "./TitleScene";
+import { PIXI, l } from "./GameScene";
+import { B, D, i } from "./LoadScene";
+import { Scene, Sprite } from "./TitleScene";
 import AudioManager from "./audio";
-
-const PIXI = {
-  Texture: {
-    fromFrame: (frameKey) => frameKey,
-  },
-  extras: {
-    AnimatedSprite: AnimatedSprite,
-  },
-  Rectangle: Phaser.GameObjects.Rectangle,
-  Graphics,
-};
 
 // K (line 1453)
 class Button extends Sprite {
@@ -191,8 +180,7 @@ class NoButton extends Button {
 }
 
 // Ie (line 3199)
-// DRJ - in original source Ie extends l
-class GotoTitleButton extends l.prototype.constructor {
+export class GotoTitleButton extends l.prototype.constructor {
   constructor(scene) {
     super(undefined, true);
 

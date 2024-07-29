@@ -4,7 +4,7 @@ import AudioManager from "./audio";
 
 window.gameScene;
 
-const PIXI = {
+export const PIXI = {
   Texture: {
     fromFrame: (frameKey) => frameKey,
   },
