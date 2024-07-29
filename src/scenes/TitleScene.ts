@@ -227,7 +227,7 @@ class StartBtn extends Container {
       });
   }
 
-  addedToScene(gameObject, scene) {
+  addedToScene() {
     this.scene.time.addEvent({
       callback: () => {
         this.addChild(this.img),
@@ -305,13 +305,7 @@ export class Scene extends Phaser.Scene {
 class BigNum extends Container {
   constructor(t, scene) {
     // super(t);
-    super(
-      scene,
-      0,
-      0,
-      undefined,
-      true
-    )
+    super(scene, 0, 0, undefined, true);
 
     this.maxDigit = t;
     this.textureList = [];
@@ -382,7 +376,8 @@ export default class TitleScene extends Scene {
       (this.logo = this.add.sprite(0, 0, "game_ui", "logo.gif")),
       (this.logo.x = this.logo.width / 2),
       this.logo.setScale(2),
-      (this.logo.y = -this.logo.height / 2);
+      // (this.logo.y = -this.logo.height / 2);
+      (this.logo.y = -this.logo.displayHeight / 2);
 
     var t = "subTitle" + ("ja" == i.LANG ? "" : "En") + ".gif";
     (this.subTitle = this.add.sprite(0, 0, "game_ui", t)),
@@ -398,8 +393,9 @@ export default class TitleScene extends Scene {
       this.startBtn.on("pointerup", this.titleStart.bind(this)),
       // this.startBtn.interactive = !1,
       (this.startBtn.alpha = 0),
+      this.addChild(this.startBtn),
       (this.copyright = this.add
-        .text(0, 0, "© CodeMonkey.Games 2021", {
+        .text(0, 0, `© CodeMonkey.Games ${new Date().getFullYear()}`, {
           fontFamily: "Press Start 2P",
           fontSize: "34px",
           strokeThickness: 0.15,
@@ -414,13 +410,12 @@ export default class TitleScene extends Scene {
       (this.scoreTitleTxt.y = this.copyright.y - 66);
 
     // this.bigNumTxt = new qt(10),
-    this.bigNumTxt = new BigNum(10, this),
-    this.bigNumTxt.x = this.scoreTitleTxt.x + this.scoreTitleTxt.width + 3,
-    this.bigNumTxt.y = this.scoreTitleTxt.y - 2,
-    this.bigNumTxt.setNum(D.highScore),
-    this.addChild(this.bigNumTxt),
-
-    (this.fadeOutBlack = this.add.graphics()),
+    (this.bigNumTxt = new BigNum(10, this)),
+      (this.bigNumTxt.x = this.scoreTitleTxt.x + this.scoreTitleTxt.width + 3),
+      (this.bigNumTxt.y = this.scoreTitleTxt.y - 2),
+      this.bigNumTxt.setNum(D.highScore),
+      this.addChild(this.bigNumTxt),
+      (this.fadeOutBlack = this.add.graphics()),
       this.fadeOutBlack.fillStyle(0),
       this.fadeOutBlack.fillRect(0, 0, i.GAME_WIDTH, i.GAME_HEIGHT),
       (this.fadeOutBlack.alpha = 0);
