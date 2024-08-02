@@ -264,6 +264,7 @@ export class Scene extends Phaser.Scene {
   }
 
   removeChild(gameObj) {
+    gameObj.disableInteractive();
     this.children.remove(gameObj);
   }
 
