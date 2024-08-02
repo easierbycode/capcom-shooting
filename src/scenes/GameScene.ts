@@ -4708,7 +4708,11 @@ class CagaBtn extends l.prototype.constructor {
   }
 }
 
-class zo extends l.prototype.constructor {
+
+// zo (line 5794)
+// ScorePopover - score and multiplier that floats up from killed enemies
+//
+class ScorePopover extends l.prototype.constructor {
   constructor(t, o) {
     super(t);
     var i = this;
@@ -4922,14 +4926,14 @@ class HUD extends l.prototype.constructor {
   }
 
   scoreView(t) {
-    var e = new zo(t.score, this._scoreRatio);
-    this.scoreViewWrap.addChild(e),
-      (e.x = Math.floor(t.unit.x + t.unit.width / 2 - e.width / 2)),
-      (e.y = Math.floor(t.unit.y + t.unit.height / 2 - e.height)),
-      TweenMax.to(e, 0.8, {
-        y: e.y - 20,
+    var popover = new ScorePopover(t.score, this._scoreRatio);
+    this.scoreViewWrap.addChild(popover),
+      (popover.x = Math.floor(t.unit.x + t.unit.width / 2 - popover.width / 2)),
+      (popover.y = Math.floor(t.unit.y + t.unit.height / 2 - popover.height)),
+      TweenMax.to(popover, 0.8, {
+        y: popover.y - 20,
         onComplete: function () {
-          this.scoreViewWrap.removeChild(e);
+          this.scoreViewWrap.removeChild(popover);
         },
         onCompleteScope: this,
       });
