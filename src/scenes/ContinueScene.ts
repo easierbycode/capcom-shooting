@@ -266,8 +266,6 @@ export class GotoTitleButton extends l.prototype.constructor {
 export class ContinueScene extends Scene {
   constructor() {
     super("continue-scene");
-    this.sceneSwitch = 0;
-    this.countDown = 9;
   }
 
   loop() {}
@@ -306,6 +304,8 @@ export class ContinueScene extends Scene {
   }
 
   create() {
+    this.sceneSwitch = 0;
+    this.countDown = 9;
     AudioManager.bgmPlay("bgm_continue", 102735, 698597);
     this.bg = new PIXI.Graphics(this);
     // this.bg.beginFill(0, 1);
@@ -674,7 +674,7 @@ export class ContinueScene extends Scene {
           this.scene.start("game-scene"))
         : // : (B.Scene = new mn()),
           this.scene.start("title-scene"); //,
-      // B.Manager.game.stage.addChild(B.Scene),
-      // F.dlog("ContinueScene.sceneRemoved() End.");
+    // B.Manager.game.stage.addChild(B.Scene),
+    // F.dlog("ContinueScene.sceneRemoved() End.");
   }
 }
