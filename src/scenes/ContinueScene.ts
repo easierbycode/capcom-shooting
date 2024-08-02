@@ -157,7 +157,7 @@ class NoButton extends Button {
   }
 
   onUp() {
-    AudioManager.play("se_cancel");
+    AudioManager.play("se_cursor");
     // this.texture = this.textureDefault;
     this.setTexture("game_ui", this.textureDefault);
   }
