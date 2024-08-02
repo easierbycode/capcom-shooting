@@ -40,7 +40,7 @@ class NextButton extends Container {
     var textStyle: Phaser.Types.GameObjects.Text.TextStyle = {
       fontSize: "16px",
       fontFamily: "sans-serif",
-      fontStyle: "strong",
+      // fontStyle: "strong",  // DRJ - shrinks text
       color: "#ffffff",
     };
 
@@ -142,7 +142,7 @@ export default class AdvScene extends Scene {
     const textStyle: Phaser.Types.GameObjects.Text.TextStyle = {
       fontFamily: "sans-serif",
       fontSize: "16px",
-      fontStyle: "strong",
+      // fontStyle: "strong",  // DRJ - shrinks text
       color: "#FFFFFF",
       wordWrap: {
         width: 230,
@@ -161,7 +161,7 @@ export default class AdvScene extends Scene {
       (this.txtBg.x = 8),
       (this.txtBg.y = i.GAME_MIDDLE + 7),
       (this.txt = this.add.text(15, i.GAME_MIDDLE + 30, " ", textStyle)),
-      this.txt.setWordWrapWidth(100, true),
+      // this.txt.setWordWrapWidth(100, true),
       (this.nameBg = this.add.graphics()),
       this.nameBg.lineStyle(2, 16777215, 1),
       this.nameBg.fillStyle(0),
