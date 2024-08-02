@@ -412,13 +412,13 @@ export class ContinueScene extends Scene {
         fontSize: 15,
 
         // fontWeight: "bold",
-        fontStyle: "strong",
+        // fontStyle: "strong",
 
         // lineHeight: 17,
         fixedHeight: 17,
 
         // fill: 16777215,
-        color: 16777215,
+        color: Phaser.Display.Color.IntegerToColor(16777215).rgba,
 
         // wordWrap: !0,
         // wordWrapWidth: 230,
