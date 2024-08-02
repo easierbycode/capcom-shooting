@@ -49,14 +49,14 @@ export class Container extends Phaser.GameObjects.Container {
     super.remove(gameObject, true);
   }
 
-  // addedToScene(gameObject, scene) {
-  //   // console.log('[Container] addedtoScene');
-  //   this.castAdded(gameObject);
-  // }
+  addedToScene(gameObject, scene) {
+    // console.log('[Container] addedtoScene');
+    this.castAdded(gameObject);
+  }
 
-  // castAdded(t) {
-  //   console.log('[Container] castAdded', t.type);
-  // }
+  castAdded(t) {
+    // console.log('[Container] castAdded', t.type);
+  }
 
   // removedFromScene(gameObject, scene) {
   //   // console.log('[Container] removedFromScene');

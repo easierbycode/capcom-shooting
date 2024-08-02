@@ -53,24 +53,20 @@ class NextButton extends Container {
     );
   }
 
-  addedToScene() {
+  castAdded() {
     this.tl = new TimelineMax({
       repeat: -1,
       yoyo: !0,
     });
 
-    this.scene.time.addEvent({
-      callback: () => {
-        this.tl
-          .to(this.actionText, 0.4, {
-            delay: 0.2,
-            alpha: 0,
-          })
-          .to(this.actionText, 0.8, {
-            alpha: 1,
-          });
-      },
-    });
+    this.tl
+      .to(this.actionText, 0.4, {
+        delay: 0.2,
+        alpha: 0,
+      })
+      .to(this.actionText, 0.8, {
+        alpha: 1,
+      });
 
     this.on("pointerover", this.onOver.bind(this)),
       this.on("pointerout", this.onOut.bind(this)),
@@ -173,6 +169,7 @@ export default class AdvScene extends Scene {
       (this.nameTxt.y = i.GAME_MIDDLE - 4),
       (this.nextBtn = new NextButton(this)),
       (this.nextBtn.visible = !1),
+      this.addChild(this.nextBtn),
       (this.endingFlg = !1),
       5 == D.stageId
         ? (this.endingFlg = !0)
