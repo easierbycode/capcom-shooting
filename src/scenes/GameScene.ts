@@ -586,7 +586,8 @@ export default class GameScene extends Scene {
       default:
         // var y = new S(t.tamaData);
         var y = new Bullet(t.tamaData);
-        (y.unit.x = t.unit.x + t.unit.width / 2 - y.unit.width / 2),
+        // (y.unit.x = t.unit.x + t.unit.width / 2 - y.unit.width / 2),
+        (y.unit.x = t.unit.x + t.unit.hitArea.width / 2 - y.character.width / 2),
           (y.unit.y = t.unit.y + t.unit.hitArea.height / 2),
           // y.on(S.CUSTOM_EVENT_DEAD, this.enemyRemove.bind(this, y)),
           y.on(Bullet.CUSTOM_EVENT_DEAD, this.enemyRemove.bind(this, y)),
