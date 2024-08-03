@@ -407,7 +407,7 @@ export class ContinueScene extends Scene {
         ],
       e = t[Math.floor(Math.random() * t.length)],
       // o = new PIXI.TextStyle({
-      o = new Phaser.GameObjects.TextStyle("", {
+      o: Phaser.Types.GameObjects.Text.TextStyle = {
         fontFamily: "sans-serif",
         fontSize: 15,
 
@@ -415,7 +415,7 @@ export class ContinueScene extends Scene {
         // fontStyle: "strong",
 
         // lineHeight: 17,
-        fixedHeight: 17,
+        // fixedHeight: 17,
 
         // fill: 16777215,
         color: Phaser.Display.Color.IntegerToColor(16777215).rgba,
@@ -434,7 +434,7 @@ export class ContinueScene extends Scene {
           x: 10,
           y: 10,
         },
-      });
+      };
     // this.commentText = new PIXI.Text(e, o);
     this.commentText = new Phaser.GameObjects.Text(this, 0, 0, e, o);
     this.commentText.x = i.GAME_CENTER - this.commentText.width / 2;
