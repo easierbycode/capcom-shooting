@@ -587,7 +587,8 @@ export default class GameScene extends Scene {
         // var y = new S(t.tamaData);
         var y = new Bullet(t.tamaData);
         // (y.unit.x = t.unit.x + t.unit.width / 2 - y.unit.width / 2),
-        (y.unit.x = t.unit.x + t.unit.hitArea.width / 2 - y.character.width / 2),
+        (y.unit.x =
+          t.unit.x + t.unit.hitArea.width / 2 - y.character.width / 2),
           (y.unit.y = t.unit.y + t.unit.hitArea.height / 2),
           // y.on(S.CUSTOM_EVENT_DEAD, this.enemyRemove.bind(this, y)),
           y.on(Bullet.CUSTOM_EVENT_DEAD, this.enemyRemove.bind(this, y)),
@@ -819,9 +820,11 @@ export default class GameScene extends Scene {
         null,
         this
       ),
-      this.hud.caFireFlg ? (this.stageBg.akebonofinish(),
-      this.title.akebonofinish(),
-      D.akebonoCnt++) : this.title.stageClear()
+      this.hud.caFireFlg
+        ? (this.stageBg.akebonofinish(),
+          this.title.akebonofinish(),
+          D.akebonoCnt++)
+        : this.title.stageClear();
   }
 
   playerDamage(t) {
@@ -2025,6 +2028,12 @@ var M = (function (t) {
       {
         key: "setUp",
         value: function (t, o, i) {
+          let controllerIds = Object.keys(window.controllers);
+          if (controllerIds.length) {
+            this.gamepad = window.controllers[controllerIds[0]];
+            this.gamepadVibration = this.gamepad?.vibrationActuator;
+          }
+
           switch (
             ((this.hp = t),
             (this._percent = this.hp / this.maxHp),
@@ -2248,7 +2257,21 @@ var M = (function (t) {
       {
         key: "barrierHitEffect",
         value: function () {
-          navigator.vibrate(30),
+          if (this.gamepadVibration) {
+            let weakMagnitude = this.unit.x / i.GAME_WIDTH;
+            let strongMagnitude = 1 - weakMagnitude;
+
+            this.gamepadVibration.playEffect("dual-rumble", {
+              startDelay: 0,
+              duration: 40,
+              // weakMagnitude: 1.0,
+              // strongMagnitude: 1.0
+              weakMagnitude,
+              strongMagnitude,
+            });
+          } else {
+            navigator.vibrate(30); //,
+          }
           (this.barrier.tint = 16711680),
             TweenMax.to(this.barrier, 0.2, {
               tint: 16777215,
@@ -2265,16 +2288,38 @@ var M = (function (t) {
         value: function (t) {
           if (this.barrierFlg);
           else if (!0 !== this.damageAnimationFlg) {
-            console.log("[Player] onDamage", t);
+            let weakMagnitude = this.unit.x / i.GAME_WIDTH;
+            let strongMagnitude = 1 - weakMagnitude;
             if (
               ((this.hp -= t),
               this.hp <= 0 && (this.hp = 0),
               (this._percent = this.hp / this.maxHp),
               this.hp <= 0)
             )
-              navigator.vibrate(777), this.dead();
+              if (this.gamepadVibration) {
+                this.gamepadVibration.playEffect("dual-rumble", {
+                  startDelay: 0,
+                  duration: 777,
+                  weakMagnitude,
+                  strongMagnitude,
+                });
+
+                this.dead();
+              } else {
+                navigator.vibrate(777), this.dead();
+              }
             else {
-              navigator.vibrate(150);
+              if (this.gamepadVibration) {
+                this.gamepadVibration.playEffect("dual-rumble", {
+                  startDelay: 0,
+                  duration: 150,
+                  weakMagnitude,
+                  strongMagnitude,
+                });
+              } else {
+                navigator.vibrate(150);
+              }
+
               var e = new TimelineMax({
                 onComplete: function () {
                   this.damageAnimationFlg = !1;
@@ -4707,7 +4752,6 @@ class CagaBtn extends l.prototype.constructor {
       this.removeChild(this.overCircle);
   }
 }
-
 
 // zo (line 5794)
 // ScorePopover - score and multiplier that floats up from killed enemies
