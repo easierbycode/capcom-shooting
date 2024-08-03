@@ -819,10 +819,9 @@ export default class GameScene extends Scene {
         null,
         this
       ),
-      // this.hud.caFireFlg ? (this.stageBg.akebonofinish(),
-      // this.title.akebonofinish(),
-      // D.akebonoCnt++) : this.title.stageClear()
-      this.title.stageClear();
+      this.hud.caFireFlg ? (this.stageBg.akebonofinish(),
+      this.title.akebonofinish(),
+      D.akebonoCnt++) : this.title.stageClear()
   }
 
   playerDamage(t) {
@@ -5176,7 +5175,8 @@ class TitleScreen extends Container {
       0,
       i.GAME_HEIGHT / 2 - 20,
       "game_ui",
-      "__BASE"
+      "__BASE",
+      true
     )),
       //   (t.stageNum.x = 0),
       //   (t.stageNum.y = i.GAME_HEIGHT / 2 - 20),
@@ -5184,7 +5184,7 @@ class TitleScreen extends Container {
     var a = PIXI.Texture.fromFrame("stageFight.gif");
     return (
       // (a.scaleMode = PIXI.SCALE_MODES.NEAREST),
-      (t.stageFight = new Sprite(scene, 0, 0, "game_ui", a)),
+      (t.stageFight = new Sprite(scene, 0, 0, "game_ui", a, true)),
       (t.stageFight.x = t.stageFight.width / 2),
       (t.stageFight.y = i.GAME_HEIGHT / 2 + t.stageFight.height / 2 - 20),
       (t.stageFight.visible = !1),
@@ -5205,7 +5205,8 @@ class TitleScreen extends Container {
         0,
         0,
         "game_ui",
-        PIXI.Texture.fromFrame("stageclear.gif")
+        PIXI.Texture.fromFrame("stageclear.gif"),
+        true
       )),
       (t.stageClearText.x = i.GAME_WIDTH / 2 - t.stageClearText.width / 2),
       (t.stageClearText.y = i.GAME_HEIGHT / 2 - t.stageClearText.height),
@@ -5229,7 +5230,8 @@ class TitleScreen extends Container {
         0,
         0,
         "game_ui",
-        "knockoutK.gif"
+        "knockoutK.gif",
+        true
       )),
       (t.knockoutK.x = i.GAME_CENTER - t.knockoutK.width / 2),
       (t.knockoutK.y = i.GAME_MIDDLE),
@@ -5242,7 +5244,8 @@ class TitleScreen extends Container {
         0,
         0,
         "game_ui",
-        "knockoutO.gif"
+        "knockoutO.gif",
+        true
       )),
       (t.knockoutO.x = i.GAME_CENTER + t.knockoutO.width / 2),
       (t.knockoutO.y = i.GAME_MIDDLE),

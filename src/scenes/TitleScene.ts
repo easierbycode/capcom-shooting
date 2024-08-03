@@ -150,10 +150,10 @@ export class Graphics extends Phaser.GameObjects.Graphics {
 }
 
 export class Sprite extends Phaser.GameObjects.Sprite {
-  constructor(scene, x, y, texture, frame?) {
+  constructor(scene, x, y, texture, frame?, addToScene?) {
     super(scene, x, y, texture, frame);
     this.setOrigin(0);
-    // scene.add.existing(this);
+    if (addToScene) scene.add.existing(this);
   }
 }
 
