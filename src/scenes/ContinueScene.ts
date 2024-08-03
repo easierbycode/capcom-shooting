@@ -475,6 +475,8 @@ export class ContinueScene extends Scene {
         "game_ui",
         PIXI.Texture.fromFrame("countdown0.gif")
       ),
+      // DRJ - added
+      this.loseFace.stop(),
       // (this.loseFace.textures = this.loseFaceGrayTexture),
       this.loseFace.setTexture("game_ui", this.loseFaceGrayTexture[0]),
       this.removeChild(this.commentText),
