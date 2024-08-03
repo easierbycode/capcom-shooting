@@ -15,15 +15,18 @@ export class Container extends Phaser.GameObjects.Container {
   set hitArea(rect) {
     this.setInteractive(rect, Phaser.Geom.Rectangle.Contains);
 
-    this.scene.time.addEvent({
-      callback: () => {
-        if (!this.body) return; // DRJ
-        this.body.setSize(rect.width, rect.height);
-        this.body.setOffset(rect.x, rect.y);
-      },
-    });
+    // this.scene.time.addEvent({
+    //   callback: () => {
+    //     if (!this.body) return; // DRJ
+    //     this.body.setSize(rect.width, rect.height);
+    //     this.body.setOffset(rect.x, rect.y);
+    //   },
+    // });
 
     this.scene.physics.add.existing(this);
+
+    this.body.setSize(rect.width, rect.height);
+    this.body.setOffset(rect.x, rect.y);
   }
 
   get hitArea() {
