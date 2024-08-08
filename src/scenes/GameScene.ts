@@ -125,6 +125,12 @@ export default class GameScene extends Scene {
   }
 
   create() {
+    if (this.physics.world.drawDebug) {
+      // Create FPS text
+      this.fpsText = this.add
+        .text(10, 50, "", { font: "14px sans-serif", fill: "#00ff00" })
+        .setDepth(10);
+    }
     var t =
       "boss_" +
       B.resource.recipe.data.bossData["boss" + D.stageId].name +
@@ -203,6 +209,10 @@ export default class GameScene extends Scene {
   }
 
   update(time: number, delta: number): void {
+    if (this.physics.world.drawDebug) {
+      // Update FPS text
+      this.fpsText.setText(`FPS: ${Math.floor(this.game.loop.actualFps)}`);
+    }
     if (!this.theWorldFlg) {
       // this.player.loop(),
       this.player.update(); //,
