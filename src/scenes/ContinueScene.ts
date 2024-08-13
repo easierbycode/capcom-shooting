@@ -646,7 +646,9 @@ export class ContinueScene extends Scene {
         (this.yesText.buttonMode = !1),
         (this.noText.interactive = !1),
         (this.noText.buttonMode = !1),
-        // (this.loseFace.textures = this.loseFaceSmileTexture))
+        // (this.loseFace.textures = this.loseFaceSmileTexture)),
+        // DRJ - added
+        this.loseFace.stop(),
         this.loseFace.setTexture("game_ui", this.loseFaceSmileTexture[0]))
       : (this.gotoTitleBtn.off("pointerup"),
         (this.gotoTitleBtn.interactive = !1),
