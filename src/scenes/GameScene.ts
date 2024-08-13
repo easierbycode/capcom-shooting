@@ -1,6 +1,7 @@
 import { Container, Graphics, Scene, Sprite, Texture } from "./TitleScene";
 import { AnimatedSprite, B, D, i } from "./LoadScene";
 import AudioManager from "./audio";
+import { BigNum } from "./ContinueScene";
 
 window.gameScene;
 
@@ -116,10 +117,10 @@ export default class GameScene extends Scene {
       // this.cover = new PIXI.extras.TilingSprite(PIXI.Texture.fromFrame("stagebgOver.gif"),i.STAGE_WIDTH,i.STAGE_HEIGHT),
       // this.addChildAt(this.cover, 4),
       // Set up boss
-      // this.boss,
-      // this.bossTimerCountDown = 99,
-      // this.bossTimerFrameCnt = 0,
-      // this.bossTimerStartFlg = !1,
+      this.boss,
+      (this.bossTimerCountDown = 99),
+      (this.bossTimerFrameCnt = 0),
+      (this.bossTimerStartFlg = !1),
       this
     );
   }
@@ -347,7 +348,15 @@ export default class GameScene extends Scene {
       this.stageBg.loop(this.stageBgAmountMove),
         this.enemyWaveFlg &&
           (this.frameCnt % this.waveInterval == 0 && this.enemyWave(),
-          (this.frameCnt += this.frameCntUp));
+          (this.frameCnt += this.frameCntUp)),
+        this.bossTimerStartFlg &&
+          (this.bossTimerFrameCnt % 60 == 0 &&
+            (this.bossTimerCountDown <= 0 &&
+              ((this.bossTimerStartFlg = !1),
+              this.timeoverComplete.bind(this)()),
+            this.bigNumTxt.setNum(this.bossTimerCountDown),
+            this.bossTimerCountDown--),
+          this.bossTimerFrameCnt++);
     }
   }
 
@@ -378,6 +387,23 @@ export default class GameScene extends Scene {
       (D.score = this.hud.scoreCount),
       this.hud.caBtnDeactive(),
       this.boss && this.boss.onTheWorld(!0);
+  }
+
+  timeoverComplete() {
+    this.title.timeover(),
+      (this.theWorldFlg = !0),
+      (D.score = this.hud.scoreCount),
+      this.hud.caBtnDeactive(),
+      this.boss && this.boss.onTheWorld(!0),
+      TweenMax.delayedCall(
+        2.5,
+        function () {
+          this.removeChild(this.player),
+            // B.Manager.game.stage.removeChild(B.Scene);
+            this.nextScene();
+          this.sceneRemoved();
+        }.bind(this)
+      );
   }
 
   enemyWave() {
@@ -786,27 +812,36 @@ export default class GameScene extends Scene {
         this.unitContainer.addChild(this.boss);
     }
     // (this.timeTxt = new PIXI.Sprite(PIXI.Texture.fromFrame("timeTxt.gif"))),
-    //   (this.timeTxt.x = i.GAME_CENTER - this.timeTxt.width),
-    //   (this.timeTxt.y = 58),
-    //   (this.timeTxt.alpha = 0),
-    //   this.unitContainer.addChild(this.timeTxt),
-    //   (this.bigNumTxt = new qt(2)),
-    //   (this.bigNumTxt.x = this.timeTxt.x + this.timeTxt.width + 3),
-    //   (this.bigNumTxt.y = this.timeTxt.y - 2),
-    //   this.bigNumTxt.setNum(99),
-    //   (this.bigNumTxt.alpha = 0),
-    //   this.unitContainer.addChild(this.bigNumTxt),
-    //   TweenMax.to([this.bigNumTxt, this.timeTxt], 0.2, {
-    //     delay: 6,
-    //     alpha: 1,
-    //     onComplete: function () {
-    //       (this.bossTimerCountDown = 99),
-    //         (this.bossTimerFrameCnt = 0),
-    //         (this.bossTimerStartFlg = !0);
-    //     },
-    //     onCompleteScope: this,
-    //   }),
-    (this.enemyWaveFlg = !1), this.stageBg.bossScene();
+    (this.timeTxt = new Sprite(
+      window.gameScene,
+      0,
+      0,
+      "game_ui",
+      PIXI.Texture.fromFrame("timeTxt.gif")
+    )),
+      (this.timeTxt.x = i.GAME_CENTER - this.timeTxt.width),
+      (this.timeTxt.y = 58),
+      (this.timeTxt.alpha = 0),
+      this.unitContainer.addChild(this.timeTxt),
+      // (this.bigNumTxt = new qt(2)),
+      (this.bigNumTxt = new BigNum(2)),
+      (this.bigNumTxt.x = this.timeTxt.x + this.timeTxt.width + 3),
+      (this.bigNumTxt.y = this.timeTxt.y - 2),
+      this.bigNumTxt.setNum(99),
+      (this.bigNumTxt.alpha = 0),
+      this.unitContainer.addChild(this.bigNumTxt),
+      TweenMax.to([this.bigNumTxt, this.timeTxt], 0.2, {
+        delay: 6,
+        alpha: 1,
+        onComplete: function () {
+          (this.bossTimerCountDown = 99),
+            (this.bossTimerFrameCnt = 0),
+            (this.bossTimerStartFlg = !0);
+        },
+        onCompleteScope: this,
+      }),
+      (this.enemyWaveFlg = !1),
+      this.stageBg.bossScene();
   }
 
   bossRemove(t) {
@@ -5275,9 +5310,19 @@ class TitleScreen extends Container {
       // (t.stageTimeoverText = new PIXI.Sprite(
       //   PIXI.Texture.fromFrame("stageTimeover.gif")
       // )),
-      // (t.stageTimeoverText.x =
-      //   i.GAME_WIDTH / 2 - t.stageTimeoverText.width / 2),
-      // (t.stageTimeoverText.y = i.GAME_HEIGHT / 2 - t.stageTimeoverText.height),
+      (t.stageTimeoverText = new Sprite(
+        scene,
+        0,
+        0,
+        "game_ui",
+        PIXI.Texture.fromFrame("stageTimeover.gif")
+      )),
+      // DRJ - visibility was originally set on parent, stageTimeoverBg
+      (t.stageTimeoverText.visible = !1),
+      (t.stageTimeoverText.alpha = 0),
+      (t.stageTimeoverText.x =
+        i.GAME_WIDTH / 2 - t.stageTimeoverText.width / 2),
+      (t.stageTimeoverText.y = i.GAME_HEIGHT / 2 - t.stageTimeoverText.height),
       // (t.knockoutK = new PIXI.Sprite(PIXI.Texture.fromFrame("knockoutK.gif"))),
       (t.knockoutK = new Sprite(
         window.gameScene,
@@ -5471,6 +5516,16 @@ class TitleScreen extends Container {
       });
   }
 
+  timeover() {
+    // (this.stageTimeoverBg.visible = !0),
+    (this.stageTimeoverText.visible = !0),
+      // TweenMax.to(this.stageTimeoverBg, 0.5, {
+      TweenMax.to(this.stageTimeoverText, 0.5, {
+        delay: 0.3,
+        alpha: 1,
+      });
+  }
+
   addedToScene(gameObject, scene): void {
     this.scene.time.addEvent({
       callback: () => {
@@ -5481,7 +5536,8 @@ class TitleScreen extends Container {
           // DRJ - need to decide what to do with Graphics that add children
           this.addChild(this.stageClearText), // this.stageClearBg.addChild(this.stageClearText),
           // this.addChild(this.stageTimeoverBg),
-          // this.stageTimeoverBg.addChild(this.stageTimeoverText),
+          // DRJ - need to decide what to do with Graphics that add children
+          this.addChild(this.stageTimeoverText), // this.stageTimeoverBg.addChild(this.stageTimeoverText),
           this.addChild(this.knockoutK),
           this.addChild(this.knockoutO);
       },
