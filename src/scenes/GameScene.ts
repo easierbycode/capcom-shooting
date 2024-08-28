@@ -2323,7 +2323,7 @@ var M = (function (t) {
               strongMagnitude,
             });
           } else {
-            navigator.vibrate(30); //,
+            navigator.vibrate?.(30); //,
           }
           (this.barrier.tint = 16711680),
             TweenMax.to(this.barrier, 0.2, {
@@ -2359,7 +2359,7 @@ var M = (function (t) {
 
                 this.dead();
               } else {
-                navigator.vibrate(777), this.dead();
+                navigator.vibrate?.(777), this.dead();
               }
             else {
               if (this.gamepadVibration) {
@@ -2370,7 +2370,7 @@ var M = (function (t) {
                   strongMagnitude,
                 });
               } else {
-                navigator.vibrate(150);
+                navigator.vibrate?.(150);
               }
 
               var e = new TimelineMax({
