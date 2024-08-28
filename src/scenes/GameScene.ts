@@ -2041,8 +2041,9 @@ var M = (function (t) {
               this.bulletRemoveComplete.bind(this, t)
             ),
             t.explosion.destroy();
-          this.removeChild(t);
-          this.scene.sys.displayList.remove(t); // DRJ
+          t.dead();
+          // this.removeChild(t);
+          // this.scene.sys.displayList.remove(t); // DRJ
         },
       },
       {
